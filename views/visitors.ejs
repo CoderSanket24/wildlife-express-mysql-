@@ -72,8 +72,19 @@
                         <p><strong>Date:</strong> Jan 20, 2025</p>
                     </div>
                 </div>
-
-
+                <% visitors_info.map(({visitorName, aadhar_id, age, address})=> { %>
+                    <div class="data-card">
+                        <div class="card-header">
+                            <span class="icon">👥</span>Booking #VIS-2025-0145
+                        </div>
+                        <div class="card-content">
+                            <p><strong>Visitor Name: </strong><%=visitorName%></p>
+                            <p><strong>Visitor age: </strong><%=age%></p>
+                            <p><strong>Aadhar Id: </strong><%=aadhar_id%></p>
+                            <p><strong>Address: </strong><%=address%></p>
+                        </div>
+                    </div>
+                <% }) %>
             </div>
         </div>
     </div>

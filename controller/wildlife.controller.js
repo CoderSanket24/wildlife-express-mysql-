@@ -1,5 +1,5 @@
 import path from "path";
-import { loadVisitorsInfo } from "../models/wildlife.model.js";
+import { loadFeedbacks, loadTicketsInfo, loadVisitorsInfo } from "../models/wildlife.model.js";
 
 export const getHomePage = async (req, res) => {
     try {
@@ -13,7 +13,9 @@ export const getHomePage = async (req, res) => {
 export const getVisitorPage = async (req, res) => {
     try {
         const visitors_info = await loadVisitorsInfo();
-        return res.render("visitors",{visitors_info});
+        const tickets = await loadTicketsInfo();
+        const feedbacks = await loadFeedbacks();
+        return res.render("visitors",{visitors_info,tickets,feedbacks});
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");

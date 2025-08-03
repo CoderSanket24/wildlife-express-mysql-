@@ -96,23 +96,23 @@
                         <p><strong>Valid Until:</strong> Jan 25, 2025</p>
                     </div>
                 </div>
-                <% visitors_info.map(({visitorName, aadhar_id, age, address})=> { %>
+                <% tickets.map(({ticket_id, visitorName, amount, valid_until})=> { %>
                     <div class="data-card">
                         <div class="card-header">
-                            <span class="icon">👥</span>Booking #VIS-2025-0145
+                            <span class="icon">🎟️</span>Ticket #TKT-20250121-089
                         </div>
                         <div class="card-content">
+                            <p><strong>Ticket Id: </strong>
+                                <%=ticket_id%>
+                            </p>
                             <p><strong>Visitor Name: </strong>
                                 <%=visitorName%>
                             </p>
-                            <p><strong>Visitor age: </strong>
-                                <%=age%>
+                            <p><strong>Amount: </strong>
+                                <%=amount%>
                             </p>
-                            <p><strong>Aadhar Id: </strong>
-                                <%=aadhar_id%>
-                            </p>
-                            <p><strong>Address: </strong>
-                                <%=address%>
+                            <p><strong>Valid Until: </strong>
+                                <%=valid_until%>
                             </p>
                         </div>
                     </div>
@@ -132,23 +132,20 @@
                         <p><strong>Date:</strong> Jan 20, 2025</p>
                     </div>
                 </div>
-                <% visitors_info.map(({visitorName, aadhar_id, age, address})=> { %>
+                <% feedbacks.map(({visitorName, rating, feedback})=> { %>
                     <div class="data-card">
                         <div class="card-header">
-                            <span class="icon">👥</span>Booking #VIS-2025-0145
+                            <span class="icon">⭐</span>Recent Feedback
                         </div>
                         <div class="card-content">
                             <p><strong>Visitor Name: </strong>
                                 <%=visitorName%>
                             </p>
-                            <p><strong>Visitor age: </strong>
-                                <%=age%>
+                            <p><strong>Rating: </strong>
+                                <%=rating.toFixed(1)%>
                             </p>
-                            <p><strong>Aadhar Id: </strong>
-                                <%=aadhar_id%>
-                            </p>
-                            <p><strong>Address: </strong>
-                                <%=address%>
+                            <p><strong>Feedback: </strong>
+                                <%=feedback%>
                             </p>
                         </div>
                     </div>

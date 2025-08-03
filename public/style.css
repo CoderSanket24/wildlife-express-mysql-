@@ -146,7 +146,7 @@ body {
     left: 100%;
 }
 
-.nav-tab:hover {
+.nav-tab:hover, .nav-tab.active {
     background: rgba(76, 175, 80, 0.4);
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
@@ -198,6 +198,10 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
     margin-top: 30px;
+}
+
+.data-grid.inactive {
+    display: none;
 }
 
 .data-card {
@@ -635,6 +639,36 @@ body {
         font-size: 2em;
     }
 }
+
+/* Loading animation */
+.loading {
+    display: none;
+    text-align: center;
+    padding: 50px;
+    color: #4CAF50;
+    font-size: 1.2em;
+}
+
+.spinner {
+    border: 4px solid rgba(76, 175, 80, 0.3);
+    border-top: 4px solid #4CAF50;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 
 /* Loading animation */
 .loading {

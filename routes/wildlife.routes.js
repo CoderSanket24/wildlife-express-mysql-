@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { getHomePage } from "../controller/wildlife.controller.js";
+import { getHomePage, getVisitorPage } from "../controller/wildlife.controller.js";
 
 const router = Router();
 
 router.get('/',getHomePage);
+router.get('/visitors.html',getVisitorPage);
 
 export default router;

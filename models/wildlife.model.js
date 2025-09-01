@@ -14,3 +14,8 @@ export const loadFeedbacks = async () => {
     const [rows] = await db.execute('select * from feedbacks');
     return rows;
 }
+
+export const loadZones = async () => {
+    const [rows] = await db.execute('select * from zones');
+    return rows;
+}

@@ -1,5 +1,5 @@
 import path from "path";
-import { loadFeedbacks, loadTicketsInfo, loadVisitorsInfo } from "../models/wildlife.model.js";
+import { loadFeedbacks, loadTicketsInfo, loadVisitorsInfo, loadZones } from "../models/wildlife.model.js";
 
 export const getHomePage = async (req, res) => {
     try {
@@ -20,4 +20,41 @@ export const getVisitorPage = async (req, res) => {
         console.error(error);
         return res.status(500).send("internal server error.");
     }
+} 
+export const getAnimalsPage = async (req, res) => {
+    try {
+        return res.render("animals");
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("internal server error.");
+    }
 }
+
+export const getMedicalPage = async (req, res) => {
+    try {
+        return res.render("medical");
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("internal server error.");
+    }
+}
+
+export const getStaffPage = async (req, res) => {
+    try {
+        return res.render("staff");
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("internal server error.");
+    }
+}
+
+export const getZonesPage = async (req, res) => {
+    try {
+        const zones = await loadZones();
+        return res.render("zones",{zones});
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("internal server error.");
+    }
+}
+

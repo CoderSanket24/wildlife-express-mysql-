@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WildGuard Sanctuary - Visitor Feedback</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 25%, #0f4c3a 50%, #2d5016 75%, #1a4d2e 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-leaf {
+            position: absolute;
+            color: rgba(76, 175, 80, 0.3);
+            font-size: 24px;
+            animation: float 8s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            animation: slideDown 1s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header h1 {
+            color: #4CAF50;
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 10px rgba(76, 175, 80, 0.5);
+            }
+            to {
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 20px rgba(76, 175, 80, 0.8);
+            }
+        }
+
+        .header p {
+            color: #81C784;
+            font-size: 1.2em;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(76, 175, 80, 0.2);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .section-title {
+            color: #4CAF50;
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, #4CAF50, #81C784);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-label {
+            display: block;
+            color: #4CAF50;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #81C784;
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .form-input::placeholder {
+            color: rgba(129, 199, 132, 0.7);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            background: rgba(76, 175, 80, 0.1);
+            padding: 10px 15px;
+            border-radius: 25px;
+            border: 2px solid rgba(76, 175, 80, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item:hover {
+            background: rgba(76, 175, 80, 0.2);
+            transform: scale(1.05);
+        }
+
+        .checkbox-item input {
+            margin-right: 8px;
+            transform: scale(1.2);
+        }
+
+        .checkbox-item label {
+            color: #81C784;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .submit-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        .submit-btn:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.4);
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+            padding: 10px;
+        }
+
+        .star {
+            font-size: 2.5em;
+            color: rgba(255, 193, 7, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .star:hover {
+            color: #FFC107;
+            transform: scale(1.3);
+        }
+
+        .star.active {
+            color: #FFC107;
+            transform: scale(1.1);
+        }
+
+        .info-card {
+            background: rgba(33, 150, 243, 0.1);
+            border: 2px solid rgba(33, 150, 243, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #81C784;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+            animation: successPulse 0.6s ease-out;
+        }
+
+        @keyframes successPulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(76, 175, 80, 0.3);
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            color: #4CAF50;
+            font-size: 1.2em;
+        }
+
+        .form-group.has-icon {
+            position: relative;
+        }
+
+        .form-group.has-icon .form-input {
+            padding-right: 50px;
+        }
+
+        .back-btn {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: rgba(76, 175, 80, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .icon {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .form-section {
+                padding: 25px;
+            }
+            .star {
+                font-size: 2em;
+            }
+            .star-rating {
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🌿 WildGuard Sanctuary</h1>
+            <p>Visitor Feedback Portal</p>
+        </div>
+
+        <div class="form-section">
+            <a href="login.html" class="back-btn">← Back to Login</a>
+            
+            <h2 class="section-title">⭐ Visitor Feedback</h2>
+            
+            <form id="feedbackForm">
+                <div class="form-row">
+                    <div class="form-group has-icon">
+                        <label class="form-label">Your Name</label>
+                        <input type="text" class="form-input" placeholder="Enter your name" required>
+                        <span class="input-icon">👤</span>
+                    </div>
+                    <div class="form-group has-icon">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-input" placeholder="your.email@example.com" required>
+                        <span class="input-icon">📧</span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Visit Date</label>
+                        <input type="date" class="form-input" required>
+                    </div>
+                    <div class="form-group has-icon">
+                        <label class="form-label">Ticket/Booking ID</label>
+                        <input type="text" class="form-input" placeholder="WGS-2025-0123">
+                        <span class="input-icon">🎫</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Overall Experience Rating</label>
+                    <div class="star-rating" data-rating-group="overall">
+                        <span class="star" data-value="1">⭐</span>
+                        <span class="star" data-value="2">⭐</span>
+                        <span class="star" data-value="3">⭐</span>
+                        <span class="star" data-value="4">⭐</span>
+                        <span class="star" data-value="5">⭐</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Wildlife Sightings</label>
+                    <div class="form-checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="tiger-seen" value="tiger">
+                            <label for="tiger-seen">🐅 Tiger</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="elephant-seen" value="elephant">
+                            <label for="elephant-seen">🐘 Elephant</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="leopard-seen" value="leopard">
+                            <label for="leopard-seen">🐆 Leopard</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="deer-seen" value="deer">
+                            <label for="deer-seen">🦌 Deer</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="birds-seen" value="birds">
+                            <label for="birds-seen">🦅 Birds</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="other-seen" value="other">
+                            <label for="other-seen">🐾 Other Animals</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Guide Service Rating</label>
+                        <div class="star-rating" data-rating-group="guide">
+                            <span class="star" data-value="1">⭐</span>
+                            <span class="star" data-value="2">⭐</span>
+                            <span class="star" data-value="3">⭐</span>
+                            <span class="star" data-value="4">⭐</span>
+                            <span class="star" data-value="5">⭐</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Facility Rating</label>
+                        <div class="star-rating" data-rating-group="facility">
+                            <span class="star" data-value="1">⭐</span>
+                            <span class="star" data-value="2">⭐</span>
+                            <span class="star" data-value="3">⭐</span>
+                            <span class="star" data-value="4">⭐</span>
+                            <span class="star" data-value="5">⭐</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">What did you like most?</label>
+                    <div class="form-checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="wildlife-diversity" value="wildlife-diversity">
+                            <label for="wildlife-diversity">🌿 Wildlife Diversity</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="guide-knowledge" value="guide-knowledge">
+                            <label for="guide-knowledge">🧠 Guide Knowledge</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="photography" value="photography">
+                            <label for="photography">📸 Photography Opportunities</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="facilities" value="facilities">
+                            <label for="facilities">🏢 Facilities</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="conservation" value="conservation">
+                            <label for="conservation">💚 Conservation Efforts</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="safety" value="safety">
+                            <label for="safety">🛡️ Safety Measures</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Comments & Suggestions</label>
+                    <textarea class="form-textarea" placeholder="Share your detailed feedback, suggestions for improvement, or memorable moments from your visit..." rows="5"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Would you recommend WildGuard Sanctuary to others?</label>
+                    <div class="form-checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="radio" id="recommend-yes" name="recommend" value="yes" required>
+                            <label for="recommend-yes">✅ Definitely Yes</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="recommend-maybe" name="recommend" value="maybe">
+                            <label for="recommend-maybe">🤔 Maybe</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="radio" id="recommend-no" name="recommend" value="no">
+                            <label for="recommend-no">❌ No</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <strong>🙏 Thank you for your feedback!</strong><br>
+                    Your feedback helps us improve our conservation efforts and visitor experience. We value every opinion and use it to enhance our wildlife sanctuary.
+                </div>
+
+                <div class="loading-spinner" id="feedbackLoading"></div>
+                <div class="success-message" id="feedbackSuccess">
+                    ⭐ Thank you for your valuable feedback! Your review has been submitted successfully.
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span class="icon">⭐</span>Submit Feedback
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Create floating leaves animation
+        function createFloatingLeaf() {
+            const leaf = document.createElement('div');
+            leaf.className = 'floating-leaf';
+            leaf.innerHTML = Math.random() > 0.5 ? '🍃' : '🌿';
+            leaf.style.left = Math.random() * 100 + '%';
+            leaf.style.animationDelay = Math.random() * 5 + 's';
+            leaf.style.animationDuration = (Math.random() * 4 + 6) + 's';
+            
+            document.querySelector('.bg-animation').appendChild(leaf);
+            
+            setTimeout(() => {
+                if (leaf.parentNode) {
+                    leaf.parentNode.removeChild(leaf);
+                }
+            }, 10000);
+        }
+
+        // Create leaves periodically
+        setInterval(createFloatingLeaf, 2000);
+
+        // Create initial leaves
+        for (let i = 0; i < 5; i++) {
+            setTimeout(createFloatingLeaf, i * 500);
+        }
+
+        // Star Rating System
+        class StarRating {
+            constructor(container) {
+                this.container = container;
+                this.stars = container.querySelectorAll('.star');
+                this.rating = 0;
+                this.init();
+            }
+
+            init() {
+                this.stars.forEach((star, index) => {
+                    star.addEventListener('click', () => this.setRating(index + 1));
+                    star.addEventListener('mouseenter', () => this.previewRating(index + 1));
+                });
+
+                this.container.addEventListener('mouseleave', () => this.showCurrentRating());
+            }
+
+            setRating(rating) {
+                this.rating = rating;
+                this.container.setAttribute('data-rating', rating);
+                this.showCurrentRating();
+            }
+
+            previewRating(rating) {
+                this.updateStars(rating);
+            }
+
+            showCurrentRating() {
+                this.updateStars(this.rating);
+            }
+
+            updateStars(rating) {
+                this.stars.forEach((star, index) => {
+                    if (index < rating) {
+                        star.classList.add('active');
+                    } else {
+                        star.classList.remove('active');
+                    }
+                });
+            }
+
+            reset() {
+                this.rating = 0;
+                this.container.removeAttribute('data-rating');
+                this.updateStars(0);
+            }
+        }
+
+        // Initialize star rating systems
+        let starRatings = [];
+
+        function initializeStarRatings() {
+            const ratingContainers = document.querySelectorAll('.star-rating');
+            starRatings = Array.from(ratingContainers).map(container => new StarRating(container));
+        }
+
+        // Notification system
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; 
+                top: 20px; 
+                right: 20px; 
+                background: ${type === 'success' ? 'rgba(76, 175, 80, 0.9)' : 'rgba(244, 67, 54, 0.9)'}; 
+                color: white; 
+                padding: 15px 20px; 
+                border-radius: 10px; 
+                z-index: 1001; 
+                font-weight: bold;
+                transform: translateX(300px); 
+                transition: transform 0.3s ease;
+                max-width: 250px; 
+                backdrop-filter: blur(10px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(300px)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        // Form submission handler
+        function handleFormSubmission() {
+            const form = document.getElementById('feedbackForm');
+            const loading = document.getElementById('feedbackLoading');
+            const success = document.getElementById('feedbackSuccess');
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                loading.style.display = 'block';
+                
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                    success.style.display = 'block';
+                    showNotification('Feedback submitted successfully!');
+                    
+                    setTimeout(() => {
+                        success.style.display = 'none';
+                        form.reset();
+                        
+                        // Reset all star ratings
+                        starRatings.forEach(rating => rating.reset());
+                    }, 5000);
+                }, 2000);
+            });
+        }
+
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeStarRatings();
+            handleFormSubmission();
+            
+            setTimeout(() => {
+                showNotification('Share your wildlife experience with us!');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

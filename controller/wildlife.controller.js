@@ -58,3 +58,20 @@ export const getZonesPage = async (req, res) => {
     }
 }
 
+export const getFeedbackPage = async (req, res) => {
+    try {
+        return res.render("feedback");
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("internal server error.");
+    }
+}
+
+export const getBookingPage = async (req, res) => {
+    try {
+        return res.render("ticket-booking");
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("internal server error.");
+    }
+}

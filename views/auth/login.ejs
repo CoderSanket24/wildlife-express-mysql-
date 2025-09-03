@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WildGuard Sanctuary - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 25%, #0f4c3a 50%, #2d5016 75%, #1a4d2e 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Animated background elements */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-leaf {
+            position: absolute;
+            color: rgba(76, 175, 80, 0.3);
+            font-size: 24px;
+            animation: float 8s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 40px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(76, 175, 80, 0.2);
+            max-width: 450px;
+            width: 100%;
+            animation: slideUp 1s ease-out;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #4CAF50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 10px rgba(76, 175, 80, 0.5);
+            }
+            to {
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 20px rgba(76, 175, 80, 0.8);
+            }
+        }
+
+        .header p {
+            color: #81C784;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            color: #4CAF50;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #81C784;
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            padding-right: 50px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .form-input::placeholder {
+            color: rgba(129, 199, 132, 0.7);
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            color: #4CAF50;
+            font-size: 1.2em;
+            cursor: pointer;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            background: rgba(76, 175, 80, 0.1);
+            padding: 10px 15px;
+            border-radius: 25px;
+            border: 2px solid rgba(76, 175, 80, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .checkbox-item input {
+            margin-right: 8px;
+            transform: scale(1.2);
+        }
+
+        .checkbox-item label {
+            color: #81C784;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .submit-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        .submit-btn:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.4);
+        }
+
+        .info-card {
+            background: rgba(33, 150, 243, 0.1);
+            border: 2px solid rgba(33, 150, 243, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #81C784;
+            text-align: center;
+        }
+
+        .link {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .link:hover {
+            color: #81C784;
+        }
+
+        .register-btn {
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin-top: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .register-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+            animation: successPulse 0.6s ease-out;
+        }
+
+        @keyframes successPulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(76, 175, 80, 0.3);
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Forgot Password Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 20px;
+        }
+
+        .modal-form {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(76, 175, 80, 0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .modal-title {
+            color: #4CAF50;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .cancel-btn {
+            flex: 1;
+            background: rgba(244, 67, 54, 0.8);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cancel-btn:hover {
+            background: rgba(244, 67, 54, 1);
+            transform: scale(1.05);
+        }
+
+        .icon {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 25px;
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <!-- Floating leaves will be generated by JavaScript -->
+    </div>
+
+    <div class="login-container">
+        <div class="header">
+            <h1>🌿 WildGuard</h1>
+            <p>Wildlife Sanctuary Portal</p>
+        </div>
+        
+        <div class="info-card">
+            <strong>🌿 Access Your Account</strong><br>
+            Login to access your bookings, view safari history, and manage your WildGuard Sanctuary profile.
+        </div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email" class="form-label">Email Address or User ID</label>
+                <input type="text" id="email" class="form-input" placeholder="Enter your email or User ID" required>
+                <span class="input-icon">📧</span>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                <span class="input-icon" onclick="togglePassword(this)">👁️</span>
+            </div>
+
+            <div class="checkbox-item">
+                <input type="checkbox" id="remember-me">
+                <label for="remember-me">Remember me for 30 days</label>
+            </div>
+
+            <div class="loading-spinner" id="loginLoading"></div>
+            <div class="success-message" id="loginSuccess">
+                ✅ Login successful! Welcome back to WildGuard Sanctuary!
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <span class="icon">🔐</span>Login to Account
+            </button>
+
+            <div style="text-align: center;">
+                <span class="link" onclick="showForgotPassword()">
+                    🔑 Forgot Password?
+                </span>
+            </div>
+
+            <div class="info-card">
+                <strong>🆕 New to WildGuard Sanctuary?</strong><br>
+                <button type="button" class="register-btn" onclick="window.location.href='register'">
+                    Create New Account
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-form">
+                <h3 class="modal-title">🔑 Reset Password</h3>
+                
+                <form id="forgotPasswordForm">
+                    <div class="form-group">
+                        <label class="form-label">Enter your email address</label>
+                        <input type="email" class="form-input" placeholder="your.email@example.com" required style="padding-right: 50px;">
+                        <span class="input-icon">📧</span>
+                    </div>
+                    
+                    <div class="info-card">
+                        We'll send you a password reset link to your registered email address.
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="submit-btn" style="margin-bottom: 0;">
+                            Send Reset Link
+                        </button>
+                        <button type="button" class="cancel-btn" onclick="closeForgotPassword()">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create floating leaves animation
+        function createFloatingLeaf() {
+            const leaf = document.createElement('div');
+            leaf.className = 'floating-leaf';
+            leaf.innerHTML = Math.random() > 0.5 ? '🍃' : '🌿';
+            leaf.style.left = Math.random() * 100 + '%';
+            leaf.style.animationDelay = Math.random() * 5 + 's';
+            leaf.style.animationDuration = (Math.random() * 4 + 6) + 's';
+            
+            document.querySelector('.bg-animation').appendChild(leaf);
+            
+            // Remove leaf after animation completes
+            setTimeout(() => {
+                if (leaf.parentNode) {
+                    leaf.parentNode.removeChild(leaf);
+                }
+            }, 10000);
+        }
+
+        // Create leaves periodically
+        setInterval(createFloatingLeaf, 2000);
+
+        // Initial leaves
+        for (let i = 0; i < 5; i++) {
+            setTimeout(createFloatingLeaf, i * 500);
+        }
+
+        // Password visibility toggle
+        function togglePassword(icon) {
+            const input = icon.parentElement.querySelector('input');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                icon.textContent = '👁️';
+            }
+        }
+
+        // Show forgot password modal
+        function showForgotPassword() {
+            document.getElementById('forgotPasswordModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close forgot password modal
+        function closeForgotPassword() {
+            document.getElementById('forgotPasswordModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Add notification system
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 20px; right: 20px; 
+                background: ${type === 'success' ? 'rgba(76, 175, 80, 0.9)' : 'rgba(244, 67, 54, 0.9)'}; 
+                color: white; padding: 15px 20px; border-radius: 10px; 
+                z-index: 1001; font-weight: bold;
+                transform: translateX(300px); transition: transform 0.3s ease;
+                max-width: 250px; backdrop-filter: blur(10px);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(300px)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        // Login form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const loading = document.getElementById('loginLoading');
+            const success = document.getElementById('loginSuccess');
+            const emailInput = this.querySelector('input[type="text"]').value;
+            const passwordInput = this.querySelector('input[type="password"]').value;
+            
+            loading.style.display = 'block';
+            
+            setTimeout(() => {
+                loading.style.display = 'none';
+                
+                if (emailInput && passwordInput) {
+                    success.style.display = 'block';
+                    showNotification('Login successful! Redirecting to dashboard...', 'success');
+                    
+                    setTimeout(() => {
+                        success.innerHTML = '🏠 Redirecting to your dashboard...';
+                        // In real app: window.location.href = '/dashboard.html';
+                    }, 2000);
+                    
+                    setTimeout(() => {
+                        success.style.display = 'none';
+                        this.reset();
+                    }, 5000);
+                } else {
+                    showNotification('Please fill in all required fields', 'error');
+                }
+            }, 1500);
+        });
+
+        // Forgot password form submission
+        document.getElementById('forgotPasswordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = this.querySelector('input[type="email"]').value;
+            
+            if (email) {
+                showNotification('Password reset link sent to your email!', 'success');
+                closeForgotPassword();
+                this.reset();
+            } else {
+                showNotification('Please enter a valid email address', 'error');
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('forgotPasswordModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeForgotPassword();
+            }
+        });
+
+        // Welcome notification
+        setTimeout(() => {
+            showNotification('🌿 Welcome to WildGuard Sanctuary!');
+        }, 1000);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeForgotPassword();
+            }
+        });
+    </script>
+</body>
+</html>

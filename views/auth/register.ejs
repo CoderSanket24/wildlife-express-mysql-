@@ -1,26 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration</title>
-    <link rel="stylesheet" href="style.css">
+    <title>WildGuard Sanctuary - User Registration</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 25%, #0f4c3a 50%, #2d5016 75%, #1a4d2e 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        /* Animated background elements */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-leaf {
+            position: absolute;
+            color: rgba(76, 175, 80, 0.3);
+            font-size: 24px;
+            animation: float 8s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            animation: slideDown 1s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header h1 {
+            color: #4CAF50;
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 10px rgba(76, 175, 80, 0.5);
+            }
+            to {
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 20px rgba(76, 175, 80, 0.8);
+            }
+        }
+
+        .header p {
+            color: #81C784;
+            font-size: 1.2em;
+        }
+
         .form-section {
-            display: none;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             padding: 40px;
             backdrop-filter: blur(15px);
             border: 2px solid rgba(76, 175, 80, 0.2);
             animation: fadeInUp 0.6s ease-out;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .form-section.active {
-            display: block;
         }
 
         @keyframes fadeInUp {
@@ -28,7 +120,6 @@
                 transform: translateY(50px);
                 opacity: 0;
             }
-
             to {
                 transform: translateY(0);
                 opacity: 1;
@@ -74,9 +165,7 @@
             font-size: 1.1em;
         }
 
-        .form-input,
-        .form-select,
-        .form-textarea {
+        .form-input, .form-select, .form-textarea {
             width: 100%;
             padding: 15px 20px;
             border: 2px solid rgba(76, 175, 80, 0.3);
@@ -86,12 +175,9 @@
             font-size: 16px;
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
-            position: relative;
         }
 
-        .form-input:focus,
-        .form-select:focus,
-        .form-textarea:focus {
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
             outline: none;
             border-color: #4CAF50;
             box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
@@ -180,6 +266,15 @@
             box-shadow: 0 10px 30px rgba(76, 175, 80, 0.4);
         }
 
+        .info-card {
+            background: rgba(33, 150, 243, 0.1);
+            border: 2px solid rgba(33, 150, 243, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #81C784;
+        }
+
         .success-message {
             background: linear-gradient(135deg, #4CAF50, #81C784);
             color: white;
@@ -196,15 +291,29 @@
                 transform: scale(0.8);
                 opacity: 0;
             }
-
             50% {
                 transform: scale(1.05);
             }
-
             100% {
                 transform: scale(1);
                 opacity: 1;
             }
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(76, 175, 80, 0.3);
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .input-icon {
@@ -223,32 +332,41 @@
             padding-right: 50px;
         }
 
+        .back-btn {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(76, 175, 80, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .icon {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2em;
             }
-
-            .nav-tabs {
-                justify-content: stretch;
-            }
-
-            .nav-tab {
-                flex: 1;
-                text-align: center;
-                min-width: 120px;
-            }
-
             .form-row {
                 grid-template-columns: 1fr;
             }
-
             .form-section {
                 padding: 25px;
             }
         }
     </style>
 </head>
-
 <body>
     <div class="bg-animation">
         <!-- Floating leaves will be generated by JavaScript -->
@@ -257,13 +375,16 @@
     <div class="container">
         <div class="header">
             <h1>🌿 WildGuard Sanctuary</h1>
-            <p>Registration & Booking Portal</p>
+            <p>User Registration Portal</p>
         </div>
 
-        <!-- User Registration Form -->
-        <div id="register" class="form-section active">
+        <div class="form-section">
+            <button class="back-btn" onclick="window.location.href='login'">
+                ← Back to Login
+            </button>
+            
             <h2 class="section-title">👤 User Registration</h2>
-
+            
             <form id="registerForm">
                 <div class="form-row">
                     <div class="form-group has-icon">
@@ -362,54 +483,108 @@
                 </button>
             </form>
         </div>
-        <script src="script.js"></script>
-        <script>
-            // Add input validation and formatting
-            document.addEventListener('DOMContentLoaded', function () {
-                // Phone number formatting
-                const phoneInputs = document.querySelectorAll('input[type="tel"]');
-                phoneInputs.forEach(input => {
-                    input.addEventListener('input', function (e) {
-                        let value = e.target.value.replace(/\D/g, '');
-                        if (value.length > 10) value = value.slice(0, 10);
-                        e.target.value = value;
-                    });
-                });
+    </div>
 
-                // PIN code validation
-                const pinInputs = document.querySelectorAll('input[placeholder="400001"]');
-                pinInputs.forEach(input => {
-                    input.addEventListener('input', function (e) {
-                        let value = e.target.value.replace(/\D/g, '');
-                        if (value.length > 6) value = value.slice(0, 6);
-                        e.target.value = value;
-                    });
-                });
-            });
+    <script>
+        // Create floating leaves animation
+        function createFloatingLeaf() {
+            const leaf = document.createElement('div');
+            leaf.className = 'floating-leaf';
+            leaf.innerHTML = Math.random() > 0.5 ? '🍃' : '🌿';
+            leaf.style.left = Math.random() * 100 + '%';
+            leaf.style.animationDelay = Math.random() * 5 + 's';
+            leaf.style.animationDuration = (Math.random() * 4 + 6) + 's';
+            
+            document.querySelector('.bg-animation').appendChild(leaf);
+            
+            setTimeout(() => {
+                if (leaf.parentNode) {
+                    leaf.parentNode.removeChild(leaf);
+                }
+            }, 10000);
+        }
 
-            document.getElementById('registerForm').addEventListener('submit', function (e) {
-                e.preventDefault();
+        setInterval(createFloatingLeaf, 2000);
 
-                const loading = document.getElementById('registerLoading');
-                const success = document.getElementById('registerSuccess');
+        for (let i = 0; i < 5; i++) {
+            setTimeout(createFloatingLeaf, i * 500);
+        }
 
-                loading.style.display = 'block';
-
+        // Add notification system
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 20px; right: 20px; 
+                background: ${type === 'success' ? 'rgba(76, 175, 80, 0.9)' : 'rgba(244, 67, 54, 0.9)'}; 
+                color: white; padding: 15px 20px; border-radius: 10px; 
+                z-index: 1001; font-weight: bold;
+                transform: translateX(300px); transition: transform 0.3s ease;
+                max-width: 250px; backdrop-filter: blur(10px);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(300px)';
                 setTimeout(() => {
-                    loading.style.display = 'none';
-                    success.style.display = 'block';
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
 
-                    // Generate user ID
-                    const userId = 'USR-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 10000)).padStart(4, '0');
-                    success.innerHTML = `✅ Registration successful! Your User ID: <strong>${userId}</strong><br>Welcome to WildGuard Sanctuary family!`;
+        // Registration form submission
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const loading = document.getElementById('registerLoading');
+            const success = document.getElementById('registerSuccess');
+            
+            loading.style.display = 'block';
+            
+            setTimeout(() => {
+                loading.style.display = 'none';
+                success.style.display = 'block';
+                
+                const userId = 'USR-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+                success.innerHTML = `✅ Registration successful! Your User ID: <strong>${userId}</strong><br>Welcome to WildGuard Sanctuary family!`;
+                
+                setTimeout(() => {
+                    success.style.display = 'none';
+                    this.reset();
+                }, 5000);
+            }, 2000);
+        });
 
-                    setTimeout(() => {
-                        success.style.display = 'none';
-                        this.reset();
-                    }, 5000);
-                }, 2000);
+        // Input formatting
+        document.addEventListener('DOMContentLoaded', function() {
+            const phoneInputs = document.querySelectorAll('input[type="tel"]');
+            phoneInputs.forEach(input => {
+                input.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length > 10) value = value.slice(0, 10);
+                    e.target.value = value;
+                });
             });
-        </script>
-</body>
 
+            const pinInputs = document.querySelectorAll('input[placeholder="400001"]');
+            pinInputs.forEach(input => {
+                input.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length > 6) value = value.slice(0, 6);
+                    e.target.value = value;
+                });
+            });
+        });
+
+        setTimeout(() => {
+            showNotification('🌿 Create your WildGuard account!');
+        }, 1000);
+    </script>
+</body>
 </html>

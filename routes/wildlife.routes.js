@@ -4,10 +4,10 @@ import { getAnimalsPage, getHomePage, getMedicalPage, getStaffPage, getVisitorPa
 const router = Router();
 
 router.get('/',getHomePage);
-router.get('/visitors.html',getVisitorPage);
-router.get('/animals.html',getAnimalsPage);
-router.get('/medical.html',getMedicalPage);
-router.get('/staff.html',getStaffPage);
-router.get('/zones.html',getZonesPage);
+router.get('/visitors',getVisitorPage);
+router.get('/animals',getAnimalsPage);
+router.get('/medical',getMedicalPage);
+router.get('/staff',getStaffPage);
+router.get('/zones',getZonesPage);
 
 export default router;

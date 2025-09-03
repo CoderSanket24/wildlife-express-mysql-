@@ -1,5 +1,5 @@
 function redirect(link) {
-    window.location.href = `./${link}.html`;
+    window.location.href = `./${link}`;
 }
 
 // Create floating leaves animation

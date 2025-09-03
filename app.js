@@ -1,6 +1,7 @@
 import express from "express";
 import { env } from "./config/env.js";
 import router from "./routes/wildlife.routes.js";
+import {authrouter} from "./routes/auth.routes.js";
 
 const app = express();
 
@@ -8,6 +9,7 @@ app.use(express.static("public"));
 
 app.set("view engine", "ejs");
 
+app.use(authrouter)
 app.use(router);
 
 app.listen(env.PORT,()=>{

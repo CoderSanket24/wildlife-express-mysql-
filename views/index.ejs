@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WildGuard Sanctuary - Wildlife Conservation Database</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 25%, #0f4c3a 50%, #2d5016 75%, #1a4d2e 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background elements */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-leaf {
+            position: absolute;
+            color: rgba(76, 175, 80, 0.3);
+            font-size: 24px;
+            animation: float 8s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo h2 {
+            color: #4CAF50;
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-login:hover {
+            background: rgba(76, 175, 80, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            color: white;
+        }
+
+        .btn-register::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        .btn-register:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 60px 30px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 25px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            animation: slideDown 1s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4CAF50, #81C784, #4CAF50);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+
+            0%,
+            100% {
+                background-position: 200% 0;
+            }
+
+            50% {
+                background-position: -200% 0;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .hero h1 {
+            color: #4CAF50;
+            font-size: 4em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 20px rgba(76, 175, 80, 0.5);
+            }
+
+            to {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(76, 175, 80, 0.8);
+            }
+        }
+
+        .hero p {
+            color: #81C784;
+            font-size: 1.4em;
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(76, 175, 80, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(76, 175, 80, 0.3);
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 10px;
+            animation: countUp 2s ease-out;
+        }
+
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-label {
+            color: #81C784;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 35px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(76, 175, 80, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(76, 175, 80, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(76, 175, 80, 0.3);
+            border-color: rgba(76, 175, 80, 0.5);
+        }
+
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-title {
+            color: #4CAF50;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .feature-description {
+            color: #C8E6C9;
+            line-height: 1.6;
+            font-size: 1.1em;
+        }
+
+        /* Interactive Sections */
+        .interactive-section {
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .section-title {
+            color: #4CAF50;
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 4px;
+            background: linear-gradient(90deg, #4CAF50, #81C784);
+            border-radius: 2px;
+        }
+
+        /* Navigation Cards */
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .nav-card {
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4CAF50, #81C784, #4CAF50);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(76, 175, 80, 0.3);
+            border-color: rgba(76, 175, 80, 0.6);
+        }
+
+        .nav-card-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .nav-card-title {
+            color: #4CAF50;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .nav-card-desc {
+            color: #81C784;
+            line-height: 1.5;
+        }
+
+        /* Widgets */
+        .widget {
+            position: fixed;
+            background: rgba(76, 175, 80, 0.2);
+            padding: 15px 20px;
+            border-radius: 20px;
+            color: #4CAF50;
+            font-weight: bold;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            z-index: 1000;
+            animation: slideIn 1s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .weather-widget {
+            top: 150px;
+            left: 20px;
+        }
+
+        .clock-widget {
+            top: 150px;
+            right: 20px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(76, 175, 80, 0.2);
+            margin-top: 40px;
+        }
+
+        .footer-text {
+            color: #81C784;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: #81C784;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5em;
+            }
+
+            .navbar {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .widget {
+                position: relative;
+                margin: 10px;
+            }
+
+            .weather-widget,
+            .clock-widget {
+                position: relative;
+                top: auto;
+                left: auto;
+                right: auto;
+            }
+        }
+
+        /* Notification System */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-weight: bold;
+            z-index: 2000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+
+    <div class="container">
+        <!-- Navigation Bar -->
+        <nav class="navbar">
+            <div class="logo">
+                <span style="font-size: 2em;">🌿</span>
+                <h2>WildGuard Sanctuary</h2>
+            </div>
+            <%if(user){%>
+                <div class="auth-buttons">
+                    <a href="logout" class="btn btn-register">Logout</a>
+                </div>
+                <%}else{%>
+                    <div class="auth-buttons">
+                        <a href="login" class="btn btn-login">Login</a>
+                        <a href="register" class="btn btn-register">Register</a>
+                    </div>
+                    <%}%>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>🌿 WildGuard Sanctuary</h1>
+            <p>Advanced Wildlife Conservation Database System - Protecting biodiversity through innovative technology
+                and dedicated conservation efforts</p>
+
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <div class="stat-number">247</div>
+                    <div class="stat-label">Species Protected</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3,890</div>
+                    <div class="stat-label">Animals Tracked</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">2,450</div>
+                    <div class="stat-label">Area (sq km)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">124</div>
+                    <div class="stat-label">Camera Traps</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features">
+            <div class="feature-card">
+                <span class="feature-icon">🦁</span>
+                <h3 class="feature-title">Wildlife Monitoring</h3>
+                <p class="feature-description">Advanced tracking and monitoring systems for endangered species including
+                    Bengal Tigers, Asian Elephants, and various bird species with real-time location data.</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">📊</span>
+                <h3 class="feature-title">Conservation Analytics</h3>
+                <p class="feature-description">Comprehensive data analysis and reporting tools to track population
+                    trends, habitat changes, and conservation success rates.</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">🎫</span>
+                <h3 class="feature-title">Eco-Tourism Management</h3>
+                <p class="feature-description">Sustainable tourism booking system with guided safari tours, educational
+                    programs, and visitor feedback management.</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">👨‍⚕️</span>
+                <h3 class="feature-title">Medical Care System</h3>
+                <p class="feature-description">Complete veterinary care tracking, feeding schedules, health monitoring,
+                    and medical intervention records for all sanctuary animals.</p>
+            </div>
+        </section>
+
+        <!-- Interactive Navigation Section -->
+        <section class="interactive-section">
+            <h2 class="section-title">Explore Our System</h2>
+
+            <div class="nav-grid">
+                <div class="nav-card" onclick="navigateToSection('animals')">
+                    <span class="nav-card-icon">🦁</span>
+                    <h3 class="nav-card-title">Animal Species Database</h3>
+                    <p class="nav-card-desc">Comprehensive species tracking with population data, habitat information,
+                        and conservation status updates.</p>
+                </div>
+
+                <div class="nav-card" onclick="navigateToSection('zones')">
+                    <span class="nav-card-icon">🌲</span>
+                    <h3 class="nav-card-title">Zone Management</h3>
+                    <p class="nav-card-desc">Interactive zone mapping, camera trap locations, and area-specific wildlife
+                        monitoring data.</p>
+                </div>
+
+                <div class="nav-card" onclick="navigateToSection('staff')">
+                    <span class="nav-card-icon">👮</span>
+                    <h3 class="nav-card-title">Rangers & Staff</h3>
+                    <p class="nav-card-desc">Staff management system with duty rosters, training records, and field
+                        operation coordination.</p>
+                </div>
+
+                <div class="nav-card" onclick="navigateToSection('medical')">
+                    <span class="nav-card-icon">🏥</span>
+                    <h3 class="nav-card-title">Medical & Feeding</h3>
+                    <p class="nav-card-desc">Animal health tracking, veterinary care records, feeding schedules, and
+                        medical intervention logs.</p>
+                </div>
+
+                <div class="nav-card" onclick="navigateToSection('visitors')">
+                    <span class="nav-card-icon">🎫</span>
+                    <h3 class="nav-card-title">Tourism Records</h3>
+                    <p class="nav-card-desc">Visitor management, safari bookings, feedback collection, and sustainable
+                        tourism analytics.</p>
+                </div>
+
+                <div class="nav-card" onclick="window.location.href='feedback'">
+                    <span class="nav-card-icon">⭐</span>
+                    <h3 class="nav-card-title">Share Feedback</h3>
+                    <p class="nav-card-desc">Help us improve by sharing your experience and suggestions for better
+                        wildlife conservation.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p class="footer-text">Committed to wildlife conservation and environmental protection through technology
+                and community engagement.</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">About Us</a>
+                <a href="#" class="footer-link">Conservation Programs</a>
+                <a href="#" class="footer-link">Research</a>
+                <a href="#" class="footer-link">Contact</a>
+                <a href="#" class="footer-link">Support</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Widgets -->
+    <div class="widget weather-widget">
+        <div>🌤️ 28°C</div>
+        <div>🌿 Perfect for Wildlife</div>
+    </div>
+
+    <div class="widget clock-widget" id="live-clock">
+        <div>🕐 Loading...</div>
+        <div>📅 Loading...</div>
+    </div>
+
+    <script>
+        // Create floating leaves animation
+        function createFloatingLeaf() {
+            const leaf = document.createElement('div');
+            leaf.className = 'floating-leaf';
+            leaf.innerHTML = Math.random() > 0.5 ? '🍃' : '🌿';
+            leaf.style.left = Math.random() * 100 + '%';
+            leaf.style.animationDelay = Math.random() * 5 + 's';
+            leaf.style.animationDuration = (Math.random() * 4 + 6) + 's';
+
+            document.querySelector('.bg-animation').appendChild(leaf);
+
+            setTimeout(() => {
+                if (leaf.parentNode) {
+                    leaf.parentNode.removeChild(leaf);
+                }
+            }, 10000);
+        }
+
+        // Create leaves periodically
+        setInterval(createFloatingLeaf, 2000);
+
+        // Create initial leaves
+        for (let i = 0; i < 8; i++) {
+            setTimeout(createFloatingLeaf, i * 300);
+        }
+
+        // Update clock
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString();
+
+            const clockElement = document.getElementById('live-clock');
+            clockElement.innerHTML = `<div>🕐 ${timeString}</div><div>📅 ${dateString}</div>`;
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Notification system
+        function showNotification(message, duration = 5000) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => notification.classList.add('show'), 100);
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, duration);
+        }
+
+        // Navigation functions
+        function navigateToSection(section) {
+            // In a real application, this would navigate to different pages or sections
+            showNotification(`Navigating to ${section.charAt(0).toUpperCase() + section.slice(1)} section...`);
+
+            // Simulate navigation delay
+            setTimeout(() => {
+                window.location.href = `${section}`;
+            }, 1000);
+        }
+
+        // Animate stat numbers on scroll
+        function animateStats() {
+            const statNumbers = document.querySelectorAll('.stat-number');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const target = parseInt(entry.target.textContent.replace(/,/g, ''));
+                        animateNumber(entry.target, target);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            });
+
+            statNumbers.forEach(stat => observer.observe(stat));
+        }
+
+        function animateNumber(element, target) {
+            let current = 0;
+            const increment = target / 100;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target.toLocaleString();
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current).toLocaleString();
+                }
+            }, 20);
+        }
+
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', function () {
+            animateStats();
+
+            // Welcome notification
+            setTimeout(() => {
+                showNotification('🌿 Welcome to WildGuard Sanctuary Database System!');
+            }, 2000);
+
+            // Add hover effects to cards
+            const cards = document.querySelectorAll('.feature-card, .nav-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function () {
+                    this.style.transform = 'translateY(-10px) scale(1.02)';
+                });
+
+                card.addEventListener('mouseleave', function () {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+
+        // Add parallax effect to hero section
+        window.addEventListener('scroll', function () {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            const widgets = document.querySelectorAll('.widget');
+
+            hero.style.transform = `translateY(${scrolled * 0.1}px)`;
+
+            // Keep widgets fixed on mobile
+            if (window.innerWidth > 768) {
+                widgets.forEach(widget => {
+                    widget.style.transform = `translateY(${scrolled * 0.05}px)`;
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

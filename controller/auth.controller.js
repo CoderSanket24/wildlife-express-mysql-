@@ -83,3 +83,14 @@ export const postLoginPage = async (req, res) => {
         return res.status(500).send("internal server error.");
     }
 }
+
+export const getLogout = async (req,res) => {
+    try {
+        res.clearCookie("session_token");
+        res.clearCookie("isLoggedIn");
+        return res.redirect("/");
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("internal server error.");
+    }
+}

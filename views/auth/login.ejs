@@ -266,6 +266,16 @@
             animation: successPulse 0.6s ease-out;
         }
 
+        .error-message {
+            background: linear-gradient(135deg, #f44336, #e57373);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+            animation: errorPulse 0.6s ease-out;
+        }
+
         @keyframes successPulse {
             0% {
                 transform: scale(0.8);
@@ -388,22 +398,28 @@
             <strong>🌿 Access Your Account</strong><br>
             Login to access your bookings, view safari history, and manage your WildGuard Sanctuary profile.
         </div>
+
+        <% if(error && error.length > 0) { %>
+            <div class="error-message">
+                ❌ <%= error %>
+            </div>
+        <% } %>
         
-        <form id="loginForm">
+        <form id="loginForm" method="post" action="/login">
             <div class="form-group">
-                <label for="email" class="form-label">Email Address or User ID</label>
-                <input type="text" id="email" class="form-input" placeholder="Enter your email or User ID" required>
+                <label for="email" class="form-label" >Email Address or User ID</label>
+                <input type="text" id="email" class="form-input" placeholder="Enter your email or User ID" required name="email">
                 <span class="input-icon">📧</span>
             </div>
 
             <div class="form-group">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                <input type="password" id="password" class="form-input" placeholder="Enter your password" required name="password">
                 <span class="input-icon" onclick="togglePassword(this)">👁️</span>
             </div>
 
             <div class="checkbox-item">
-                <input type="checkbox" id="remember-me">
+                <input type="checkbox" id="remember-me" name="remember-me">
                 <label for="remember-me">Remember me for 30 days</label>
             </div>
 
@@ -438,7 +454,7 @@
             <div class="modal-form">
                 <h3 class="modal-title">🔑 Reset Password</h3>
                 
-                <form id="forgotPasswordForm">
+                <form id="forgotPasswordForm" method="post" action="/forgot-password">
                     <div class="form-group">
                         <label class="form-label">Enter your email address</label>
                         <input type="email" class="form-input" placeholder="your.email@example.com" required style="padding-right: 50px;">
@@ -541,54 +557,6 @@
                 }, 300);
             }, 4000);
         }
-
-        // Login form submission
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const loading = document.getElementById('loginLoading');
-            const success = document.getElementById('loginSuccess');
-            const emailInput = this.querySelector('input[type="text"]').value;
-            const passwordInput = this.querySelector('input[type="password"]').value;
-            
-            loading.style.display = 'block';
-            
-            setTimeout(() => {
-                loading.style.display = 'none';
-                
-                if (emailInput && passwordInput) {
-                    success.style.display = 'block';
-                    showNotification('Login successful! Redirecting to dashboard...', 'success');
-                    
-                    setTimeout(() => {
-                        success.innerHTML = '🏠 Redirecting to your dashboard...';
-                        // In real app: window.location.href = '/dashboard.html';
-                    }, 2000);
-                    
-                    setTimeout(() => {
-                        success.style.display = 'none';
-                        this.reset();
-                    }, 5000);
-                } else {
-                    showNotification('Please fill in all required fields', 'error');
-                }
-            }, 1500);
-        });
-
-        // Forgot password form submission
-        document.getElementById('forgotPasswordForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const email = this.querySelector('input[type="email"]').value;
-            
-            if (email) {
-                showNotification('Password reset link sent to your email!', 'success');
-                closeForgotPassword();
-                this.reset();
-            } else {
-                showNotification('Please enter a valid email address', 'error');
-            }
-        });
 
         // Close modal when clicking outside
         document.getElementById('forgotPasswordModal').addEventListener('click', function(e) {

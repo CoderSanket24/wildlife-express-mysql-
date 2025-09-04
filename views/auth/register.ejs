@@ -286,6 +286,30 @@
             animation: successPulse 0.6s ease-out;
         }
 
+        .error-message {
+            background: linear-gradient(135deg, #f44336, #e57373);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+            animation: errorPulse 0.6s ease-out;
+        }
+
+        @keyframes errorPulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
         @keyframes successPulse {
             0% {
                 transform: scale(0.8);
@@ -385,41 +409,47 @@
             
             <h2 class="section-title">👤 User Registration</h2>
             
-            <form id="registerForm">
+            <% if(error && error.length > 0) { %>
+                <div class="error-message">
+                    ❌ <%= error %>
+                </div>
+            <% } %>
+
+            <form id="registerForm" method="post" action="/register">
                 <div class="form-row">
                     <div class="form-group has-icon">
-                        <label class="form-label">First Name</label>
-                        <input type="text" class="form-input" placeholder="Enter your first name" required>
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" placeholder="Enter your full name" required name="name">
                         <span class="input-icon">👤</span>
                     </div>
                     <div class="form-group has-icon">
-                        <label class="form-label">Last Name</label>
-                        <input type="text" class="form-input" placeholder="Enter your last name" required>
-                        <span class="input-icon">👤</span>
+                        <label class="form-label">Aadhar Card Number</label>
+                        <input type="text" class="form-input" placeholder="Enter your aadhar card number" required name="aadhar_id" >
+                        <span class="input-icon">🆔</span>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group has-icon">
                         <label class="form-label">Email Address</label>
-                        <input type="email" class="form-input" placeholder="your.email@example.com" required>
+                        <input type="email" class="form-input" placeholder="your.email@example.com" required name="email">
                         <span class="input-icon">📧</span>
                     </div>
                     <div class="form-group has-icon">
                         <label class="form-label">Phone Number</label>
-                        <input type="tel" class="form-input" placeholder="+91 98765 43210" required>
+                        <input type="tel" class="form-input" placeholder="+91 98765 43210" required name="phone">
                         <span class="input-icon">📱</span>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Date of Birth</label>
-                        <input type="date" class="form-input" required>
+                        <label class="form-label">Age</label>
+                        <input type="number" class="form-input" required name="age">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Gender</label>
-                        <select class="form-select" required>
+                        <select class="form-select" required name="gender">
                             <option value="">Select Gender</option>
                             <option value="male">Male</option>
                             <option value="female">Female</option>
@@ -431,18 +461,18 @@
 
                 <div class="form-group">
                     <label class="form-label">Address</label>
-                    <textarea class="form-textarea" placeholder="Enter your complete address" required></textarea>
+                    <textarea class="form-textarea" placeholder="Enter your complete address" required name="address"></textarea>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group has-icon">
                         <label class="form-label">City</label>
-                        <input type="text" class="form-input" placeholder="Enter your city" required>
+                        <input type="text" class="form-input" placeholder="Enter your city" required name="city">
                         <span class="input-icon">🏙️</span>
                     </div>
                     <div class="form-group has-icon">
                         <label class="form-label">PIN Code</label>
-                        <input type="text" class="form-input" placeholder="400001" required>
+                        <input type="text" class="form-input" placeholder="400001" required name="pin">
                         <span class="input-icon">📍</span>
                     </div>
                 </div>
@@ -451,25 +481,36 @@
                     <label class="form-label">Interests (Select all that apply)</label>
                     <div class="form-checkbox-group">
                         <div class="checkbox-item">
-                            <input type="checkbox" id="wildlife" value="wildlife">
+                            <input type="checkbox" id="wildlife" value="wildlife" name="interests">
                             <label for="wildlife">🦁 Wildlife Photography</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="conservation" value="conservation">
+                            <input type="checkbox" id="conservation" value="conservation" name="interests">
                             <label for="conservation">🌱 Conservation</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="research" value="research">
+                            <input type="checkbox" id="research" value="research" name="interests">
                             <label for="research">🔬 Research</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="education" value="education">
+                            <input type="checkbox" id="education" value="education" name="interests">
                             <label for="education">📚 Education</label>
                         </div>
                         <div class="checkbox-item">
-                            <input type="checkbox" id="volunteering" value="volunteering">
+                            <input type="checkbox" id="volunteering" value="volunteering" name="interests">
                             <label for="volunteering">🤝 Volunteering</label>
                         </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" placeholder="Enter your password" required name="password">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" class="form-input" placeholder="Enter your password" required name="confirm_password">
                     </div>
                 </div>
 
@@ -537,29 +578,6 @@
                 }, 300);
             }, 4000);
         }
-
-        // Registration form submission
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const loading = document.getElementById('registerLoading');
-            const success = document.getElementById('registerSuccess');
-            
-            loading.style.display = 'block';
-            
-            setTimeout(() => {
-                loading.style.display = 'none';
-                success.style.display = 'block';
-                
-                const userId = 'USR-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random() * 10000)).padStart(4, '0');
-                success.innerHTML = `✅ Registration successful! Your User ID: <strong>${userId}</strong><br>Welcome to WildGuard Sanctuary family!`;
-                
-                setTimeout(() => {
-                    success.style.display = 'none';
-                    this.reset();
-                }, 5000);
-            }, 2000);
-        });
 
         // Input formatting
         document.addEventListener('DOMContentLoaded', function() {

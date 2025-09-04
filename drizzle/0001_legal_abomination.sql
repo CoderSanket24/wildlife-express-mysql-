@@ -1,0 +1,1 @@
+ALTER TABLE `visitors` ADD `password` varchar(255) NOT NULL;

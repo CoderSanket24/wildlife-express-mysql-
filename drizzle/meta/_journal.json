@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1756958074627,
+      "tag": "0000_broad_dragon_lord",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1756962023953,
+      "tag": "0001_legal_abomination",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1756963377352,
+      "tag": "0002_messy_franklin_storm",
+      "breakpoints": true
+    }
+  ]
+}

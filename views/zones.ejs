@@ -19,15 +19,15 @@
 
             <div class="stats-container">
                 <div class="stat-item">
-                    <div class="stat-number">8</div>
+                    <div class="stat-number"><%=activeZones%></div>
                     <div class="stat-label">Active Zones</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">2,450</div>
+                    <div class="stat-number"><%=totalArea%></div>
                     <div class="stat-label">Total Area (sq km)</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">124</div>
+                    <div class="stat-number"><%=totalCameraTraps%></div>
                     <div class="stat-label">Camera Traps</div>
                 </div>
             </div>
@@ -61,30 +61,17 @@
                     </div>
                 </div>
 
-                <div class="data-card">
-                    <div class="card-header">
-                        <span class="icon">🏞️</span>Tourism Zone C
-                    </div>
-                    <div class="card-content">
-                        <p><strong>Area Size:</strong> 220 sq km</p>
-                        <p><strong>Climate:</strong> Dry Deciduous</p>
-                        <p><strong>Camera Traps:</strong> 12 active</p>
-                        <p><strong>Access Level:</strong> Public Safari</p>
-                        <p><strong>Primary Species:</strong> Various Birds, Deer</p>
-                    </div>
-                </div>
-
-                <% zones.map(({zone_id, area, climate, camera_traps, access_level, primary_species})=> { %>
+                <% zones.map(({zone_id, name ,area, climate, cameraTraps, accessLevel, primarySpecies})=> { %>
                     <div class="data-card">
                         <div class="card-header">
-                            <span class="icon">🏞️</span> Zone <%=zone_id%>
+                            <span class="icon">🏞️</span><%=name%>
                         </div>
                         <div class="card-content">
                             <p><strong>Area Size:</strong> <%=area%> sq km</p>
                             <p><strong>Climate:</strong> <%=climate%></p>
-                            <p><strong>Camera Traps:</strong> <%=camera_traps%> active</p>
-                            <p><strong>Access Level:</strong> <%=access_level%></p>
-                            <p><strong>Primary Species:</strong> <%=primary_species%></p>
+                            <p><strong>Camera Traps:</strong> <%=cameraTraps%> active</p>
+                            <p><strong>Access Level:</strong> <%=accessLevel%></p>
+                            <p><strong>Primary Species:</strong> <%=primarySpecies%></p>
                         </div>
                     </div>
                     <% }) %>

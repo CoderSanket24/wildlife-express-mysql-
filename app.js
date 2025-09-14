@@ -25,5 +25,5 @@ app.use(authrouter);
 app.use(router);
 
 app.listen(env.PORT,()=>{
-    console.log(`Server started on port ${env.PORT}`);
+    console.log(`Server started on port ${env.PORT}     http://localhost:${env.PORT}`);
 })

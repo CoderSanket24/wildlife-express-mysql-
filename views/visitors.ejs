@@ -81,7 +81,6 @@
                 </div>
             </div>
 
-            <button class="add-btn">+ Register Visitor</button>
             <button class="add-btn">+ Generate Ticket</button>
 
             <div class="nav-tabs">
@@ -110,14 +109,14 @@
                     </div>
                 </div>
 
-                <% visitors_info.map(({visitorName, aadhar_id, age, address})=> { %>
+                <% visitors_info.map(({name, aadhar_id, age, address})=> { %>
                     <div class="data-card">
                         <div class="card-header">
                             <span class="icon">👥</span>Booking #VIS-2025-0145
                         </div>
                         <div class="card-content">
                             <p><strong>Visitor Name: </strong>
-                                <%=visitorName%>
+                                <%=name%>
                             </p>
                             <p><strong>Visitor age: </strong>
                                 <%=age%>

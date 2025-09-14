@@ -1,0 +1,428 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 25%, #0f4c3a 50%, #2d5016 75%, #1a4d2e 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    padding: 20px;
+}
+
+.bg-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.floating-leaf {
+    position: absolute;
+    color: rgba(76, 175, 80, 0.3);
+    font-size: 24px;
+    animation: float 8s infinite linear;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-100px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 30px;
+    background: rgba(76, 175, 80, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(76, 175, 80, 0.3);
+    animation: slideDown 1s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.header h1 {
+    color: #4CAF50;
+    font-size: 3em;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(76, 175, 80, 0.5);
+    }
+
+    to {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 20px rgba(76, 175, 80, 0.8);
+    }
+}
+
+.header p {
+    color: #81C784;
+    font-size: 1.2em;
+}
+
+.form-section {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 40px;
+    backdrop-filter: blur(15px);
+    border: 2px solid rgba(76, 175, 80, 0.2);
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.section-title {
+    color: #4CAF50;
+    font-size: 2.2em;
+    margin-bottom: 30px;
+    text-align: center;
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, #4CAF50, #81C784);
+    border-radius: 2px;
+}
+
+.form-group {
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-label {
+    display: block;
+    color: #4CAF50;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 1.1em;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 15px 20px;
+    border: 2px solid rgba(76, 175, 80, 0.3);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #81C784;
+    font-size: 16px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+    transform: translateY(-2px);
+}
+
+.form-input::placeholder {
+    color: rgba(129, 199, 132, 0.7);
+}
+
+.form-textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.form-checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    background: rgba(76, 175, 80, 0.1);
+    padding: 10px 15px;
+    border-radius: 25px;
+    border: 2px solid rgba(76, 175, 80, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.checkbox-item:hover {
+    background: rgba(76, 175, 80, 0.2);
+    transform: scale(1.05);
+}
+
+.checkbox-item input {
+    margin-right: 8px;
+    transform: scale(1.2);
+}
+
+.checkbox-item label {
+    color: #81C784;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #4CAF50, #81C784);
+    color: white;
+    border: none;
+    padding: 18px 40px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.2em;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.submit-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
+}
+
+.submit-btn:hover::after {
+    width: 300px;
+    height: 300px;
+}
+
+.submit-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(76, 175, 80, 0.4);
+}
+
+.price-card {
+    background: rgba(76, 175, 80, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    border: 2px solid rgba(76, 175, 80, 0.3);
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.price-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #4CAF50, #81C784, #4CAF50);
+    background-size: 200% 100%;
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+
+    0%,
+    100% {
+        background-position: 200% 0;
+    }
+
+    50% {
+        background-position: -200% 0;
+    }
+}
+
+.price-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+    color: #81C784;
+}
+
+.price-item:last-child {
+    border-bottom: none;
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #4CAF50;
+}
+
+.warning-card {
+    background: rgba(255, 193, 7, 0.1);
+    border: 2px solid rgba(255, 193, 7, 0.3);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px 0;
+    color: #FFB74D;
+}
+
+.success-message {
+    background: linear-gradient(135deg, #4CAF50, #81C784);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    margin: 20px 0;
+    display: none;
+    animation: successPulse 0.6s ease-out;
+}
+
+@keyframes successPulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.loading-spinner {
+    border: 4px solid rgba(76, 175, 80, 0.3);
+    border-top: 4px solid #4CAF50;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+    display: none;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.input-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    color: #4CAF50;
+    font-size: 1.2em;
+}
+
+.form-group.has-icon {
+    position: relative;
+}
+
+.form-group.has-icon .form-input {
+    padding-right: 50px;
+}
+
+.back-btn {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    border: 2px solid rgba(76, 175, 80, 0.3);
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: rgba(76, 175, 80, 0.3);
+    transform: translateY(-2px);
+}
+
+.icon {
+    font-size: 1.2em;
+    margin-right: 8px;
+}
+
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 2em;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .form-section {
+        padding: 25px;
+    }
+}

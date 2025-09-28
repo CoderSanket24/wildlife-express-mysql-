@@ -1,1 +1,0 @@
-ALTER TABLE `visitors` MODIFY COLUMN `interests` varchar(255) NOT NULL;

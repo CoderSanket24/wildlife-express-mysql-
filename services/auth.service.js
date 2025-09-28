@@ -1,15 +1,17 @@
-import { eq } from "drizzle-orm";
-import { db } from "../config/db.js";
-import { visitorsInfo } from "../drizzle/schema.js";
+import { db as dbClient} from "../config/db-client.js";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 
 export const createVisitor = async (name, aadhar_id, email, age, gender, phone, address, city, pin, interests, password)=>{
-    return await db.insert(visitorsInfo).values({name, aadhar_id, email, age, gender, phone, address, city, pin, interests, password}).$returningId();
+    const [result] = await dbClient.execute(
+        'INSERT INTO visitors_info (name, aadhar_id, email, age, gender, phone, address, city, pin, interests, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [name, aadhar_id, email, age, gender, phone, address, city, pin, interests, password]
+    );
+    return result.insertId;
 }
 
 export const getVisitorByEmail = async (email) => {
-    const [user] = await db.select().from(visitorsInfo).where(eq(visitorsInfo.email,email));
+    const [user] = await dbClient.execute('select * from visitors_info where email = ?',[email]);
     return user;
 };
 

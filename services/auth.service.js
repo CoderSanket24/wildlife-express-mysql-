@@ -15,6 +15,12 @@ export const getVisitorByEmail = async (email) => {
     return user[0];
 };
 
+export const getAdminByEmail = async (email) => {
+    const [admin] = await dbClient.execute('select * from admin_details where email = ?',[email]);
+    return admin[0];
+};
+
+
 export const hashPassword = async (password) => {
     return await argon2.hash(password);
 };
@@ -23,8 +29,8 @@ export const comparePasswords = async (password, hash)=>{
     return await argon2.verify(hash,password);
 }
 
-export const generateToken = ({id, name, email}) => {
-    return jwt.sign({id, name, email},process.env.SECREATE_KEY,{
+export const generateToken = ({id, name, email,role}) => {
+    return jwt.sign({id, name, email,role},process.env.SECREATE_KEY,{
         expiresIn:"1d"
     });
 }

@@ -407,6 +407,14 @@
         
         <form id="loginForm" method="post" action="/login">
             <div class="form-group">
+                <label for="role" class="form-label">Role</label>
+                <select id="role" name="role" class="form-input">
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label for="email" class="form-label" >Email Address or User ID</label>
                 <input type="text" id="email" class="form-input" placeholder="Enter your email or User ID" required name="email">
                 <span class="input-icon">📧</span>

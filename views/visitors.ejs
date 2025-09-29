@@ -81,7 +81,9 @@
                 </div>
             </div>
 
-            <button class="add-btn">+ Generate Ticket</button>
+            <%if(user.role === 'admin'){%>
+                <button class="add-btn">+ Generate Ticket</button>
+            <%}%>
 
             <div class="nav-tabs">
                 <div class="nav-tab active" onclick="showSection('Visitors')">

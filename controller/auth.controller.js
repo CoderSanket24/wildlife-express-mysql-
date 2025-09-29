@@ -1,4 +1,4 @@
-import { createVisitor, hashPassword, getVisitorByEmail, comparePasswords, generateToken } from "../services/auth.service.js";
+import { createVisitor, hashPassword, getVisitorByEmail, comparePasswords, generateToken, getAdminByEmail } from "../services/auth.service.js";
 import { registerSchema, loginSchema } from "../validators/auth.validator.js";
 
 export const getRegistrationPage = async (req, res) => {
@@ -62,18 +62,23 @@ export const postLoginPage = async (req, res) => {
             req.flash('error', error.issues[0].message);
             return res.redirect('/login');
         }
-        const { email, password } = data;
-        const visitor = await getVisitorByEmail(email);
-        if (!visitor) {
+        const { email, password, role } = data;
+        let user = null;
+        if (role === 'admin') {
+            user = await getAdminByEmail(email);
+        }else{
+            user = await getVisitorByEmail(email);
+        }
+        if (!user) {
             req.flash('error', "Invalid email or password");
             return res.redirect('/login');
         }
-        const isPasswordValid = await comparePasswords(password, visitor.password);
+        const isPasswordValid = await comparePasswords(password, user.password);
         if (!isPasswordValid) {
             req.flash('error', "Invalid email or password");
             return res.redirect('/login');
         }
-        const token = generateToken({ id: visitor.id, name: visitor.name, email: visitor.email });
+        const token = generateToken({ id: user.id, name: user.name, email: user.email, role: role });
 
         res.cookie("isLoggedIn", true);
         res.cookie("session_token", token);

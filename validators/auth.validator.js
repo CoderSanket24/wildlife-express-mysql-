@@ -3,6 +3,7 @@ import z from "zod";
 export const loginSchema = z.object({
     email: z.email({error:"Invalid email format."}),
     password: z.string().trim().min(6,{error:"Password must be at least 6 characters."}).max(100,{error:"Password must not more than 100 characters."}),
+    role: z.string(),
 })
 
 export const registerSchema = loginSchema.extend({

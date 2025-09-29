@@ -11,8 +11,8 @@ export const createVisitor = async (name, aadhar_id, email, age, gender, phone, 
 }
 
 export const getVisitorByEmail = async (email) => {
-    const [user] = await dbClient.execute('select * from visitors_info where email = ?',[email]);
-    return user;
+    const [user] = await dbClient.execute('select * from visitors where email = ?',[email]);
+    return user[0];
 };
 
 export const hashPassword = async (password) => {

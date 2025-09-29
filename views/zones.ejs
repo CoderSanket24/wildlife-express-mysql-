@@ -61,17 +61,17 @@
                     </div>
                 </div>
 
-                <% zones.map(({zone_id, name ,area, climate, cameraTraps, accessLevel, primarySpecies})=> { %>
+                <% zones.map(({zone_id, zone_name ,area, climate, camera_traps, access_level, primary_species})=> { %>
                     <div class="data-card">
                         <div class="card-header">
-                            <span class="icon">🏞️</span><%=name%>
+                            <span class="icon">🏞️</span><%=zone_name%>
                         </div>
                         <div class="card-content">
                             <p><strong>Area Size:</strong> <%=area%> sq km</p>
                             <p><strong>Climate:</strong> <%=climate%></p>
-                            <p><strong>Camera Traps:</strong> <%=cameraTraps%> active</p>
-                            <p><strong>Access Level:</strong> <%=accessLevel%></p>
-                            <p><strong>Primary Species:</strong> <%=primarySpecies%></p>
+                            <p><strong>Camera Traps:</strong> <%=camera_traps%> active</p>
+                            <p><strong>Access Level:</strong> <%=access_level%></p>
+                            <p><strong>Primary Species:</strong> <%=primary_species%></p>
                         </div>
                     </div>
                     <% }) %>

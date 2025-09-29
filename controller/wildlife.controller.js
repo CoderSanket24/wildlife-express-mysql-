@@ -1,4 +1,4 @@
-import { loadFeedbacks, loadTicketsInfo, loadVisitorsInfo, loadZones } from "../services/wildlife.service.js";
+import { loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones } from "../services/wildlife.service.js";
 
 export const getHomePage = async (req, res) => {
     try {
@@ -45,10 +45,12 @@ export const getMedicalPage = async (req, res) => {
 export const getStaffPage = async (req, res) => {
     try {
         if(!req.user) return res.redirect('/');
-        return res.render("staff");
+        const staff = await loadStaff();
+        const activeStaff = staff.length;
+        return res.render("staff",{staff,activeStaff});
     } catch (error) {
         console.error(error);
-        return res.status(500).send("internal server error.");
+        return res.status(500).send("internal server error."); 
     }
 }
 
@@ -58,7 +60,7 @@ export const getZonesPage = async (req, res) => {
         const zones = await loadZones();
         const activeZones = zones.length;
         const totalArea = zones.reduce((acc, zone) => acc + zone.area, 0);
-        const totalCameraTraps = zones.reduce((acc, zone) => acc + zone.cameraTraps, 0);
+        const totalCameraTraps = zones.reduce((acc, zone) => acc + zone.camera_traps, 0);
         return res.render("zones",{zones,activeZones,totalArea,totalCameraTraps});
     } catch (error) {
         console.error(error);

@@ -1,7 +1,7 @@
 import { db as dbClient } from "../config/db-client.js";
 
 export const loadVisitorsInfo = async () => {
-    const [rows] = await dbClient.execute('select * from visitors_info');
+    const [rows] = await dbClient.execute('select * from visitors');
     return rows;
 }
 
@@ -17,5 +17,15 @@ export const loadFeedbacks = async () => {
 
 export const loadZones = async () => {
     const [rows] = await dbClient.execute('select * from zones');
+    return rows;
+}
+
+export const loadAnimals = async () => {
+    const [rows] = await dbClient.execute('select * from animals');
+    return rows;
+}
+
+export const loadStaff = async () => {
+    const [rows] = await dbClient.execute('select * from rangers_staff');
     return rows;
 }

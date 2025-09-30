@@ -9,6 +9,7 @@ const envSchema = z.object({
   DATABASE_USER: z.string().min(1, "DATABASE_USER is required"),
   DATABASE_PASSWORD: z.string().min(1, "DATABASE_PASSWORD is required"),
   DATABASE_NAME: z.string().min(1, "DATABASE_NAME is required"),
+  DATABASE_PORT: z.coerce.number().default(4000),
 });
 
 export const env = envSchema.parse(process.env);

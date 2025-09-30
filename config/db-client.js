@@ -6,4 +6,6 @@ export const db = await mysql.createConnection({
         user: env.DATABASE_USER,
         password: env.DATABASE_PASSWORD,
         database: env.DATABASE_NAME,
+        port: env.DATABASE_PORT,
+        ssl: { rejectUnauthorized: true },
 })

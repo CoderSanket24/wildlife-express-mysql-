@@ -36,7 +36,7 @@ export const postRegistrationPage = async (req, res) => {
         // Handle interests array - convert to comma-separated string
         const interestsString = Array.isArray(interests) ? interests.join(',') : interests;
 
-        const [user] = await createVisitor(name, aadhar_id, email, age, gender, phone, address, city, pin, interestsString, hashedPassword);
+        const user = await createVisitor(name, aadhar_id, email, age, gender, phone, address, city, pin, interestsString, hashedPassword);
         console.log('User created successfully:', user);
         return res.redirect('/login');
     }

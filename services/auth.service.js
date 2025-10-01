@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 export const createVisitor = async (name, aadhar_id, email, age, gender, phone, address, city, pin, interests, password)=>{
     const [result] = await dbClient.execute(
-        'INSERT INTO visitors_info (name, aadhar_id, email, age, gender, phone, address, city, pin, interests, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO visitors (name, aadhar_id, email, age, gender, phone, address, city, pin, interests, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [name, aadhar_id, email, age, gender, phone, address, city, pin, interests, password]
     );
     return result.insertId;

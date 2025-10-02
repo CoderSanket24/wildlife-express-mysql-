@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -38,7 +38,7 @@
                 <div class="data-card">
                     <div class="card-header">
                         <span class="icon">🐅</span>Bengal Tiger
-                        <span class="status-badge endangered">Endangered</span>
+                        <span class="status-badge Endangered">Endangered</span>
                     </div>
                     <div class="card-content">
                         <p><strong>Species ID:</strong> TGR-001</p>
@@ -83,7 +83,7 @@
                 <div class="data-card">
                     <div class="card-header">
                         <span class="icon">🐘</span>Asian Elephant
-                        <span class="status-badge vulnerable">Vulnerable</span>
+                        <span class="status-badge Vulnerable">Vulnerable</span>
                     </div>
                     <div class="card-content">
                         <p><strong>Species ID:</strong> ELE-002</p>
@@ -128,7 +128,7 @@
                 <div class="data-card">
                     <div class="card-header">
                         <span class="icon">🦌</span>Spotted Deer
-                        <span class="status-badge safe">Stable</span>
+                        <span class="status-badge Stable">Stable</span>
                     </div>
                     <div class="card-content">
                         <p><strong>Species ID:</strong> DER-003</p>
@@ -169,20 +169,67 @@
                         </div>
                     </div>
                 </div>
+
+                <%animals.forEach(animal=> {%>
+                    <div class="data-card">
+                        <div class="card-header">
+                            <span class="icon">🦌</span><%= animal.name %>
+                            <span class="status-badge <%= animal.status %>"><%= animal.status %></span>
+                        </div>
+                        <div class="card-content">
+                            <p><strong>Species ID:</strong> <%= animal.species_id %></p>
+                            <p><strong>Current Count:</strong> <%= animal.count %> individuals</p>
+                            <p><strong>Habitat Zone:</strong> <%= animal.habitat_zone %></p>
+                            <p><strong>Last Survey:</strong> <%= animal.last_survey %></p>
+
+                            <div class="photo-gallery">
+                                <div class="gallery-header">
+                                    <h4>📷 Photo Gallery (15 photos)</h4>
+                                </div>
+                                <div class="photo-grid">
+                                    <div class="photo-item" onclick="openLightbox('deer', 0)">
+                                        <div class="photo-placeholder deer-1">
+                                            <span class="photo-icon">📸</span>
+                                            <div class="photo-overlay">Grazing</div>
+                                        </div>
+                                    </div>
+                                    <div class="photo-item" onclick="openLightbox('deer', 1)">
+                                        <div class="photo-placeholder deer-2">
+                                            <span class="photo-icon">📸</span>
+                                            <div class="photo-overlay">Herd</div>
+                                        </div>
+                                    </div>
+                                    <div class="photo-item" onclick="openLightbox('deer', 2)">
+                                        <div class="photo-placeholder deer-3">
+                                            <span class="photo-icon">📸</span>
+                                            <div class="photo-overlay">Young Fawn</div>
+                                        </div>
+                                    </div>
+                                    <div class="photo-more" onclick="openLightbox('deer', 3)">
+                                        <div class="photo-placeholder">
+                                            <span>+12</span>
+                                            <div class="photo-overlay">More Photos</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <%})%>
             </div>
         </div>
-        
+
         <!-- Lightbox for Photo Gallery -->
         <div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
             <div class="lightbox-content" onclick="event.stopPropagation()">
                 <button class="lightbox-close" onclick="closeLightbox()">×</button>
                 <button class="lightbox-nav lightbox-prev" onclick="prevPhoto()">‹</button>
                 <button class="lightbox-nav lightbox-next" onclick="nextPhoto()">›</button>
-        
+
                 <div class="lightbox-image" id="lightbox-image">
                     📸
                 </div>
-        
+
                 <div class="lightbox-info">
                     <div class="lightbox-title" id="lightbox-title">Photo Title</div>
                     <div class="lightbox-details" id="lightbox-details">

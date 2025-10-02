@@ -36,8 +36,8 @@ export const getAnimalsPage = async (req, res) => {
 export const addAnimalPage = async (req, res) => {
     try {
         if(!req.user) return res.redirect('/');
-        const { name, species_id, status, count, habitat_zone, last_survey } = req.body;
-        await addAnimal(name, species_id, status, count, habitat_zone, last_survey);
+        const { name, species_id, status, count, habitat_zone, last_survey, image_url } = req.body;
+        await addAnimal(name, species_id, status, count, habitat_zone, last_survey, image_url);
         return res.redirect('/animals');
     } catch (error) {
         console.error(error);

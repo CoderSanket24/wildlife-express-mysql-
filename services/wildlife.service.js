@@ -25,8 +25,8 @@ export const loadAnimals = async () => {
     return rows;
 }
 
-export const addAnimal = async (name, species_id, status, count, habitat_zone, last_survey) => {
-    const [rows] = await dbClient.execute('insert into animals (name, species_id, status, count, habitat_zone, last_survey) values (?, ?, ?, ?, ?, ?)', [name, species_id, status, count, habitat_zone, last_survey]);
+export const addAnimal = async (name, species_id, status, count, habitat_zone, last_survey, image_url) => {
+    const [rows] = await dbClient.execute('insert into animals (name, species_id, status, count, habitat_zone, last_survey, image_url) values (?, ?, ?, ?, ?, ?, ?)', [name, species_id, status, count, habitat_zone, last_survey, image_url]);
     return rows;
 }
 

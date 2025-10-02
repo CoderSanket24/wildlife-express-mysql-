@@ -35,157 +35,33 @@
             <button class="add-btn">+ Add New Species</button>
 
             <div class="data-grid">
-                <div class="data-card">
-                    <div class="card-header">
-                        <span class="icon">🐅</span>Bengal Tiger
-                        <span class="status-badge Endangered">Endangered</span>
-                    </div>
-                    <div class="card-content">
-                        <p><strong>Species ID:</strong> TGR-001</p>
-                        <p><strong>Current Count:</strong> 23 individuals</p>
-                        <p><strong>Habitat Zone:</strong> Core Zone A</p>
-                        <p><strong>Last Survey:</strong> Dec 2024</p>
-
-                        <div class="photo-gallery">
-                            <div class="gallery-header">
-                                <h4>📷 Photo Gallery (8 photos)</h4>
-                            </div>
-                            <div class="photo-grid">
-                                <div class="photo-item" onclick="openLightbox('tiger', 0)">
-                                    <div class="photo-placeholder tiger-1">
-                                        <span class="photo-icon">📸</span>
-                                        <div class="photo-overlay">Adult Male</div>
-                                    </div>
-                                </div>
-                                <div class="photo-item" onclick="openLightbox('tiger', 1)">
-                                    <div class="photo-placeholder tiger-2">
-                                        <span class="photo-icon">📸</span>
-                                        <div class="photo-overlay">With Cubs</div>
-                                    </div>
-                                </div>
-                                <div class="photo-item" onclick="openLightbox('tiger', 2)">
-                                    <div class="photo-placeholder tiger-3">
-                                        <span class="photo-icon">📸</span>
-                                        <div class="photo-overlay">Hunting</div>
-                                    </div>
-                                </div>
-                                <div class="photo-more" onclick="openLightbox('tiger', 3)">
-                                    <div class="photo-placeholder">
-                                        <span>+5</span>
-                                        <div class="photo-overlay">More Photos</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="data-card">
-                    <div class="card-header">
-                        <span class="icon">🐘</span>Asian Elephant
-                        <span class="status-badge Vulnerable">Vulnerable</span>
-                    </div>
-                    <div class="card-content">
-                        <p><strong>Species ID:</strong> ELE-002</p>
-                        <p><strong>Current Count:</strong> 45 individuals</p>
-                        <p><strong>Habitat Zone:</strong> Buffer Zone B</p>
-                        <p><strong>Last Survey:</strong> Jan 2025</p>
-
-                        <div class="photo-gallery">
-                            <div class="gallery-header">
-                                <h4>📷 Photo Gallery (12 photos)</h4>
-                            </div>
-                            <div class="photo-grid">
-                                <div class="photo-item" onclick="openLightbox('elephant', 0)">
-                                    <div class="photo-placeholder elephant-1">
-                                        <span class="photo-icon">📸</span>
-                                        <div class="photo-overlay">Herd Leader</div>
-                                    </div>
-                                </div>
-                                <div class="photo-item" onclick="openLightbox('elephant', 1)">
-                                    <div class="photo-placeholder elephant-2">
-                                        <span class="photo-icon">📸</span>
-                                        <div class="photo-overlay">Baby Elephant</div>
-                                    </div>
-                                </div>
-                                <div class="photo-item" onclick="openLightbox('elephant', 2)">
-                                    <div class="photo-placeholder elephant-3">
-                                        <span class="photo-icon">📸</span>
-                                        <div class="photo-overlay">Water Play</div>
-                                    </div>
-                                </div>
-                                <div class="photo-more" onclick="openLightbox('elephant', 3)">
-                                    <div class="photo-placeholder">
-                                        <span>+9</span>
-                                        <div class="photo-overlay">More Photos</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="data-card">
-                    <div class="card-header">
-                        <span class="icon">🦌</span>Spotted Deer
-                        <span class="status-badge Stable">Stable</span>
-                    </div>
-                    <div class="card-content">
-                        <p><strong>Species ID:</strong> DER-003</p>
-                        <p><strong>Current Count:</strong> 186 individuals</p>
-                        <p><strong>Habitat Zone:</strong> Multiple Zones</p>
-                        <p><strong>Last Survey:</strong> Jan 2025</p>
-
-                        <div class="photo-gallery">
-                            <div class="gallery-header">
-                                <h4>📷 Photo Gallery (15 photos)</h4>
-                            </div>
-                            <div class="photo-grid">
-                                <div class="photo-item" onclick="openLightbox('deer', 0)">
-                                    <div class="photo-placeholder deer-1">
-                                        <span class="photo-icon">📸</span>
-                                        <div class="photo-overlay">Grazing</div>
-                                    </div>
-                                </div>
-                                <div class="photo-item" onclick="openLightbox('deer', 1)">
-                                    <div class="photo-placeholder deer-2">
-                                        <span class="photo-icon">📸</span>
-                                        <div class="photo-overlay">Herd</div>
-                                    </div>
-                                </div>
-                                <div class="photo-item" onclick="openLightbox('deer', 2)">
-                                    <div class="photo-placeholder deer-3">
-                                        <span class="photo-icon">📸</span>
-                                        <div class="photo-overlay">Young Fawn</div>
-                                    </div>
-                                </div>
-                                <div class="photo-more" onclick="openLightbox('deer', 3)">
-                                    <div class="photo-placeholder">
-                                        <span>+12</span>
-                                        <div class="photo-overlay">More Photos</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <%animals.forEach(animal=> {%>
                     <div class="data-card">
                         <div class="card-header">
                             <%= animal.name %>
                         </div>
-                        <div >
-                            <img src="images/image.png" alt="<%= animal.name %>" class="card-image">
+                        <div>
+                            <img src="images/<%= animal.image_url %>" alt="<%= animal.name %>" class="card-image">
                         </div>
                         <div class="card-content">
-                            <p><strong>Species ID:</strong> <%= animal.species_id %></p>
-                            <p><strong>Current Count:</strong> <%= animal.count %> individuals</p>
-                            <p><strong>Habitat Zone:</strong> <%= animal.habitat_zone %></p>
-                            <p><strong>Last Survey:</strong> <%= animal.last_survey %></p>
+                            <p><strong>Species ID:</strong>
+                                <%= animal.species_id %>
+                            </p>
+                            <p><strong>Current Count:</strong>
+                                <%= animal.count %> individuals
+                            </p>
+                            <p><strong>Habitat Zone:</strong>
+                                <%= animal.habitat_zone %>
+                            </p>
+                            <p><strong>Last Survey:</strong>
+                                <%= new Date(animal.last_survey).toDateString().toLowerCase() %>
+                            </p>
                         </div>
                         <div class="card-footer">
-                            <span class="status-badge <%= animal.status %>"><%= animal.status %></span>
+                            <span class="status-badge <%= animal.status %>">
+                                <%= animal.status %>
+                            </span>
                         </div>
                     </div>
                     <%})%>
@@ -197,7 +73,7 @@
             Loading data...
         </div>
     </div>
-    <script src="../app.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>

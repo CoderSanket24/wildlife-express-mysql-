@@ -25,6 +25,11 @@ export const loadAnimals = async () => {
     return rows;
 }
 
+export const addAnimal = async (name, species_id, status, count, habitat_zone, last_survey) => {
+    const [rows] = await dbClient.execute('insert into animals (name, species_id, status, count, habitat_zone, last_survey) values (?, ?, ?, ?, ?, ?)', [name, species_id, status, count, habitat_zone, last_survey]);
+    return rows;
+}
+
 export const loadStaff = async () => {
     const [rows] = await dbClient.execute('select * from rangers_staff');
     return rows;

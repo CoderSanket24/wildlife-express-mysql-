@@ -1,4 +1,4 @@
-import { loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones } from "../services/wildlife.service.js";
+import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones } from "../services/wildlife.service.js";
 
 export const getHomePage = async (req, res) => {
     try {
@@ -25,7 +25,20 @@ export const getVisitorPage = async (req, res) => {
 export const getAnimalsPage = async (req, res) => {
     try {
         if(!req.user) return res.redirect('/');
-        return res.render("animals");
+        const animals = await loadAnimals();
+        return res.render("animals",{animals});
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("internal server error.");
+    }
+}
+
+export const addAnimalPage = async (req, res) => {
+    try {
+        if(!req.user) return res.redirect('/');
+        const { name, species_id, status, count, habitat_zone, last_survey } = req.body;
+        await addAnimal(name, species_id, status, count, habitat_zone, last_survey);
+        return res.redirect('/animals');
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");
@@ -71,7 +84,7 @@ export const getZonesPage = async (req, res) => {
 export const getFeedbackPage = async (req, res) => {
     try {
         if(!req.user) return res.redirect('/');
-        return res.render("feedback");
+        return res.render("forms/feedback");
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");
@@ -81,7 +94,7 @@ export const getFeedbackPage = async (req, res) => {
 export const getBookingPage = async (req, res) => {
     try {
         if(!req.user) return res.redirect('/');
-        return res.render("ticket-booking");
+        return res.render("forms/ticket-booking");
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");

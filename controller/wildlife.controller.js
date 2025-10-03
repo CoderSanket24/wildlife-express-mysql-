@@ -1,4 +1,4 @@
-import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback } from "../services/wildlife.service.js";
+import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking } from "../services/wildlife.service.js";
 
 export const getHomePage = async (req, res) => {
     try {
@@ -26,7 +26,10 @@ export const getAnimalsPage = async (req, res) => {
     try {
         if(!req.user) return res.redirect('/');
         const animals = await loadAnimals();
-        return res.render("animals",{animals});
+        const totalSpecies = new Set(animals.map(animal => animal.species_id)).size;
+        const totalAnimals = animals.reduce((acc, animal) => acc + animal.count, 0);
+        const endangeredCount = animals.filter(animal => animal.status.toLowerCase() === 'endangered').length;
+        return res.render("animals",{animals,totalSpecies,totalAnimals,endangeredCount});
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");
@@ -117,3 +120,14 @@ export const getBookingPage = async (req, res) => {
         return res.status(500).send("internal server error.");
     }
 }
+
+export const postBookingPage = async (req, res) => {
+    try {
+        const bookingData = req.body;
+        const result = await createBooking(bookingData);
+        return res.status(201).json({ success: true, message: "Booking created successfully.", bookingId: result.bookingId });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: "Failed to create booking." });
+    }
+};

@@ -61,3 +61,46 @@ export const loadStaff = async () => {
     const [rows] = await dbClient.execute('select * from rangers_staff');
     return rows;
 }
+
+export const createBooking = async (bookingData) => {
+    const query = `
+        INSERT INTO tickets (
+            booking_id, 
+            visitor_name, 
+            contact_number, 
+            safari_date, 
+            time_slot, 
+            safari_zone, 
+            person_count, 
+            has_guide, 
+            has_camera, 
+            has_lunch, 
+            has_transport, 
+            base_cost, 
+            services_cost, 
+            gst_amount, 
+            total_amount
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    `;
+
+    const values = [
+        bookingData.booking_id,
+        bookingData.visitor_name,
+        bookingData.contact_number,
+        bookingData.safari_date,
+        bookingData.time_slot,
+        bookingData.safari_zone,
+        bookingData.person_count,
+        bookingData.has_guide ? 1 : 0,
+        bookingData.has_camera ? 1 : 0,
+        bookingData.has_lunch ? 1 : 0,
+        bookingData.has_transport ? 1 : 0,
+        bookingData.base_cost,
+        bookingData.services_cost,
+        bookingData.gst_amount,
+        bookingData.total_amount
+    ];
+
+    const [result] = await dbClient.execute(query, values);
+    return { success: true, insertId: result.insertId, bookingId: bookingData.booking_id };
+};

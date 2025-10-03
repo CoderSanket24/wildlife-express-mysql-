@@ -82,7 +82,7 @@
             </div>
 
             <%if(user.role === 'admin'){%>
-                <button class="add-btn">+ Generate Ticket</button>
+                <button class="add-btn" onclick="window.location.href='/booking'">+ Generate Ticket</button>
             <%}%>
 
             <div class="nav-tabs">
@@ -134,39 +134,31 @@
                     <% }) %>
             </div>
             <div id="Tickets" class="data-grid inactive">
-                <div class="data-card">
-                    <div class="card-header">
-                        <span class="icon">🎟️</span>Ticket #TKT-20250121-089
-                    </div>
-                    <div class="card-content">
-                        <p><strong>Visitor:</strong> Sarah Johnson</p>
-                        <p><strong>Ticket Type:</strong> Photography Safari</p>
-                        <p><strong>Amount:</strong> ₹2,500</p>
-                        <p><strong>Status:</strong> Confirmed</p>
-                        <p><strong>Valid Until:</strong> Jan 25, 2025</p>
-                    </div>
-                </div>
-                <% tickets.map(({ticket_id, visitorName, amount, valid_until})=> { %>
-                    <div class="data-card">
-                        <div class="card-header">
-                            <span class="icon">🎟️</span>Ticket #TKT-20250121-089
+                <% if (tickets && tickets.length > 0) { %>
+                    <% tickets.forEach(ticket => { %>
+                        <div class="data-card">
+                            <div class="card-header">
+                                <span class="icon">🎟️</span>Ticket #<%= ticket.booking_id %>
+                            </div>
+                            <div class="card-content">
+                                <p><strong>Visitor:</strong> <%= ticket.visitor_name %></p>
+                                <p><strong>Contact:</strong> <%= ticket.contact_number %></p>
+                                <p><strong>Safari Date:</strong> <%= new Date(ticket.safari_date).toLocaleDateString('en-GB') %></p>
+                                <p><strong>Time Slot:</strong> <%= ticket.time_slot %></p>
+                                <p><strong>Zone:</strong> <%= ticket.safari_zone %></p>
+                                <p><strong>Persons:</strong> <%= ticket.person_count %></p>
+                                <p><strong>Total Amount:</strong> ₹<%= Number(ticket.total_amount).toLocaleString('en-IN') %></p>
+                                <p><strong>Status:</strong> <span class="status status-<%= ticket.booking_status.toLowerCase() %>"><%= ticket.booking_status %></span></p>
+                            </div>
                         </div>
-                        <div class="card-content">
-                            <p><strong>Ticket Id: </strong>
-                                <%=ticket_id%>
-                            </p>
-                            <p><strong>Visitor Name: </strong>
-                                <%=visitorName%>
-                            </p>
-                            <p><strong>Amount: </strong>
-                                <%=amount%>
-                            </p>
-                            <p><strong>Valid Until: </strong>
-                                <%=valid_until%>
-                            </p>
-                        </div>
-                    </div>
                     <% }) %>
+                <% } else { %>
+                    <div class="data-card">
+                        <div class="card-content">
+                            <p>No ticket information available.</p>
+                        </div>
+                    </div>
+                <% } %>
             </div>
             <div id="Feedbacks" class="data-grid inactive">
                 <% feedbacks.map((feedback)=> { %>

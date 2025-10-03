@@ -180,33 +180,9 @@
         </div>
     </div>
 
+    <script src="script.js"></script>
+
     <script>
-        // Create floating leaves animation
-        function createFloatingLeaf() {
-            const leaf = document.createElement('div');
-            leaf.className = 'floating-leaf';
-            leaf.innerHTML = Math.random() > 0.5 ? '🍃' : '🌿';
-            leaf.style.left = Math.random() * 100 + '%';
-            leaf.style.animationDelay = Math.random() * 5 + 's';
-            leaf.style.animationDuration = (Math.random() * 4 + 6) + 's';
-            
-            document.querySelector('.bg-animation').appendChild(leaf);
-            
-            setTimeout(() => {
-                if (leaf.parentNode) {
-                    leaf.parentNode.removeChild(leaf);
-                }
-            }, 10000);
-        }
-
-        // Create leaves periodically
-        setInterval(createFloatingLeaf, 2000);
-
-        // Create initial leaves
-        for (let i = 0; i < 5; i++) {
-            setTimeout(createFloatingLeaf, i * 500);
-        }
-
         // Star Rating System
         class StarRating {
             constructor(container) {
@@ -264,42 +240,6 @@
             starRatings = Array.from(ratingContainers).map(container => new StarRating(container));
         }
 
-        // Notification system
-        function showNotification(message, type = 'success') {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed; 
-                top: 20px; 
-                right: 20px; 
-                background: ${type === 'success' ? 'rgba(76, 175, 80, 0.9)' : 'rgba(244, 67, 54, 0.9)'}; 
-                color: white; 
-                padding: 15px 20px; 
-                border-radius: 10px; 
-                z-index: 1001; 
-                font-weight: bold;
-                transform: translateX(300px); 
-                transition: transform 0.3s ease;
-                max-width: 250px; 
-                backdrop-filter: blur(10px);
-                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            `;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.transform = 'translateX(0)';
-            }, 100);
-            
-            setTimeout(() => {
-                notification.style.transform = 'translateX(300px)';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            }, 4000);
-        }
-
         // Form submission handler
         function handleFormSubmission() {
             const form = document.getElementById('feedbackForm');
@@ -308,22 +248,59 @@
 
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-                
+
+                const formData = {
+                    name: form.querySelector('input[type="text"][placeholder="Enter your name"]').value,
+                    email: form.querySelector('input[type="email"]').value,
+                    visitDate: form.querySelector('input[type="date"]').value,
+                    ticketId: form.querySelector('input[type="text"][placeholder="WGS-2025-0123"]').value,
+                    ratings: {
+                        overall: starRatings.find(r => r.container.dataset.ratingGroup === 'overall')?.rating || 0,
+                        guide: starRatings.find(r => r.container.dataset.ratingGroup === 'guide')?.rating || 0,
+                        facility: starRatings.find(r => r.container.dataset.ratingGroup === 'facility')?.rating || 0,
+                    },
+                    sightings: Array.from(form.querySelectorAll('input[id$="-seen"]:checked')).map(cb => cb.value),
+                    likedMost: Array.from(form.querySelectorAll('input[id*="-diversity"], input[id*="-knowledge"], input[id*="-photography"], input[id*="-facilities"], input[id*="-conservation"], input[id*="-safety"]'))
+                                    .filter(cb => cb.checked)
+                                    .map(cb => cb.value),
+                    comments: form.querySelector('textarea').value,
+                    recommend: form.querySelector('input[name="recommend"]:checked')?.value || 'Not answered'
+                };
+
+                // Print the form data to the console
+                console.log('--- Feedback Submission ---');
+                console.log(formData);
+                console.log('-------------------------');
+
                 loading.style.display = 'block';
-                
-                setTimeout(() => {
+
+                fetch('/feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
                     loading.style.display = 'none';
-                    success.style.display = 'block';
-                    showNotification('Feedback submitted successfully!');
-                    
-                    setTimeout(() => {
-                        success.style.display = 'none';
-                        form.reset();
-                        
-                        // Reset all star ratings
-                        starRatings.forEach(rating => rating.reset());
-                    }, 5000);
-                }, 2000);
+                    if (data.success) {
+                        success.style.display = 'block';
+                        showNotification('Feedback submitted successfully!');
+                        setTimeout(() => {
+                            success.style.display = 'none';
+                            form.reset();
+                            starRatings.forEach(rating => rating.reset());
+                        }, 5000);
+                    } else {
+                        throw new Error(data.message || 'An unknown error occurred.');
+                    }
+                })
+                .catch(error => {
+                    loading.style.display = 'none';
+                    console.error('Submission Error:', error);
+                    showNotification('Error: Could not submit feedback.', 'error');
+                });
             });
         }
 

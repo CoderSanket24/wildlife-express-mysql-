@@ -1,4 +1,4 @@
-import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones } from "../services/wildlife.service.js";
+import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback } from "../services/wildlife.service.js";
 
 export const getHomePage = async (req, res) => {
     try {
@@ -88,6 +88,23 @@ export const getFeedbackPage = async (req, res) => {
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");
+    }
+}
+
+export const postFeedbackPage = async (req, res) => {
+    try {
+        // The user does not need to be logged in to submit feedback.
+        const formData = req.body;;
+        
+        // Basic validation
+        if (!formData.name || !formData.email || !formData.visitDate) {
+            return res.status(400).json({ success: false, message: 'Missing required fields.' });
+        }
+        await submitFeedback(formData);
+        return res.status(200).json({ success: true, message: "Feedback submitted successfully." });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: "Failed to submit feedback." });
     }
 }
 

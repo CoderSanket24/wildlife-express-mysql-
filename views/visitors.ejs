@@ -169,33 +169,30 @@
                     <% }) %>
             </div>
             <div id="Feedbacks" class="data-grid inactive">
-                <div class="data-card">
-                    <div class="card-header">
-                        <span class="icon">⭐</span>Recent Feedback
-                    </div>
-                    <div class="card-content">
-                        <p><strong>Visitor:</strong> Ravi Mehta</p>
-                        <p><strong>Rating:</strong> 5/5 stars</p>
-                        <p><strong>Comment:</strong> "Excellent safari experience! Saw tigers and elephants. Guide was
-                            very
-                            knowledgeable."</p>
-                        <p><strong>Date:</strong> Jan 20, 2025</p>
-                    </div>
-                </div>
-                <% feedbacks.map(({visitorName, rating, feedback})=> { %>
+                <% feedbacks.map((feedback)=> { %>
                     <div class="data-card">
                         <div class="card-header">
-                            <span class="icon">⭐</span>Recent Feedback
+                            <span class="icon">⭐</span>Feedback from <%= feedback.name %>
                         </div>
                         <div class="card-content">
-                            <p><strong>Visitor Name: </strong>
-                                <%=visitorName%>
+                            <p><strong>Date: </strong>
+                                <%= new Date(feedback.visit_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>
                             </p>
-                            <p><strong>Rating: </strong>
-                                <%=rating.toFixed(1)%>
+                            <p><strong>Overall Rating: </strong>
+                                <%= '⭐'.repeat(feedback.rating_overall) %><%= '☆'.repeat(5 - feedback.rating_overall) %>
+                            </p>
+                            <p><strong>Guide Rating: </strong>
+                                <%= '⭐'.repeat(feedback.rating_guide) %><%= '☆'.repeat(5 - feedback.rating_guide) %>
+                            </p>
+                            <p><strong>Facility Rating: </strong>
+                                <%= '⭐'.repeat(feedback.rating_facility) %><%= '☆'.repeat(5 - feedback.rating_facility) %>
+                            </p>
+                            <p><strong>Sightings: </strong>
+                                <% const sightings = typeof feedback.sightings === 'string' ? JSON.parse(feedback.sightings || '[]') : (feedback.sightings || []); %>
+                                <%= sightings.join(', ') || 'None mentioned' %>
                             </p>
                             <p><strong>Feedback: </strong>
-                                <%=feedback%>
+                                <%= feedback.comments %>
                             </p>
                         </div>
                     </div>

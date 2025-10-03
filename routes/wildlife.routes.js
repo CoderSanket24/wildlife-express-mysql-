@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addAnimalPage, getAnimalsPage, getBookingPage, getFeedbackPage, getHomePage, getMedicalPage, getStaffPage, getVisitorPage, getZonesPage } from "../controller/wildlife.controller.js";
+import { addAnimalPage, getAnimalsPage, getBookingPage, getFeedbackPage, getHomePage, getMedicalPage, getStaffPage, getVisitorPage, getZonesPage, postFeedbackPage } from "../controller/wildlife.controller.js";
 
 const router = Router();
 
@@ -10,7 +10,7 @@ router.post('/animals',addAnimalPage);
 router.get('/medical',getMedicalPage);
 router.get('/staff',getStaffPage);
 router.get('/zones',getZonesPage);
-router.get('/feedback',getFeedbackPage);
+router.route("/feedback").get(getFeedbackPage).post(postFeedbackPage);
 router.get('/booking',getBookingPage);
 
 export default router;

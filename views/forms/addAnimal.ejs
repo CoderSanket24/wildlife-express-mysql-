@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WildGuard Sanctuary - Add Animal</title>
+    <link rel="stylesheet" href="/addAnimal.css">
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🌿 WildGuard Sanctuary</h1>
+            <p>Add New Animal to Database</p>
+        </div>
+
+        <div class="form-section">
+            <a href="/animals" class="back-btn">← Back to Dashboard</a>
+            
+            <h2 class="section-title">🦁 Add Animal Record</h2>
+            
+            <form id="addAnimalForm" enctype="multipart/form-data">
+                <div class="form-row">
+                    <div class="form-group has-icon">
+                        <label class="form-label">Animal Name<span class="required">*</span></label>
+                        <input type="text" name="name" class="form-input" id="animalName" placeholder="e.g., Bengal Tiger, Asian Elephant" required>
+                        <span class="input-icon">🦁</span>
+                    </div>
+                    <div class="form-group has-icon">
+                        <label class="form-label">Species ID<span class="required">*</span></label>
+                        <input type="text" name="species_id" class="form-input" id="speciesId" placeholder="e.g., TGR-001, ELE-002" required>
+                        <span class="input-icon">🔖</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Conservation Status<span class="required">*</span></label>
+                    <div class="status-options">
+                        <div class="status-option">
+                            <input type="radio" class="status-radio" id="stable" name="status" value="Stable" required>
+                            <label for="stable" class="status-label stable">✅ Stable</label>
+                        </div>
+                        <div class="status-option">
+                            <input type="radio" class="status-radio" id="vulnerable" name="status" value="Vulnerable">
+                            <label for="vulnerable" class="status-label vulnerable">⚠️ Vulnerable</label>
+                        </div>
+                        <div class="status-option">
+                            <input type="radio" class="status-radio" id="endangered" name="status" value="Endangered">
+                            <label for="endangered" class="status-label endangered">🚨 Endangered</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group has-icon">
+                        <label class="form-label">Population Count<span class="required">*</span></label>
+                        <input type="number" name="count" class="form-input" id="count" placeholder="e.g., 23" min="1" required>
+                        <span class="input-icon">🔢</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Habitat Zone<span class="required">*</span></label>
+                        <select name="habitat_zone" class="form-select" id="habitatZone" required>
+                            <option value="">Select Habitat Zone</option>
+                            <option value="Core Zone A">Core Zone A (Premium Wildlife)</option>
+                            <option value="Buffer Zone B">Buffer Zone B (Elephant Safari)</option>
+                            <option value="Tourism Zone C">Tourism Zone C (General Safari)</option>
+                            <option value="Research Zone D">Research Zone D (Restricted)</option>
+                            <option value="Multiple Zones">Multiple Zones</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Last Survey Date<span class="required">*</span></label>
+                    <input type="date" name="last_survey" class="form-input" id="surveyDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Animal Image</label>
+                    <div id="uploadSection" class="image-input-section active">
+                        <div class="file-upload-wrapper">
+                            <input type="file" name="image" class="form-input-file" id="imageFile" accept="image/*" onchange="handleFileUpload(event)">
+                            <label for="imageFile" class="file-upload-label">
+                                <span class="file-icon">📁</span>
+                                <span class="file-text">Click to upload or drag & drop</span>
+                                <span class="file-hint">PNG, JPG, JPEG up to 5MB</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="image-preview" id="imagePreview">
+                    <div class="preview-text">📸 Image Preview</div>
+                    <img id="previewImg" class="preview-image" alt="Animal preview">
+                    <button type="button" class="remove-image-btn" onclick="removeImage()">✕ Remove Image</button>
+                </div>
+
+                <div class="info-card">
+                    <strong>ℹ️ Important Guidelines:</strong><br>
+                    • Species ID must be unique for each animal<br>
+                    • Ensure population count is accurate based on latest survey<br>
+                    • Survey date should be recent for data accuracy<br>
+                    • All fields marked with <span class="required">*</span> are required
+                </div>
+
+                <div class="loading-spinner" id="loadingSpinner"></div>
+                <div class="success-message" id="successMessage">
+                    ✅ Animal record added successfully! Species ID: <span id="generatedId"></span>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span class="icon">🦁</span>Add Animal to Database
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('surveyDate').max = today;
+        });
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    showNotification('File size must be less than 5MB', 'error');
+                    event.target.value = '';
+                    return;
+                }
+                if (!file.type.startsWith('image/')) {
+                    showNotification('Please upload an image file', 'error');
+                    event.target.value = '';
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview');
+                    const previewImg = document.getElementById('previewImg');
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                    document.querySelector('.file-upload-label .file-text').textContent = `Selected: ${file.name}`;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeImage() {
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('imageFile').value = '';
+            document.querySelector('.file-upload-label .file-text').textContent = 'Click to upload or drag & drop';
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.classList.add('show'), 10);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 500);
+            }, 4000);
+        }
+
+        document.getElementById('addAnimalForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const loading = document.getElementById('loadingSpinner');
+            const success = document.getElementById('successMessage');
+            const generatedId = document.getElementById('generatedId');
+            
+            loading.style.display = 'block';
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('/addAnimal', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const result = await response.json();
+                loading.style.display = 'none';
+
+                if (result.success) {
+                    generatedId.textContent = result.species_id;
+                    success.style.display = 'block';
+                    showNotification('Animal record added successfully!');
+                    setTimeout(() => {
+                        window.location.href = '/animals';
+                    }, 3000);
+                } else {
+                    showNotification(result.message || 'Failed to add animal.', 'error');
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                showNotification('An error occurred. Please try again.', 'error');
+                console.error('Form submission error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -36,15 +36,33 @@ export const getAnimalsPage = async (req, res) => {
     }
 }
 
-export const addAnimalPage = async (req, res) => {
+export const getAddAnimalPage = async (req, res) => {
     try {
         if(!req.user) return res.redirect('/');
-        const { name, species_id, status, count, habitat_zone, last_survey, image_url } = req.body;
-        await addAnimal(name, species_id, status, count, habitat_zone, last_survey, image_url);
-        return res.redirect('/animals');
+        return res.render("forms/addAnimal");
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");
+    }
+}
+
+export const postAddAnimalPage = async (req, res) => {
+    try {
+        if(!req.user) return res.redirect('/');
+
+        const { name, species_id, status, count, habitat_zone, last_survey } = req.body;
+        const image_url = req.file ? `${req.file.path.replace(/\\/g, '/').replace('public/images/', '')}` : null;
+
+        if (!name || !species_id || !status || !count || !habitat_zone || !last_survey) {
+            return res.status(400).json({ success: false, message: 'Missing required fields.' });
+        }
+
+        await addAnimal(name, species_id, status, count, habitat_zone, last_survey, image_url);
+
+        return res.status(201).json({ success: true, message: 'Animal added successfully!', species_id: species_id });
+    } catch (error) {
+        console.error('Error adding animal:', error);
+        return res.status(500).json({ success: false, message: 'Failed to add animal record.' });
     }
 }
 

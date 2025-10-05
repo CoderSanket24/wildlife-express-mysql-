@@ -1,8 +1,13 @@
-import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking } from "../services/wildlife.service.js";
+import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking, totalAnimalsCount, totalSpeciesCount, totalAreasCount, totalCameraTrapsCount, avgRating, recommendRating } from "../services/wildlife.service.js";
+import {getVisitorByEmail} from "../services/auth.service.js";
 
 export const getHomePage = async (req, res) => {
     try {
-        return res.render("index");
+        const totalAnimals = await totalAnimalsCount();
+        const speciesCount = await totalSpeciesCount();
+        const totalAreas = await totalAreasCount();
+        const totalCameraTraps = await totalCameraTrapsCount();
+        return res.render("index", { totalAnimals, speciesCount, totalAreas, totalCameraTraps });
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");
@@ -13,9 +18,9 @@ export const getVisitorPage = async (req, res) => {
     try {
         if(!req.user) return res.redirect('/');
         const visitors_info = await loadVisitorsInfo();
+        const totalVisitors = visitors_info.length;
         const tickets = await loadTicketsInfo();
-        const feedbacks = await loadFeedbacks();
-        return res.render("visitors",{visitors_info,tickets,feedbacks});
+        return res.render("visitors",{visitors_info,tickets,totalVisitors});
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");
@@ -149,3 +154,35 @@ export const postBookingPage = async (req, res) => {
         return res.status(500).json({ success: false, message: "Failed to create booking." });
     }
 };
+
+export const getUserProfilePage = async (req, res) => {
+    try {
+        if(!req.user) return res.redirect('/');
+        const user = await getVisitorByEmail(req.user.email);
+        return res.render("user-profile", { user });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("internal server error.");
+    }
+}
+
+export const getVisitorsFeedbackPage = async (req, res) => {
+    try {
+        if(!req.user) return res.redirect('/'); // Ensure user is logged in
+        const feedbacks = await loadFeedbacks();
+        const totalFeedbacks = feedbacks.length;
+        const averageRatingResult = await avgRating();
+        const averageRating = averageRatingResult ? parseFloat(averageRatingResult).toFixed(1) : "0.00";
+        const recommendRatingResult = await recommendRating();
+        const recommendRatingPercentage = (recommendRatingResult / totalFeedbacks) * 100;
+        const thisMonthFeedbacks = feedbacks.filter(feedback => {
+            const submittedDate = new Date(feedback.submitted_at);
+            const now = new Date();
+            return submittedDate.getMonth() === now.getMonth() && submittedDate.getFullYear() === now.getFullYear();
+        }).length;
+        return res.render("visitors-feedback", { feedbacks, totalFeedbacks, averageRating, recommendRatingPercentage, thisMonthFeedbacks });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("internal server error.");
+    }       
+}

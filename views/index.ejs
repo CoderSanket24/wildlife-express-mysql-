@@ -38,19 +38,19 @@
 
             <div class="hero-stats">
                 <div class="stat-card">
-                    <div class="stat-number">247</div>
+                    <div class="stat-number"><%= speciesCount %></div>
                     <div class="stat-label">Species Protected</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">3,890</div>
+                    <div class="stat-number"><%= totalAnimals %></div>
                     <div class="stat-label">Animals Tracked</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">2,450</div>
+                    <div class="stat-number"><%= totalAreas %></div>
                     <div class="stat-label">Area (sq km)</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number">124</div>
+                    <div class="stat-number"><%= totalCameraTraps %></div>
                     <div class="stat-label">Camera Traps</div>
                 </div>
             </div>
@@ -127,11 +127,25 @@
                         tourism analytics.</p>
                 </div>
 
-                <div class="nav-card" onclick="window.location.href='feedback'">
+                <div class="nav-card" onclick="navigateToSection('visitors-feedback')">
+                    <span class="nav-card-icon">📝</span>
+                    <h3 class="nav-card-title">Visitor Feedback</h3>
+                    <p class="nav-card-desc">Collect and analyze visitor feedback to improve sanctuary experiences and
+                        user satisfaction.</p>
+                </div>
+
+                <div class="nav-card" onclick="navigateToSection('feedback')">
                     <span class="nav-card-icon">⭐</span>
                     <h3 class="nav-card-title">Share Feedback</h3>
                     <p class="nav-card-desc">Help us improve by sharing your experience and suggestions for better
                         wildlife conservation.</p>
+                </div>
+
+                <div class="nav-card" onclick="navigateToSection('user-profile')">
+                    <span class="nav-card-icon">👤</span>
+                    <h3 class="nav-card-title">User Profile</h3>
+                    <p class="nav-card-desc">Manage your account details, view activity history, and customize your
+                        preferences.</p>
                 </div>
             </div>
         </section>

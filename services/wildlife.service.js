@@ -15,6 +15,16 @@ export const loadFeedbacks = async () => {
     return rows;
 }
 
+export const avgRating = async () => {
+    const [rows] = await dbClient.execute('SELECT AVG(rating_overall) AS avg_rating FROM feedbacks');
+    return rows[0].avg_rating;
+}
+
+export const recommendRating = async () => {
+    const [rows] = await dbClient.execute('SELECT * FROM feedbacks WHERE recommend="yes"');
+    return rows.length;
+}
+
 export const submitFeedback = async (formData) => {
     const query = `
         INSERT INTO feedback (
@@ -47,9 +57,29 @@ export const loadZones = async () => {
     return rows;
 }
 
+export const totalAreasCount = async () => {
+    const [rows] = await dbClient.execute('select sum(area) as total from zones');
+    return rows[0].total;
+}
+
+export const totalCameraTrapsCount = async () => {
+    const [rows] = await dbClient.execute('select sum(camera_traps) as total from zones');
+    return rows[0].total;
+}
+
 export const loadAnimals = async () => {
     const [rows] = await dbClient.execute('select * from animals');
     return rows;
+}
+
+export const totalAnimalsCount = async () => {
+    const [rows] = await dbClient.execute('select sum(count) as total from animals');
+    return rows[0].total;
+}
+
+export const totalSpeciesCount = async () => {
+    const [rows] = await dbClient.execute('select count(distinct species_id) as total from animals');
+    return rows[0].total;
 }
 
 export const addAnimal = async (name, species_id, status, count, habitat_zone, last_survey, image_url) => {

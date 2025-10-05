@@ -393,3 +393,17 @@ body {
         transform: rotate(360deg);
     }
 }
+
+       .back-btn {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    border: 2px solid rgba(76, 175, 80, 0.3);
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WildGuard Sanctuary - User Profile</title>
+    <link rel="stylesheet" href="/profile.css">
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🌿 WildGuard Sanctuary</h1>
+            <p>User Profile Management</p>
+        </div>
+
+        <a href="/" class="back-btn">← Back to Dashboard</a>
+
+        <div class="profile-container">
+            <!-- Profile Sidebar -->
+            <div class="profile-card">
+                <div class="profile-avatar">
+                    👤
+                    <div class="avatar-upload">
+                        <label for="avatarUpload" style="cursor: pointer; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                            📷
+                        </label>
+                        <input type="file" id="avatarUpload" accept="image/*" onchange="updateAvatar(event)">
+                    </div>
+                </div>
+
+                <div class="profile-name"><%=user.name%></div>
+                <div class="profile-role">Wildlife Enthusiast</div>
+
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Safaris</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">Feedbacks</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">156</div>
+                        <div class="stat-label">Days Active</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">24</div>
+                        <div class="stat-label">Photos</div>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <button class="action-btn">Edit Profile</button>
+                    <button class="action-btn secondary">Change Password</button>
+                    <button class="action-btn secondary">Download Data</button>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="profile-content">
+                <div class="content-tabs">
+                    <button class="tab-btn active" onclick="switchTab('personal')">Personal Info</button>
+                    <button class="tab-btn" onclick="switchTab('activity')">Activity History</button>
+                    <button class="tab-btn" onclick="switchTab('bookings')">My Bookings</button>
+                    <button class="tab-btn" onclick="switchTab('settings')">Settings</button>
+                </div>
+
+                <!-- Personal Info Tab -->
+                <div id="personal" class="tab-content active">
+                    <div class="info-section">
+                        <div class="section-title">
+                            Personal Information
+                            <button class="edit-btn" style="float: right;">✏️ Edit</button>
+                        </div>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">Full Name</div>
+                                <div class="info-value"><%=user.name%></div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">User ID</div>
+                                <div class="info-value"><%=user.id%></div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Email Address</div>
+                                <div class="info-value"><%=user.email%></div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Phone Number</div>
+                                <div class="info-value"><%=user.phone%></div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Aadhar Id</div>
+                                <div class="info-value"><%=user.aadhar_id%></div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Member Since</div>
+                                <div class="info-value"><%=new Date(user.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })%></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-section" style="margin-top: 20px;">
+                        <div class="section-title">Address Information</div>
+                        <div class="info-grid">
+                            <div class="info-item" style="grid-column: 1 / -1;">
+                                <div class="info-label">Address</div>
+                                <div class="info-value"><%=user.address%></div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">City</div>
+                                <div class="info-value"><%=user.city%></div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">PIN Code</div>
+                                <div class="info-value"><%=user.pin%></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-section" style="margin-top: 20px;">
+                        <div class="section-title">Interests & Preferences</div>
+                        <div>
+                            <span class="badge success">Wildlife Photography</span>
+                            <span class="badge success">Conservation</span>
+                            <span class="badge success">Bird Watching</span>
+                            <span class="badge info">Research</span>
+                            <span class="badge info">Education</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity History Tab -->
+                <div id="activity" class="tab-content">
+                    <div class="info-section">
+                        <div class="section-title">Recent Activity</div>
+                        
+                        <div class="activity-card">
+                            <div class="activity-header">
+                                <div class="activity-title">🎫 Safari Booking Confirmed</div>
+                                <div class="activity-date">2 days ago</div>
+                            </div>
+                            <div class="activity-description">
+                                Booked morning safari at Core Zone A for January 28, 2025. Booking ID: WGS-2025-0234
+                            </div>
+                        </div>
+
+                        <div class="activity-card">
+                            <div class="activity-header">
+                                <div class="activity-title">⭐ Feedback Submitted</div>
+                                <div class="activity-date">5 days ago</div>
+                            </div>
+                            <div class="activity-description">
+                                Submitted 5-star feedback for Tourism Zone C safari experience. Spotted Bengal Tiger and Asian Elephants.
+                            </div>
+                        </div>
+
+                        <div class="activity-card">
+                            <div class="activity-header">
+                                <div class="activity-title">📸 Photo Upload</div>
+                                <div class="activity-date">1 week ago</div>
+                            </div>
+                            <div class="activity-description">
+                                Uploaded 8 wildlife photographs from recent safari visit. Photos shared with conservation team.
+                            </div>
+                        </div>
+
+                        <div class="activity-card">
+                            <div class="activity-header">
+                                <div class="activity-title">👤 Profile Updated</div>
+                                <div class="activity-date">2 weeks ago</div>
+                            </div>
+                            <div class="activity-description">
+                                Updated contact information and added new interests: Bird Watching, Wildlife Photography.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bookings Tab -->
+                <div id="bookings" class="tab-content">
+                    <div class="info-section">
+                        <div class="section-title">My Safari Bookings</div>
+                        
+                        <div class="activity-card">
+                            <div class="activity-header">
+                                <div class="activity-title">🎫 Core Zone A - Morning Safari</div>
+                                <span class="badge warning">Upcoming</span>
+                            </div>
+                            <div class="activity-description">
+                                <strong>Date:</strong> January 28, 2025<br>
+                                <strong>Time:</strong> 6:00 AM - 9:00 AM<br>
+                                <strong>Booking ID:</strong> WGS-2025-0234<br>
+                                <strong>Persons:</strong> 2<br>
+                                <strong>Amount:</strong> ₹5,900
+                            </div>
+                        </div>
+
+                        <div class="activity-card">
+                            <div class="activity-header">
+                                <div class="activity-title">🎫 Tourism Zone C - Photography Safari</div>
+                                <span class="badge success">Completed</span>
+                            </div>
+                            <div class="activity-description">
+                                <strong>Date:</strong> January 15, 2025<br>
+                                <strong>Time:</strong> 9:30 AM - 12:30 PM<br>
+                                <strong>Booking ID:</strong> WGS-2025-0156<br>
+                                <strong>Persons:</strong> 1<br>
+                                <strong>Amount:</strong> ₹3,500
+                            </div>
+                        </div>
+
+                        <div class="activity-card">
+                            <div class="activity-header">
+                                <div class="activity-title">🎫 Buffer Zone B - Elephant Safari</div>
+                                <span class="badge success">Completed</span>
+                            </div>
+                            <div class="activity-description">
+                                <strong>Date:</strong> December 10, 2024<br>
+                                <strong>Time:</strong> 2:00 PM - 5:00 PM<br>
+                                <strong>Booking ID:</strong> WGS-2024-0987<br>
+                                <strong>Persons:</strong> 4<br>
+                                <strong>Amount:</strong> ₹9,440
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settings" class="tab-content">
+                    <div class="info-section">
+                        <div class="section-title">Account Settings</div>
+                        
+                        <div class="info-item" style="margin-bottom: 15px;">
+                            <div class="info-label">Email Notifications</div>
+                            <label style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                                <input type="checkbox" checked style="transform: scale(1.3);"> Receive safari booking confirmations
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                                <input type="checkbox" checked style="transform: scale(1.3);"> Wildlife updates and newsletters
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                                <input type="checkbox" style="transform: scale(1.3);"> Conservation program alerts
+                            </label>
+                        </div>
+
+                        <div class="info-item" style="margin-bottom: 15px;">
+                            <div class="info-label">Privacy Settings</div>
+                            <label style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                                <input type="checkbox" checked style="transform: scale(1.3);"> Make profile visible to other users
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                                <input type="checkbox" checked style="transform: scale(1.3);"> Share photos with community
+                            </label>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">Account Actions</div>
+                            <button class="action-btn secondary" style="margin-top: 10px; width: 100%;">Export My Data</button>
+                            <button class="action-btn secondary" style="margin-top: 10px; width: 100%;">Deactivate Account</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create floating leaves animation
+        function createFloatingLeaf() {
+            const leaf = document.createElement('div');
+            leaf.className = 'floating-leaf';
+            leaf.innerHTML = Math.random() > 0.5 ? '🍃' : '🌿';
+            leaf.style.left = Math.random() * 100 + '%';
+            leaf.style.animationDelay = Math.random() * 5 + 's';
+            leaf.style.animationDuration = (Math.random() * 4 + 6) + 's';
+            
+            document.querySelector('.bg-animation').appendChild(leaf);
+            
+            setTimeout(() => {
+                if (leaf.parentNode) {
+                    leaf.parentNode.removeChild(leaf);
+                }
+            }, 10000);
+        }
+
+        setInterval(createFloatingLeaf, 2000);
+        for (let i = 0; i < 5; i++) {
+            setTimeout(createFloatingLeaf, i * 500);
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Update avatar
+        function updateAvatar(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const avatar = document.querySelector('.profile-avatar');
+                    avatar.style.backgroundImage = `url(${e.target.result})`;
+                    avatar.style.backgroundSize = 'cover';
+                    avatar.style.backgroundPosition = 'center';
+                    avatar.innerHTML = '';
+                    
+                    // Re-add upload button
+                    const uploadDiv = document.createElement('div');
+                    uploadDiv.className = 'avatar-upload';
+                    uploadDiv.innerHTML = `
+                        <label for="avatarUpload" style="cursor: pointer; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                            📷
+                        </label>
+                    `;
+                    avatar.appendChild(uploadDiv);
+                    
+                    showNotification('Profile picture updated successfully!');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Notification system
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 20px; right: 20px; 
+                background: rgba(76, 175, 80, 0.9); 
+                color: white; padding: 15px 20px; border-radius: 10px; 
+                z-index: 1001; font-weight: bold;
+                transform: translateX(300px); transition: transform 0.3s ease;
+                max-width: 250px; backdrop-filter: blur(10px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(300px)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Welcome notification
+        setTimeout(() => {
+            showNotification('Welcome to your profile!');
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -134,3 +134,18 @@ export const createBooking = async (bookingData) => {
     const [result] = await dbClient.execute(query, values);
     return { success: true, insertId: result.insertId, bookingId: bookingData.booking_id };
 };
+
+export const medical_checkups = async () => {
+    const [rows] = await dbClient.execute('select * from medical_checkups');
+    return rows;
+}
+
+export const medical_treatments = async () => { 
+    const [rows] = await dbClient.execute('select * from medical_treatments');
+    return rows;
+}
+
+export const feeding_logs = async () => {
+    const [rows] = await dbClient.execute('select * from feeding_logs');
+    return rows;
+}

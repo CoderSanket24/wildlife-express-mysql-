@@ -35,44 +35,56 @@
             <button class="add-btn">+ Log Feeding</button>
         
             <div class="data-grid">
-                <div class="data-card">
-                    <div class="card-header">
-                        <span class="icon">🩺</span>Tiger TGR-001-Alpha
+                <% if (checkups) { %>
+                    <% checkups.forEach(checkup => { %>
+                    <div class="data-card">
+                        <div class="card-header">
+                            <span class="icon">🩺</span>Animal ID: <%= checkup.animal_id %>
+                        </div>
+                        <div class="card-content">
+                            <p><strong>Last Checkup:</strong> <%= new Date(checkup.checkup_date).toLocaleDateString() %></p>
+                            <p><strong>Health Status:</strong> <%= checkup.health_status %></p>
+                            <p><strong>Weight:</strong> <%= checkup.weight_kg %> kg</p>
+                            <p><strong>Vaccination:</strong> <%= checkup.vaccination_status %></p>
+                            <p><strong>Next Checkup:</strong> <%= new Date(checkup.next_checkup_date).toLocaleDateString() %></p>
+                        </div>
                     </div>
-                    <div class="card-content">
-                        <p><strong>Last Checkup:</strong> Jan 15, 2025</p>
-                        <p><strong>Health Status:</strong> Good</p>
-                        <p><strong>Weight:</strong> 220 kg</p>
-                        <p><strong>Vaccination:</strong> Up to date</p>
-                        <p><strong>Next Checkup:</strong> Mar 15, 2025</p>
+                    <% }); %>
+                <% } %>
+
+                <% if (treatments) { %>
+                    <% treatments.forEach(treatment => { %>
+                    <div class="data-card">
+                        <div class="card-header">
+                            <span class="icon">💊</span>Treatment Log - Animal ID: <%= treatment.animal_id %>
+                        </div>
+                        <div class="card-content">
+                            <p><strong>Condition:</strong> <%= treatment.condition %></p>
+                            <p><strong>Treatment Started:</strong> <%= new Date(treatment.treatment_start_date).toLocaleDateString() %></p>
+                            <p><strong>Medication:</strong> <%= treatment.medication %></p>
+                            <p><strong>Progress:</strong> <%= treatment.treatment_progress %></p>
+                            <p><strong>Expected Recovery:</strong> <%= new Date(treatment.expected_recovery_date).toLocaleDateString() %></p>
+                        </div>
                     </div>
-                </div>
-        
-                <div class="data-card">
-                    <div class="card-header">
-                        <span class="icon">🥩</span>Feeding Schedule - Carnivores
+                    <% }); %>
+                <% } %>
+
+                <% if (logs) { %>
+                    <% logs.forEach(log => { %>
+                    <div class="data-card">
+                        <div class="card-header">
+                            <span class="icon">🥩</span><%= log.schedule_name %>
+                        </div>
+                        <div class="card-content">
+                            <p><strong>Date:</strong> <%= new Date(log.feeding_date).toLocaleDateString() %></p>
+                            <p><strong>Food Type:</strong> <%= log.food_type %></p>
+                            <p><strong>Quantity:</strong> <%= log.quantity_kg %> kg total</p>
+                            <p><strong>Fed By:</strong> Staff ID: <%= log.staff_id %></p>
+                            <p><strong>Time:</strong> <%= log.feeding_time %></p>
+                        </div>
                     </div>
-                    <div class="card-content">
-                        <p><strong>Date:</strong> Today</p>
-                        <p><strong>Food Type:</strong> Fresh Meat</p>
-                        <p><strong>Quantity:</strong> 180 kg total</p>
-                        <p><strong>Fed By:</strong> Staff ID: RNG-105</p>
-                        <p><strong>Time:</strong> 6:00 AM & 4:00 PM</p>
-                    </div>
-                </div>
-        
-                <div class="data-card">
-                    <div class="card-header">
-                        <span class="icon">💊</span>Treatment Log - Elephant ELE-002-Beta
-                    </div>
-                    <div class="card-content">
-                        <p><strong>Condition:</strong> Minor Foot Injury</p>
-                        <p><strong>Treatment Started:</strong> Jan 10, 2025</p>
-                        <p><strong>Medication:</strong> Antibiotics + Antiseptic</p>
-                        <p><strong>Progress:</strong> Healing Well</p>
-                        <p><strong>Expected Recovery:</strong> Feb 5, 2025</p>
-                    </div>
-                </div>
+                    <% }); %>
+                <% } %>
             </div>
         </div>
     </div>

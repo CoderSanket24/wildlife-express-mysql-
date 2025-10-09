@@ -1,5 +1,5 @@
-import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking, totalAnimalsCount, totalSpeciesCount, totalAreasCount, totalCameraTrapsCount, avgRating, recommendRating } from "../services/wildlife.service.js";
-import {getVisitorByEmail} from "../services/auth.service.js";
+import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking, totalAnimalsCount, totalSpeciesCount, totalAreasCount, totalCameraTrapsCount, avgRating, recommendRating, medical_checkups, medical_treatments, feeding_logs } from "../services/wildlife.service.js";
+import { getVisitorByEmail } from "../services/auth.service.js";
 
 export const getHomePage = async (req, res) => {
     try {
@@ -16,25 +16,25 @@ export const getHomePage = async (req, res) => {
 
 export const getVisitorPage = async (req, res) => {
     try {
-        if(!req.user) return res.redirect('/');
+        if (!req.user) return res.redirect('/');
         const visitors_info = await loadVisitorsInfo();
         const totalVisitors = visitors_info.length;
         const tickets = await loadTicketsInfo();
-        return res.render("visitors",{visitors_info,tickets,totalVisitors});
+        return res.render("visitors", { visitors_info, tickets, totalVisitors });
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");
     }
-} 
+}
 
 export const getAnimalsPage = async (req, res) => {
     try {
-        if(!req.user) return res.redirect('/');
+        if (!req.user) return res.redirect('/');
         const animals = await loadAnimals();
         const totalSpecies = new Set(animals.map(animal => animal.species_id)).size;
         const totalAnimals = animals.reduce((acc, animal) => acc + animal.count, 0);
         const endangeredCount = animals.filter(animal => animal.status.toLowerCase() === 'endangered').length;
-        return res.render("animals",{animals,totalSpecies,totalAnimals,endangeredCount});
+        return res.render("animals", { animals, totalSpecies, totalAnimals, endangeredCount });
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");
@@ -43,7 +43,7 @@ export const getAnimalsPage = async (req, res) => {
 
 export const getAddAnimalPage = async (req, res) => {
     try {
-        if(!req.user) return res.redirect('/');
+        if (!req.user) return res.redirect('/');
         return res.render("forms/addAnimal");
     } catch (error) {
         console.error(error);
@@ -53,7 +53,7 @@ export const getAddAnimalPage = async (req, res) => {
 
 export const postAddAnimalPage = async (req, res) => {
     try {
-        if(!req.user) return res.redirect('/');
+        if (!req.user) return res.redirect('/');
 
         const { name, species_id, status, count, habitat_zone, last_survey } = req.body;
         const image_url = req.file ? `${req.file.path.replace(/\\/g, '/').replace('public/images/', '')}` : null;
@@ -73,8 +73,16 @@ export const postAddAnimalPage = async (req, res) => {
 
 export const getMedicalPage = async (req, res) => {
     try {
-        if(!req.user) return res.redirect('/');
-        return res.render("medical");
+        if (!req.user) return res.redirect('/');
+        const checkups = await medical_checkups();
+        const treatments = await medical_treatments();
+        const logs = await feeding_logs();
+
+        res.render("medical", {
+            checkups,
+            treatments,
+            logs,
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");
@@ -83,24 +91,24 @@ export const getMedicalPage = async (req, res) => {
 
 export const getStaffPage = async (req, res) => {
     try {
-        if(!req.user) return res.redirect('/');
+        if (!req.user) return res.redirect('/');
         const staff = await loadStaff();
         const activeStaff = staff.length;
-        return res.render("staff",{staff,activeStaff});
+        return res.render("staff", { staff, activeStaff });
     } catch (error) {
         console.error(error);
-        return res.status(500).send("internal server error."); 
+        return res.status(500).send("internal server error.");
     }
 }
 
 export const getZonesPage = async (req, res) => {
     try {
-        if(!req.user) return res.redirect('/');
+        if (!req.user) return res.redirect('/');
         const zones = await loadZones();
         const activeZones = zones.length;
         const totalArea = zones.reduce((acc, zone) => acc + zone.area, 0);
         const totalCameraTraps = zones.reduce((acc, zone) => acc + zone.camera_traps, 0);
-        return res.render("zones",{zones,activeZones,totalArea,totalCameraTraps});
+        return res.render("zones", { zones, activeZones, totalArea, totalCameraTraps });
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");
@@ -109,7 +117,7 @@ export const getZonesPage = async (req, res) => {
 
 export const getFeedbackPage = async (req, res) => {
     try {
-        if(!req.user) return res.redirect('/');
+        if (!req.user) return res.redirect('/');
         return res.render("forms/feedback");
     } catch (error) {
         console.error(error);
@@ -121,7 +129,7 @@ export const postFeedbackPage = async (req, res) => {
     try {
         // The user does not need to be logged in to submit feedback.
         const formData = req.body;;
-        
+
         // Basic validation
         if (!formData.name || !formData.email || !formData.visitDate) {
             return res.status(400).json({ success: false, message: 'Missing required fields.' });
@@ -136,7 +144,7 @@ export const postFeedbackPage = async (req, res) => {
 
 export const getBookingPage = async (req, res) => {
     try {
-        if(!req.user) return res.redirect('/');
+        if (!req.user) return res.redirect('/');
         return res.render("forms/ticket-booking");
     } catch (error) {
         console.error(error);
@@ -157,7 +165,7 @@ export const postBookingPage = async (req, res) => {
 
 export const getUserProfilePage = async (req, res) => {
     try {
-        if(!req.user) return res.redirect('/');
+        if (!req.user) return res.redirect('/');
         const user = await getVisitorByEmail(req.user.email);
         return res.render("user-profile", { user });
     } catch (error) {
@@ -168,7 +176,7 @@ export const getUserProfilePage = async (req, res) => {
 
 export const getVisitorsFeedbackPage = async (req, res) => {
     try {
-        if(!req.user) return res.redirect('/'); // Ensure user is logged in
+        if (!req.user) return res.redirect('/'); // Ensure user is logged in
         const feedbacks = await loadFeedbacks();
         const totalFeedbacks = feedbacks.length;
         const averageRatingResult = await avgRating();
@@ -184,5 +192,5 @@ export const getVisitorsFeedbackPage = async (req, res) => {
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");
-    }       
+    }
 }

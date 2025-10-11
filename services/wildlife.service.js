@@ -1,3 +1,4 @@
+import { vi } from "zod/locales";
 import { db as dbClient } from "../config/db-client.js";
 
 export const loadVisitorsInfo = async () => {
@@ -25,18 +26,17 @@ export const recommendRating = async () => {
     return rows.length;
 }
 
-export const submitFeedback = async (formData) => {
+export const submitFeedback = async (formData, visitorId) => {
     const query = `
-        INSERT INTO feedback (
-            name, email, visit_date, ticket_id, 
+        INSERT INTO feedbacks (
+            visitor_id, visit_date, booking_id, 
             rating_overall, rating_guide, rating_facility, 
             sightings, liked_most, comments, recommend
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+        ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     `;
 
     const values = [
-        formData.name,
-        formData.email,
+        visitorId,
         formData.visitDate,
         formData.ticketId || null,
         formData.ratings.overall,
@@ -92,55 +92,54 @@ export const loadStaff = async () => {
     return rows;
 }
 
-export const createBooking = async (bookingData) => {
-    const query = `
-        INSERT INTO tickets (
-            booking_id, 
-            visitor_name, 
-            contact_number, 
-            safari_date, 
-            time_slot, 
-            safari_zone, 
-            person_count, 
-            has_guide, 
-            has_camera, 
-            has_lunch, 
-            has_transport, 
-            base_cost, 
-            services_cost, 
-            gst_amount, 
-            total_amount
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-    `;
+export const createBooking = async (bookingData, visitorEmail) => {
+    const procedureCallQuery = `CALL BookSafariTicket(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @booking_status);`;
 
     const values = [
-        bookingData.booking_id,
-        bookingData.visitor_name,
-        bookingData.contact_number,
+        visitorEmail,
         bookingData.safari_date,
         bookingData.time_slot,
         bookingData.safari_zone,
         bookingData.person_count,
+        bookingData.base_cost,
         bookingData.has_guide ? 1 : 0,
         bookingData.has_camera ? 1 : 0,
         bookingData.has_lunch ? 1 : 0,
-        bookingData.has_transport ? 1 : 0,
-        bookingData.base_cost,
-        bookingData.services_cost,
-        bookingData.gst_amount,
-        bookingData.total_amount
+        bookingData.has_transport ? 1 : 0
     ];
 
-    const [result] = await dbClient.execute(query, values);
-    return { success: true, insertId: result.insertId, bookingId: bookingData.booking_id };
+    await dbClient.execute(procedureCallQuery, values);
+    const result = await dbClient.execute('SELECT @booking_status AS message;');
+    console.log(result);
+    
+    return { success: true, message: result[0][0].message, bookingId: bookingData.booking_id };
 };
+
+export const getBookingsByEmail = async (email) => {
+    const query = `
+        SELECT
+            v.name,
+            v.email,
+            t.booking_id,
+            t.safari_date,
+            t.time_slot,
+            t.safari_zone,
+            t.person_count,
+            t.total_amount
+        FROM visitors v
+        JOIN tickets t ON v.id = t.visitor_id
+        WHERE v.email = '${email}';
+    `;
+    const rows = await dbClient.execute(query);
+    return rows[0];
+}
 
 export const medical_checkups = async () => {
     const [rows] = await dbClient.execute('select * from medical_checkups');
     return rows;
 }
 
-export const medical_treatments = async () => { 
+export const medical_treatments = async () => {
     const [rows] = await dbClient.execute('select * from medical_treatments');
     return rows;
 }

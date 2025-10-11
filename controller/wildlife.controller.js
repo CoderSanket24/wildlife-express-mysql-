@@ -1,4 +1,4 @@
-import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking, totalAnimalsCount, totalSpeciesCount, totalAreasCount, totalCameraTrapsCount, avgRating, recommendRating, medical_checkups, medical_treatments, feeding_logs } from "../services/wildlife.service.js";
+import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking, totalAnimalsCount, totalSpeciesCount, totalAreasCount, totalCameraTrapsCount, avgRating, recommendRating, medical_checkups, medical_treatments, feeding_logs, getBookingsByEmail } from "../services/wildlife.service.js";
 import { getVisitorByEmail } from "../services/auth.service.js";
 
 export const getHomePage = async (req, res) => {
@@ -129,12 +129,7 @@ export const postFeedbackPage = async (req, res) => {
     try {
         // The user does not need to be logged in to submit feedback.
         const formData = req.body;;
-
-        // Basic validation
-        if (!formData.name || !formData.email || !formData.visitDate) {
-            return res.status(400).json({ success: false, message: 'Missing required fields.' });
-        }
-        await submitFeedback(formData);
+        await submitFeedback(formData,req.user.id);
         return res.status(200).json({ success: true, message: "Feedback submitted successfully." });
     } catch (error) {
         console.error(error);
@@ -155,8 +150,8 @@ export const getBookingPage = async (req, res) => {
 export const postBookingPage = async (req, res) => {
     try {
         const bookingData = req.body;
-        const result = await createBooking(bookingData);
-        return res.status(201).json({ success: true, message: "Booking created successfully.", bookingId: result.bookingId });
+        const result = await createBooking(bookingData,req.user.email);
+        return res.status(201).json({ success: true, message: result.message, bookingId: result.bookingId });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ success: false, message: "Failed to create booking." });
@@ -167,7 +162,8 @@ export const getUserProfilePage = async (req, res) => {
     try {
         if (!req.user) return res.redirect('/');
         const user = await getVisitorByEmail(req.user.email);
-        return res.render("user-profile", { user });
+        const bookings = await getBookingsByEmail(req.user.email);
+        return res.render("user-profile", { user, bookings});
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");

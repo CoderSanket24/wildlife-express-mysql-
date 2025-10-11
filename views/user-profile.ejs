@@ -185,47 +185,34 @@
                     <div class="info-section">
                         <div class="section-title">My Safari Bookings</div>
                         
+                        <%bookings.map(booking => {%>
                         <div class="activity-card">
                             <div class="activity-header">
-                                <div class="activity-title">🎫 Core Zone A - Morning Safari</div>
-                                <span class="badge warning">Upcoming</span>
+                                <div class="activity-title">🎫 <%=booking.safari_zone%></div>
+                                <%if (new Date() > new Date(booking.safari_date)) {%>
+                                    <span class="badge success">Completed</span>
+                                <%}else{%>
+                                    <span class="badge warning">Upcoming</span>
+                                <%}%>
                             </div>
                             <div class="activity-description">
-                                <strong>Date:</strong> January 28, 2025<br>
-                                <strong>Time:</strong> 6:00 AM - 9:00 AM<br>
-                                <strong>Booking ID:</strong> WGS-2025-0234<br>
-                                <strong>Persons:</strong> 2<br>
-                                <strong>Amount:</strong> ₹5,900
+                                <strong>Date:</strong> <%=new Date(booking.safari_date).toLocaleDateString('en-US', { year: 'numeric' ,
+                                    month: 'long' , day: 'numeric' })%><br>
+                                <%if(booking.time_slot === 'morning-1'){%>
+                                    <strong>Time:</strong> 6:00 AM - 9:00 AM<br>
+                                <%}else if(booking.time_slot === 'morning-2'){%>
+                                    <strong>Time:</strong> 9:30 AM - 12:30 PM<br>
+                                <%}else if(booking.time_slot === 'afternoon'){%>
+                                    <strong>Time:</strong> 2:00 PM - 5:00 PM<br>
+                                <%}else if(booking.time_slot === 'evening'){%>
+                                    <strong>Time:</strong> 5:30 PM - 8:30 PM<br>
+                                <%}%>
+                                <strong>Booking ID:</strong> <%=booking.booking_id%><br>
+                                <strong>Persons:</strong> <%=booking.person_count%><br>
+                                <strong>Amount:</strong> ₹<%=booking.total_amount%>
                             </div>
                         </div>
-
-                        <div class="activity-card">
-                            <div class="activity-header">
-                                <div class="activity-title">🎫 Tourism Zone C - Photography Safari</div>
-                                <span class="badge success">Completed</span>
-                            </div>
-                            <div class="activity-description">
-                                <strong>Date:</strong> January 15, 2025<br>
-                                <strong>Time:</strong> 9:30 AM - 12:30 PM<br>
-                                <strong>Booking ID:</strong> WGS-2025-0156<br>
-                                <strong>Persons:</strong> 1<br>
-                                <strong>Amount:</strong> ₹3,500
-                            </div>
-                        </div>
-
-                        <div class="activity-card">
-                            <div class="activity-header">
-                                <div class="activity-title">🎫 Buffer Zone B - Elephant Safari</div>
-                                <span class="badge success">Completed</span>
-                            </div>
-                            <div class="activity-description">
-                                <strong>Date:</strong> December 10, 2024<br>
-                                <strong>Time:</strong> 2:00 PM - 5:00 PM<br>
-                                <strong>Booking ID:</strong> WGS-2024-0987<br>
-                                <strong>Persons:</strong> 4<br>
-                                <strong>Amount:</strong> ₹9,440
-                            </div>
-                        </div>
+                        <%});%>
                     </div>
                 </div>
 

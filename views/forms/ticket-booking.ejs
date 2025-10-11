@@ -25,19 +25,6 @@
             
             <form id="ticketForm">
                 <div class="form-row">
-                    <div class="form-group has-icon">
-                        <label class="form-label">Full Name</label>
-                        <input type="text" name="visitor_name" class="form-input" placeholder="Enter visitor's name" required>
-                        <span class="input-icon">👤</span>
-                    </div>
-                    <div class="form-group has-icon">
-                        <label class="form-label">Contact Number</label>
-                        <input type="tel" name="contact_number" class="form-input" placeholder="+91 98765 43210" required>
-                        <span class="input-icon">📱</span>
-                    </div>
-                </div>
-
-                <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Safari Date</label>
                         <input type="date" name="safari_date" class="form-input" required id="safariDate">
@@ -88,15 +75,15 @@
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" name="has_camera" id="camera" onchange="updatePricing()">
-                            <label for="camera">📸 Camera Equipment (+₹300)</label>
+                            <label for="camera">📸 Camera Equipment (+₹250)</label>
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" name="has_lunch" id="lunch" onchange="updatePricing()">
-                            <label for="lunch">🍽️ Packed Lunch (+₹200/person)</label>
+                            <label for="lunch">🍽️ Packed Lunch (+₹300/person)</label>
                         </div>
                         <div class="checkbox-item">
                             <input type="checkbox" name="has_transport" id="transport" onchange="updatePricing()">
-                            <label for="transport">🚗 Transportation (+₹800)</label>
+                            <label for="transport">🚗 Transportation (+₹1000)</label>
                         </div>
                     </div>
                 </div>
@@ -198,9 +185,9 @@
             let servicesCost = 0;
             
             if (document.getElementById('guide').checked) servicesCost += 500;
-            if (document.getElementById('camera').checked) servicesCost += 300;
-            if (document.getElementById('lunch').checked) servicesCost += 200 * personCount;
-            if (document.getElementById('transport').checked) servicesCost += 800;
+            if (document.getElementById('camera').checked) servicesCost += 250;
+            if (document.getElementById('lunch').checked) servicesCost += 300 * personCount;
+            if (document.getElementById('transport').checked) servicesCost += 1000;
             
             const subtotal = baseCost + servicesCost;
             const gst = Math.round(subtotal * 0.18);
@@ -281,7 +268,7 @@
                 if (result.success) {
                     bookingIdSpan.textContent = result.bookingId;
                     successDiv.style.display = 'block';
-                    showNotification('Ticket booked successfully!', 'success');
+                    showNotification(result.message || 'Booking successful!', 'success');
                     setTimeout(() => {
                         successDiv.style.display = 'none';
                         form.reset();

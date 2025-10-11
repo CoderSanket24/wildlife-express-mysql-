@@ -16,24 +16,11 @@
         </div>
 
         <div class="form-section">
-            <a href="login.html" class="back-btn">← Back to Login</a>
+            <a href="/" class="back-btn">← Back to Login</a>
             
             <h2 class="section-title">⭐ Visitor Feedback</h2>
             
             <form id="feedbackForm">
-                <div class="form-row">
-                    <div class="form-group has-icon">
-                        <label class="form-label">Your Name</label>
-                        <input type="text" class="form-input" placeholder="Enter your name" required>
-                        <span class="input-icon">👤</span>
-                    </div>
-                    <div class="form-group has-icon">
-                        <label class="form-label">Email Address</label>
-                        <input type="email" class="form-input" placeholder="your.email@example.com" required>
-                        <span class="input-icon">📧</span>
-                    </div>
-                </div>
-
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Visit Date</label>
@@ -250,8 +237,6 @@
                 e.preventDefault();
 
                 const formData = {
-                    name: form.querySelector('input[type="text"][placeholder="Enter your name"]').value,
-                    email: form.querySelector('input[type="email"]').value,
                     visitDate: form.querySelector('input[type="date"]').value,
                     ticketId: form.querySelector('input[type="text"][placeholder="WGS-2025-0123"]').value,
                     ratings: {

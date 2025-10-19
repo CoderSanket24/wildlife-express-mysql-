@@ -57,14 +57,33 @@ export const loadZones = async () => {
     return rows;
 }
 
-export const totalAreasCount = async () => {
-    const [rows] = await dbClient.execute('select sum(area) as total from zones');
-    return rows[0].total;
+export const addZone = async (zoneData) => {
+    const procedureCallQuery = `CALL sp_AddZone_V2(?, ?, ?, ?, ?, ?, ?, @statusMessage);`;
+
+    const values = [
+        zoneData.zone_id,
+        zoneData.zone_name,
+        zoneData.area,
+        zoneData.climate,
+        zoneData.camera_traps,
+        zoneData.access_level,
+        zoneData.primary_species,
+    ];
+
+    await dbClient.execute(procedureCallQuery, values);
+    const result = await dbClient.execute('SELECT @statusMessage AS message;');
+    return { success: true, message: result[0][0].message };
 }
 
-export const totalCameraTrapsCount = async () => {
-    const [rows] = await dbClient.execute('select sum(camera_traps) as total from zones');
-    return rows[0].total;
+export const zoneDetails = async () => {
+    const [rows] = await dbClient.execute(`
+        SELECT
+            SUM(area) AS total_area,
+            SUM(camera_traps) AS total_cameras
+        FROM zones;
+    `)
+    console.log(rows[0]);
+    return rows[0];
 }
 
 export const loadAnimals = async () => {

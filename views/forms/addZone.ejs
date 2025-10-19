@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WildGuard Sanctuary - Add Zone</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 25%, #0f4c3a 50%, #2d5016 75%, #1a4d2e 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-leaf {
+            position: absolute;
+            color: rgba(76, 175, 80, 0.3);
+            font-size: 24px;
+            animation: float 8s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            animation: slideDown 1s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header h1 {
+            color: #4CAF50;
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 10px rgba(76, 175, 80, 0.5);
+            }
+
+            to {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 20px rgba(76, 175, 80, 0.8);
+            }
+        }
+
+        .header p {
+            color: #81C784;
+            font-size: 1.2em;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(76, 175, 80, 0.2);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .section-title {
+            color: #4CAF50;
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, #4CAF50, #81C784);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-label {
+            display: block;
+            color: #4CAF50;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .required {
+            color: #f44336;
+            margin-left: 4px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #81C784;
+            font-size: 16px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .form-input::placeholder {
+            color: rgba(129, 199, 132, 0.7);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .zone-type-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .zone-type-card {
+            background: rgba(76, 175, 80, 0.1);
+            border: 2px solid rgba(76, 175, 80, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .zone-type-card input[type="radio"] {
+            display: none;
+        }
+
+        .zone-type-card:hover {
+            background: rgba(76, 175, 80, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .zone-type-card input[type="radio"]:checked+label {
+            color: #4CAF50;
+        }
+
+        .zone-type-card input[type="radio"]:checked~.zone-icon {
+            transform: scale(1.2);
+        }
+
+        input[type="radio"]:checked+label+.zone-type-card {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4CAF50;
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .zone-icon {
+            font-size: 3em;
+            display: block;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .zone-type-label {
+            color: #81C784;
+            font-weight: bold;
+            font-size: 1.1em;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .zone-type-desc {
+            color: #C8E6C9;
+            font-size: 0.85em;
+        }
+
+        .access-level-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .access-badge {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .access-radio {
+            display: none;
+        }
+
+        .access-label {
+            display: block;
+            padding: 12px 20px;
+            background: rgba(76, 175, 80, 0.1);
+            border: 2px solid rgba(76, 175, 80, 0.2);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: bold;
+            color: #81C784;
+        }
+
+        .access-radio:checked+.access-label {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4CAF50;
+            color: #4CAF50;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .access-label:hover {
+            background: rgba(76, 175, 80, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .access-quick-btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 12px 20px;
+            background: rgba(76, 175, 80, 0.1);
+            border: 2px solid rgba(76, 175, 80, 0.2);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: bold;
+            color: #81C784;
+        }
+
+        .access-quick-btn:hover {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4CAF50;
+            transform: translateY(-2px);
+        }
+
+        .char-counter {
+            text-align: right;
+            color: #81C784;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .facilities-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .facility-item {
+            display: flex;
+            align-items: center;
+            background: rgba(76, 175, 80, 0.1);
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 2px solid rgba(76, 175, 80, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .facility-item:hover {
+            background: rgba(76, 175, 80, 0.2);
+            transform: scale(1.02);
+        }
+
+        .facility-item input {
+            margin-right: 10px;
+            transform: scale(1.3);
+        }
+
+        .facility-item label {
+            color: #81C784;
+            cursor: pointer;
+            font-weight: bold;
+            flex: 1;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .submit-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        .submit-btn:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.4);
+        }
+
+        .info-card {
+            background: rgba(33, 150, 243, 0.1);
+            border: 2px solid rgba(33, 150, 243, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #81C784;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+            animation: successPulse 0.6s ease-out;
+        }
+
+        @keyframes successPulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(76, 175, 80, 0.3);
+            border-top: 4px solid #4CAF50;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4CAF50;
+            font-size: 1.2em;
+        }
+
+        .form-group.has-icon .form-input {
+            padding-right: 50px;
+        }
+
+        .back-btn {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: rgba(76, 175, 80, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .icon {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+
+        .coordinates-helper {
+            background: rgba(76, 175, 80, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            border: 1px solid rgba(76, 175, 80, 0.2);
+        }
+
+        .coordinates-helper p {
+            color: #81C784;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .coordinates-example {
+            color: #4CAF50;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-section {
+                padding: 25px;
+            }
+
+            .zone-type-options {
+                grid-template-columns: 1fr;
+            }
+
+            .facilities-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🌿 WildGuard Sanctuary</h1>
+            <p>Zone Management System</p>
+        </div>
+
+        <div class="form-section">
+            <a href="/zones" class="back-btn">← Back to Dashboard</a>
+
+            <h2 class="section-title">🌲 Add New Zone</h2>
+
+            <form id="addZoneForm">
+                <!-- Basic Information -->
+                <div class="form-row">
+                    <div class="form-group has-icon">
+                        <label class="form-label">Zone ID (2 characters)<span class="required">*</span></label>
+                        <input type="text" class="form-input" id="zoneId" placeholder="e.g., CA, BB, TC" maxlength="2"
+                            required>
+                        <span class="input-icon">🔖</span>
+                    </div>
+                    <div class="form-group has-icon">
+                        <label class="form-label">Zone Name<span class="required">*</span></label>
+                        <input type="text" class="form-input" id="zoneName"
+                            placeholder="e.g., Core Zone A, Buffer Zone B" required>
+                        <span class="input-icon">🏷️</span>
+                    </div>
+                </div>
+
+                <!-- Area and Climate -->
+                <div class="form-row">
+                    <div class="form-group has-icon">
+                        <label class="form-label">Area Size (sq km)<span class="required">*</span></label>
+                        <input type="number" class="form-input" id="area" placeholder="e.g., 450.5" step="0.01" min="0"
+                            required>
+                        <span class="input-icon">📏</span>
+                    </div>
+                    <div class="form-group has-icon">
+                        <label class="form-label">Climate<span class="required">*</span></label>
+                        <input type="text" class="form-input" id="climate" placeholder="e.g., Tropical Monsoon"
+                            maxlength="30" required>
+                        <span class="input-icon">🌤️</span>
+                    </div>
+                </div>
+
+                <!-- Camera Traps and Access Level -->
+                <div class="form-row">
+                    <div class="form-group has-icon">
+                        <label class="form-label">Number of Camera Traps<span class="required">*</span></label>
+                        <input type="number" class="form-input" id="cameraTraps" placeholder="e.g., 25" min="0"
+                            required>
+                        <span class="input-icon">📷</span>
+                    </div>
+                    <div class="form-group has-icon">
+                        <label class="form-label">Access Level<span class="required">*</span></label>
+                        <input type="text" class="form-input" id="accessLevel"
+                            placeholder="e.g., Restricted, Limited, Public" maxlength="30" required>
+                        <span class="input-icon">🚪</span>
+                    </div>
+                </div>
+
+                <!-- Access Level Quick Select -->
+                <div class="form-group">
+                    <label class="form-label">Quick Select Access Level</label>
+                    <div class="access-level-options">
+                        <button type="button" class="access-quick-btn" onclick="setAccessLevel('Restricted')">🚫
+                            Restricted</button>
+                        <button type="button" class="access-quick-btn" onclick="setAccessLevel('Limited Tourism')">⚠️
+                            Limited Tourism</button>
+                        <button type="button" class="access-quick-btn" onclick="setAccessLevel('Public Safari')">🎫
+                            Public Safari</button>
+                        <button type="button" class="access-quick-btn" onclick="setAccessLevel('Research Only')">🔬
+                            Research Only</button>
+                    </div>
+                </div>
+
+                <!-- Primary Species -->
+                <div class="form-group">
+                    <label class="form-label">Primary Species<span class="required">*</span></label>
+                    <textarea class="form-textarea" id="primarySpecies"
+                        placeholder="List the main wildlife species found in this zone (max 200 characters)... e.g., Tigers, Leopards, Elephants"
+                        maxlength="200" required></textarea>
+                    <div class="char-counter" id="charCounter">0 / 200 characters</div>
+                </div>
+
+                <!-- Zone Type Helper (for reference only) -->
+                <div class="form-group">
+                    <label class="form-label">Zone Type Reference (Optional)</label>
+                    <div class="zone-type-options">
+                        <label class="zone-type-card">
+                            <input type="radio" name="zoneTypeRef" value="Core Zone">
+                            <span class="zone-icon">🏔️</span>
+                            <span class="zone-type-label">Core Zone</span>
+                            <span class="zone-type-desc">High conservation priority area</span>
+                        </label>
+
+                        <label class="zone-type-card">
+                            <input type="radio" name="zoneTypeRef" value="Buffer Zone">
+                            <span class="zone-icon">🌳</span>
+                            <span class="zone-type-label">Buffer Zone</span>
+                            <span class="zone-type-desc">Habitat protection area</span>
+                        </label>
+
+                        <label class="zone-type-card">
+                            <input type="radio" name="zoneTypeRef" value="Tourism Zone">
+                            <span class="zone-icon">🎫</span>
+                            <span class="zone-type-label">Tourism Zone</span>
+                            <span class="zone-type-desc">Public safari activities</span>
+                        </label>
+
+                        <label class="zone-type-card">
+                            <input type="radio" name="zoneTypeRef" value="Research Zone">
+                            <span class="zone-icon">🔬</span>
+                            <span class="zone-type-label">Research Zone</span>
+                            <span class="zone-type-desc">Scientific monitoring</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <strong>📋 Zone Management Guidelines:</strong><br>
+                    • Ensure accurate GPS coordinates for zone mapping<br>
+                    • Core zones typically have restricted access<br>
+                    • Tourism zones should have adequate facilities<br>
+                    • Regular patrol schedules maintain zone security<br>
+                    • Camera traps help monitor wildlife activity
+                </div>
+
+                <div class="loading-spinner" id="loadingSpinner"></div>
+                <div class="success-message" id="successMessage">
+                    ✅ Zone added successfully! Zone Code: <span id="generatedZoneCode"></span>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span class="icon">🌲</span>Add Zone to System
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Create floating leaves animation
+        function createFloatingLeaf() {
+            const leaf = document.createElement('div');
+            leaf.className = 'floating-leaf';
+            leaf.innerHTML = Math.random() > 0.5 ? '🍃' : '🌿';
+            leaf.style.left = Math.random() * 100 + '%';
+            leaf.style.animationDelay = Math.random() * 5 + 's';
+            leaf.style.animationDuration = (Math.random() * 4 + 6) + 's';
+
+            document.querySelector('.bg-animation').appendChild(leaf);
+
+            setTimeout(() => {
+                if (leaf.parentNode) {
+                    leaf.parentNode.removeChild(leaf);
+                }
+            }, 10000);
+        }
+
+        setInterval(createFloatingLeaf, 2000);
+        for (let i = 0; i < 5; i++) {
+            setTimeout(createFloatingLeaf, i * 500);
+        }
+
+        // Add interactive zone type selection
+        document.querySelectorAll('.zone-type-card').forEach(card => {
+            card.addEventListener('click', function () {
+                document.querySelectorAll('.zone-type-card').forEach(c => {
+                    c.style.background = 'rgba(76, 175, 80, 0.1)';
+                    c.style.borderColor = 'rgba(76, 175, 80, 0.2)';
+                    c.style.boxShadow = 'none';
+                });
+
+                this.style.background = 'rgba(76, 175, 80, 0.3)';
+                this.style.borderColor = '#4CAF50';
+                this.style.boxShadow = '0 5px 15px rgba(76, 175, 80, 0.3)';
+            });
+        });
+
+        // Set access level function
+        function setAccessLevel(level) {
+            document.getElementById('accessLevel').value = level;
+            showNotification('Access level set to: ' + level);
+        }
+
+        // Character counter for primary species
+        document.getElementById('primarySpecies').addEventListener('input', function () {
+            const counter = document.getElementById('charCounter');
+            const length = this.value.length;
+            counter.textContent = `${length} / 200 characters`;
+
+            if (length > 180) {
+                counter.style.color = '#f44336';
+            } else {
+                counter.style.color = '#81C784';
+            }
+        });
+
+        // Validate Zone ID format (2 characters)
+        document.getElementById('zoneId').addEventListener('input', function () {
+            this.value = this.value.toUpperCase().slice(0, 2);
+        });
+
+        // Notification system
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 20px; right: 20px; 
+                background: ${type === 'success' ? 'rgba(76, 175, 80, 0.9)' : 'rgba(244, 67, 54, 0.9)'}; 
+                color: white; padding: 15px 20px; border-radius: 10px; 
+                z-index: 1001; font-weight: bold;
+                transform: translateX(300px); transition: transform 0.3s ease;
+                max-width: 250px; backdrop-filter: blur(10px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(300px)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        // Form submission
+        document.getElementById('addZoneForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const loading = document.getElementById('loadingSpinner');
+            const success = document.getElementById('successMessage');
+
+            // Validate Zone ID (exactly 2 characters)
+            const zoneId = document.getElementById('zoneId').value;
+
+            // Get form data matching database schema
+            const formData = {
+                zone_id: zoneId,
+                zone_name: document.getElementById('zoneName').value,
+                area: parseFloat(document.getElementById('area').value),
+                climate: document.getElementById('climate').value,
+                camera_traps: parseInt(document.getElementById('cameraTraps').value),
+                access_level: document.getElementById('accessLevel').value,
+                primary_species: document.getElementById('primarySpecies').value
+            };
+
+            // Validate data
+            if (formData.climate.length > 30) {
+                showNotification('Climate must be 30 characters or less', 'error');
+                return;
+            }
+
+            if (formData.access_level.length > 30) {
+                showNotification('Access level must be 30 characters or less', 'error');
+                return;
+            }
+
+            if (formData.primary_species.length > 200) {
+                showNotification('Primary species must be 200 characters or less', 'error');
+                return;
+            }
+
+            loading.style.display = 'block';
+
+            try {
+                const response = await fetch('/addZone', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                });
+
+                const result = await response.json();
+
+                loading.style.display = 'none';
+
+                if (result.success) {
+                    success.style.display = 'block';
+
+                    document.getElementById('generatedZoneCode').textContent = formData.zone_id;
+
+                    showNotification('Zone added successfully!');
+
+                    // Log data (in real app, this would be sent to backend)
+                    console.log('Zone Data for Database:', formData);
+                    console.log('SQL INSERT would be:');
+                    console.log(`INSERT INTO zones (zone_id, zone_name, area, climate, camera_traps, access_level, primary_species) VALUES ('${formData.zone_id}', '${formData.zone_name}', ${formData.area}, '${formData.climate}', ${formData.camera_traps}, '${formData.access_level}', '${formData.primary_species}');`);
+
+                    setTimeout(() => {
+                        success.style.display = 'none';
+                        this.reset();
+                        document.getElementById('charCounter').textContent = '0 / 200 characters';
+                    }, 5000);
+                } else {
+                    showNotification(result.message || 'Booking failed!', 'error');
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                showNotification('An error occurred. Please try again.', 'error');
+                console.error('Form submission error:', error);
+            }
+        });
+    </script>
+
+</html>

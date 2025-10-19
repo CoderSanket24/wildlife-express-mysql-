@@ -1,12 +1,14 @@
-import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking, totalAnimalsCount, totalSpeciesCount, totalAreasCount, totalCameraTrapsCount, avgRating, recommendRating, medical_checkups, medical_treatments, feeding_logs, getBookingsByEmail } from "../services/wildlife.service.js";
+import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking, totalAnimalsCount, totalSpeciesCount, avgRating, recommendRating, medical_checkups, medical_treatments, feeding_logs, getBookingsByEmail, addZone, zoneDetails } from "../services/wildlife.service.js";
 import { getVisitorByEmail } from "../services/auth.service.js";
 
 export const getHomePage = async (req, res) => {
     try {
         const totalAnimals = await totalAnimalsCount();
         const speciesCount = await totalSpeciesCount();
-        const totalAreas = await totalAreasCount();
-        const totalCameraTraps = await totalCameraTrapsCount();
+        const ZoneDetails = await zoneDetails();
+        const totalAreas = ZoneDetails.total_area;
+        const totalCameraTraps = ZoneDetails.total_cameras;
+        
         return res.render("index", { totalAnimals, speciesCount, totalAreas, totalCameraTraps });
     } catch (error) {
         console.error(error);
@@ -106,12 +108,34 @@ export const getZonesPage = async (req, res) => {
         if (!req.user) return res.redirect('/');
         const zones = await loadZones();
         const activeZones = zones.length;
-        const totalArea = zones.reduce((acc, zone) => acc + zone.area, 0);
-        const totalCameraTraps = zones.reduce((acc, zone) => acc + zone.camera_traps, 0);
+        const ZoneDetails = await zoneDetails();
+        const totalArea = ZoneDetails.total_area;
+        const totalCameraTraps = ZoneDetails.total_cameras;
         return res.render("zones", { zones, activeZones, totalArea, totalCameraTraps });
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");
+    }
+}
+
+export const getAddZonesPage = async (req, res) => {
+    try {
+        if (!req.user) return res.redirect('/');
+        return res.render("forms/addZone");
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("internal server error.");
+    }
+}
+
+export const postAddZonesPage = async (req, res) => {
+    try {
+        const zoneData = req.body;
+        const result = await addZone(zoneData);
+        return res.status(201).json({ success: true, message: result.message });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: "Failed to Add Zone." });
     }
 }
 

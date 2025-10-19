@@ -12,7 +12,23 @@ export const loadTicketsInfo = async () => {
 }
 
 export const loadFeedbacks = async () => {
-    const [rows] = await dbClient.execute('SELECT * FROM feedbacks ORDER BY submitted_at DESC');
+    const [rows] = await dbClient.execute(`
+        SELECT
+            v.name,
+            f.visit_date,
+            f.booking_id,
+            f.rating_overall,
+            f.rating_guide,
+            f.rating_facility,
+            f.sightings,
+            f.comments,
+            f.recommend,
+            f.submitted_at
+        FROM feedbacks f
+        INNER JOIN visitors v ON f.visitor_id = v.id
+        ORDER BY submitted_at DESC;
+    `);
+    
     return rows;
 }
 

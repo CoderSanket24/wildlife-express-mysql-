@@ -12,7 +12,7 @@ FROM visitors v
 JOIN tickets t ON v.id = t.visitor_id
 WHERE v.email = '${email}';
 
-# trigger
+# trigger for ticket
 DELIMITER $$
 
 CREATE TRIGGER before_ticket_insert_calculate_cost
@@ -107,3 +107,43 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+# trigger for feedbacks
+DELIMITER //
+
+CREATE TRIGGER trg_Feedback_BeforeInsert
+BEFORE INSERT ON feedbacks
+FOR EACH ROW
+BEGIN
+    -- Check rating range
+    IF NEW.rating_overall < 1 OR NEW.rating_overall > 5 THEN
+        SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Overall rating must be between 1 and 5.';
+    END IF;
+
+    -- Enforce comments for bad reviews
+    IF NEW.rating_overall <= 2 AND (NEW.comments IS NULL OR NEW.comments = '') THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Comments are required for ratings of 1 or 2.';
+    END IF;
+END //
+
+DELIMITTER ;
+
+
+# inner join on feedback and visitor
+SELECT
+    v.name,
+    f.visit_date,
+    f.booking_id,
+    f.rating_overall,
+    f.rating_guide,
+    f.rating_facility,
+    f.sightings,
+    f.comments,
+    f.recommend,
+    f.submitted_at
+FROM feedbacks f
+INNER JOIN visitors v ON f.visitor_id = v.id
+ORDER BY submitted_at DESC;

@@ -33,11 +33,15 @@
 
                 <div class="profile-stats">
                     <div class="stat-item">
-                        <div class="stat-number">12</div>
+                        <div class="stat-number">
+                            <%=bookings.length%>
+                        </div>
                         <div class="stat-label">Safaris</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-number">8</div>
+                        <div class="stat-number">
+                            <%=feedbacks.length%>
+                        </div>
                         <div class="stat-label">Feedbacks</div>
                     </div>
                 </div>
@@ -73,7 +77,7 @@
             <div class="profile-content">
                 <div class="content-tabs">
                     <button class="tab-btn active" onclick="switchTab('personal')">Personal Info</button>
-                    <button class="tab-btn" onclick="switchTab('activity')">Activity History</button>
+                    <button class="tab-btn" onclick="switchTab('feedbacks')">My Feedbacks</button>
                     <button class="tab-btn" onclick="switchTab('bookings')">My Bookings</button>
                 </div>
 
@@ -151,52 +155,66 @@
 
                 </div>
 
-                <!-- Activity History Tab -->
-                <div id="activity" class="tab-content">
+                <!-- My Feedbacks Tab -->
+                <div id="feedbacks" class="tab-content">
                     <div class="info-section">
-                        <div class="section-title">Recent Activity</div>
+                        <div class="section-title">My Feedbacks</div>
 
-                        <div class="activity-card">
-                            <div class="activity-header">
-                                <div class="activity-title">🎫 Safari Booking Confirmed</div>
-                                <div class="activity-date">2 days ago</div>
-                            </div>
-                            <div class="activity-description">
-                                Booked morning safari at Core Zone A for January 28, 2025. Booking ID: WGS-2025-0234
-                            </div>
-                        </div>
-
-                        <div class="activity-card">
-                            <div class="activity-header">
-                                <div class="activity-title">⭐ Feedback Submitted</div>
-                                <div class="activity-date">5 days ago</div>
-                            </div>
-                            <div class="activity-description">
-                                Submitted 5-star feedback for Tourism Zone C safari experience. Spotted Bengal Tiger and
-                                Asian Elephants.
-                            </div>
-                        </div>
-
-                        <div class="activity-card">
-                            <div class="activity-header">
-                                <div class="activity-title">📸 Photo Upload</div>
-                                <div class="activity-date">1 week ago</div>
-                            </div>
-                            <div class="activity-description">
-                                Uploaded 8 wildlife photographs from recent safari visit. Photos shared with
-                                conservation team.
-                            </div>
-                        </div>
-
-                        <div class="activity-card">
-                            <div class="activity-header">
-                                <div class="activity-title">👤 Profile Updated</div>
-                                <div class="activity-date">2 weeks ago</div>
-                            </div>
-                            <div class="activity-description">
-                                Updated contact information and added new interests: Bird Watching, Wildlife
-                                Photography.
-                            </div>
+                        <div class="bookings-container">
+                            <%if (feedbacks.length> 0) {%>
+                                <%feedbacks.forEach(feedback=> {%>
+                                    <div class="activity-card">
+                                        <div class="activity-header">
+                                            <div class="activity-title">⭐ Feedback for Booking #<%=feedback.booking_id%>
+                                            </div>
+                                            <div class="activity-date">
+                                                <%=new Date(feedback.submitted_at).toLocaleDateString('en-US', {
+                                                    year: 'numeric' , month: 'short' , day: 'numeric' })%>
+                                            </div>
+                                        </div>
+                                        <div class="activity-description">
+                                            <strong>Visit Date:</strong>
+                                            <%=new Date(feedback.visit_date).toLocaleDateString('en-US', {
+                                                year: 'numeric' , month: 'long' , day: 'numeric' })%><br>
+                                                <strong>Overall Rating:</strong>
+                                                <span class="rating-stars">
+                                                    <%for(let i=1; i <=5; i++) {%>
+                                                        <%if(i <=feedback.rating_overall) {%>
+                                                            ⭐
+                                                            <%} else {%>
+                                                                ☆
+                                                                <%}%>
+                                                                    <%}%>
+                                                </span>
+                                                (<%=feedback.rating_overall%>/5)<br>
+                                                    <strong>Guide Rating:</strong>
+                                                    <%=feedback.rating_guide%>/5<br>
+                                                        <strong>Facility Rating:</strong>
+                                                        <%=feedback.rating_facility%>/5<br>
+                                                            <%if(feedback.comments) {%>
+                                                                <strong>Comments:</strong>
+                                                                <%=feedback.comments%><br>
+                                                                    <%}%>
+                                                                        <strong>Would Recommend:</strong>
+                                                                        <%if(feedback.recommend==='yes' ) {%>
+                                                                            <span class="badge success">Yes</span>
+                                                                            <%} else {%>
+                                                                                <span class="badge warning">No</span>
+                                                                                <%}%>
+                                        </div>
+                                    </div>
+                                    <%});%>
+                                        <%} else {%>
+                                            <div class="activity-card">
+                                                <div class="activity-header">
+                                                    <div class="activity-title">📝 No Feedbacks Yet</div>
+                                                </div>
+                                                <div class="activity-description">
+                                                    You haven't submitted any feedback yet. After your safari visits,
+                                                    don't forget to share your experience!
+                                                </div>
+                                            </div>
+                                            <%}%>
                         </div>
                     </div>
                 </div>
@@ -206,38 +224,41 @@
                     <div class="info-section">
                         <div class="section-title">My Safari Bookings</div>
 
-                        <%bookings.map(booking=> {%>
-                            <div class="activity-card">
-                                <div class="activity-header">
-                                    <div class="activity-title">🎫 <%=booking.safari_zone%>
+                        <div class="bookings-container">
+                            <%bookings.map(booking=> {%>
+                                <div class="activity-card">
+                                    <div class="activity-header">
+                                        <div class="activity-title">🎫 <%=booking.safari_zone%>
+                                        </div>
+                                        <%if (new Date()> new Date(booking.safari_date)) {%>
+                                            <span class="badge success">Completed</span>
+                                            <%}else{%>
+                                                <span class="badge warning">Upcoming</span>
+                                                <%}%>
                                     </div>
-                                    <%if (new Date()> new Date(booking.safari_date)) {%>
-                                        <span class="badge success">Completed</span>
-                                        <%}else{%>
-                                            <span class="badge warning">Upcoming</span>
-                                            <%}%>
+                                    <div class="activity-description">
+                                        <strong>Date:</strong>
+                                        <%=new Date(booking.safari_date).toLocaleDateString('en-US', { year: 'numeric' ,
+                                            month: 'long' , day: 'numeric' })%><br>
+                                            <%if(booking.time_slot==='morning-1' ){%>
+                                                <strong>Time:</strong> 6:00 AM - 9:00 AM<br>
+                                                <%}else if(booking.time_slot==='morning-2' ){%>
+                                                    <strong>Time:</strong> 9:30 AM - 12:30 PM<br>
+                                                    <%}else if(booking.time_slot==='afternoon' ){%>
+                                                        <strong>Time:</strong> 2:00 PM - 5:00 PM<br>
+                                                        <%}else if(booking.time_slot==='evening' ){%>
+                                                            <strong>Time:</strong> 5:30 PM - 8:30 PM<br>
+                                                            <%}%>
+                                                                <strong>Booking ID:</strong>
+                                                                <%=booking.booking_id%><br>
+                                                                    <strong>Persons:</strong>
+                                                                    <%=booking.person_count%><br>
+                                                                        <strong>Amount:</strong> ₹
+                                                                        <%=booking.total_amount%>
+                                    </div>
                                 </div>
-                                <div class="activity-description">
-                                    <strong>Date:</strong>
-                                    <%=new Date(booking.safari_date).toLocaleDateString('en-US', { year: 'numeric' ,
-                                        month: 'long' , day: 'numeric' })%><br>
-                                        <%if(booking.time_slot==='morning-1' ){%>
-                                            <strong>Time:</strong> 6:00 AM - 9:00 AM<br>
-                                            <%}else if(booking.time_slot==='morning-2' ){%>
-                                                <strong>Time:</strong> 9:30 AM - 12:30 PM<br>
-                                                <%}else if(booking.time_slot==='afternoon' ){%>
-                                                    <strong>Time:</strong> 2:00 PM - 5:00 PM<br>
-                                                    <%}else if(booking.time_slot==='evening' ){%>
-                                                        <strong>Time:</strong> 5:30 PM - 8:30 PM<br>
-                                                        <%}%>
-                                                            <strong>Booking ID:</strong>
-                                                            <%=booking.booking_id%><br>
-                                                                <strong>Persons:</strong>
-                                                                <%=booking.person_count%><br>
-                                                                    <strong>Amount:</strong> ₹<%=booking.total_amount%>
-                                </div>
-                            </div>
-                            <%});%>
+                                <%});%>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -168,6 +168,27 @@ export const getBookingsByEmail = async (email) => {
     return rows[0];
 }
 
+export const getFeedbacksByEmail = async (email) => {
+    const query = `
+        SELECT
+            f.visit_date,
+            f.booking_id,
+            f.rating_overall,
+            f.rating_guide,
+            f.rating_facility,
+            f.sightings,
+            f.comments,
+            f.recommend,
+            f.submitted_at
+        FROM feedbacks f
+        INNER JOIN visitors v ON f.visitor_id = v.id
+        WHERE v.email = ?
+        ORDER BY f.submitted_at DESC;
+    `;
+    const [rows] = await dbClient.execute(query, [email]);
+    return rows;
+}
+
 export const medical_checkups = async () => {
     const [rows] = await dbClient.execute('select * from medical_checkups');
     return rows;

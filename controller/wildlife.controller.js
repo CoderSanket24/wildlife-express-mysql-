@@ -1,4 +1,4 @@
-import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking, totalAnimalsCount, totalSpeciesCount, avgRating, recommendRating, medical_checkups, medical_treatments, feeding_logs, getBookingsByEmail, addZone, zoneDetails } from "../services/wildlife.service.js";
+import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking, totalAnimalsCount, totalSpeciesCount, avgRating, recommendRating, medical_checkups, medical_treatments, feeding_logs, getBookingsByEmail, getFeedbacksByEmail, addZone, zoneDetails } from "../services/wildlife.service.js";
 import { getVisitorByEmail } from "../services/auth.service.js";
 
 export const getHomePage = async (req, res) => {
@@ -188,7 +188,9 @@ export const getUserProfilePage = async (req, res) => {
         if (!req.user) return res.redirect('/');
         const user = await getVisitorByEmail(req.user.email);
         const bookings = await getBookingsByEmail(req.user.email);
-        return res.render("user-profile", { user, bookings});
+        const feedbacks = await getFeedbacksByEmail(req.user.email);
+        
+        return res.render("user-profile", { user, bookings, feedbacks});
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");

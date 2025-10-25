@@ -4,13 +4,46 @@
     box-sizing: border-box;
 }
 
+/* Hide scrollbars globally */
+*::-webkit-scrollbar {
+    display: none;
+}
+
+* {
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* Internet Explorer 10+ */
+}
+
+html {
+    height: 100%;
+    overflow-x: hidden;
+    /* Prevent overscroll bounce */
+    overscroll-behavior: none;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #1e3c72 0%, #2a5298 25%, #0f4c3a 50%, #2d5016 75%, #1a4d2e 100%);
+    background-attachment: fixed;
     min-height: 100vh;
+    height: 100%;
     overflow-x: hidden;
     position: relative;
     padding: 20px;
+    /* Prevent overscroll bounce */
+    overscroll-behavior: none;
+    /* Hide scrollbars */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* Internet Explorer 10+ */
+}
+
+body::-webkit-scrollbar {
+    display: none;
+    /* WebKit */
 }
 
 .bg-animation {
@@ -435,6 +468,38 @@ body {
 .edit-btn:hover {
     background: rgba(76, 175, 80, 0.3);
     transform: scale(1.05);
+}
+
+.bookings-container {
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 10px;
+    margin-right: -10px;
+}
+
+.bookings-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.bookings-container::-webkit-scrollbar-track {
+    background: rgba(76, 175, 80, 0.1);
+    border-radius: 10px;
+}
+
+.bookings-container::-webkit-scrollbar-thumb {
+    background: rgba(76, 175, 80, 0.3);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.bookings-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(76, 175, 80, 0.5);
+}
+
+/* Firefox scrollbar styling */
+.bookings-container {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(76, 175, 80, 0.3) rgba(76, 175, 80, 0.1);
 }
 
 @media (max-width: 968px) {

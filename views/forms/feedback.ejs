@@ -284,7 +284,7 @@
                 .catch(error => {
                     loading.style.display = 'none';
                     console.error('Submission Error:', error);
-                    showNotification('Error: Could not submit feedback.', 'error');
+                    showNotification(`Error: ${error.message}`, 'error');
                 });
             });
         }

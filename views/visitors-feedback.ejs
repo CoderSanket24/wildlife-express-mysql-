@@ -60,7 +60,11 @@
                                 <%= feedback.name %>
                             </div>
                             <div class="visit-date">
-                                <%=new Date(feedback.visit_date).toLocaleDateString('en-US', { year: 'numeric' ,
+                                Feedback: <%=new Date(feedback.submitted_at).toLocaleDateString('en-US', { year: 'numeric' ,
+                                    month: 'long' , day: 'numeric' })%>
+                            </div>
+                            <div class="visit-date">
+                                Visit: <%=new Date(feedback.visit_date).toLocaleDateString('en-US', { year: 'numeric' ,
                                     month: 'long' , day: 'numeric' })%>
                             </div>
                         </div>

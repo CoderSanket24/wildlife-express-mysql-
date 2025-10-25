@@ -64,8 +64,7 @@ export const submitFeedback = async (formData, visitorId) => {
         formData.recommend
     ];
 
-    const [result] = await dbClient.execute(query, values);
-    return result;
+    await dbClient.execute(query, values);
 }
 
 export const loadZones = async () => {

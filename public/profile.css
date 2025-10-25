@@ -167,30 +167,6 @@ body {
     overflow: hidden;
 }
 
-.avatar-upload {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    background: rgba(76, 175, 80, 0.9);
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.avatar-upload:hover {
-    background: #4CAF50;
-    transform: scale(1.1);
-}
-
-.avatar-upload input {
-    display: none;
-}
-
 .profile-name {
     color: #4CAF50;
     font-size: 1.8em;
@@ -257,6 +233,27 @@ body {
     background: rgba(76, 175, 80, 0.2);
     color: #4CAF50;
     border: 2px solid rgba(76, 175, 80, 0.3);
+}
+
+.profile-interests {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 2px solid rgba(76, 175, 80, 0.2);
+}
+
+.interests-title {
+    color: #4CAF50;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.interests-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
 }
 
 /* Main Content */
@@ -379,27 +376,48 @@ body {
 
 .badge {
     display: inline-block;
-    padding: 4px 12px;
-    border-radius: 15px;
-    font-size: 0.85em;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8em;
     font-weight: bold;
-    margin-right: 8px;
-    margin-top: 8px;
+    margin: 4px;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .badge.success {
-    background: rgba(76, 175, 80, 0.3);
+    background: rgba(76, 175, 80, 0.2);
     color: #4CAF50;
+    border-color: rgba(76, 175, 80, 0.4);
+}
+
+.badge.success:hover {
+    background: rgba(76, 175, 80, 0.3);
 }
 
 .badge.warning {
-    background: rgba(255, 193, 7, 0.3);
+    background: rgba(255, 193, 7, 0.2);
     color: #FFC107;
+    border-color: rgba(255, 193, 7, 0.4);
+}
+
+.badge.warning:hover {
+    background: rgba(255, 193, 7, 0.3);
 }
 
 .badge.info {
-    background: rgba(33, 150, 243, 0.3);
+    background: rgba(33, 150, 243, 0.2);
     color: #2196F3;
+    border-color: rgba(33, 150, 243, 0.4);
+}
+
+.badge.info:hover {
+    background: rgba(33, 150, 243, 0.3);
 }
 
 .edit-btn {

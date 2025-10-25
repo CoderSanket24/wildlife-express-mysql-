@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WildGuard Sanctuary - User Profile</title>
     <link rel="stylesheet" href="/profile.css">
 </head>
+
 <body>
     <div class="bg-animation"></div>
 
@@ -22,15 +24,11 @@
             <div class="profile-card">
                 <div class="profile-avatar">
                     👤
-                    <div class="avatar-upload">
-                        <label for="avatarUpload" style="cursor: pointer; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-                            📷
-                        </label>
-                        <input type="file" id="avatarUpload" accept="image/*" onchange="updateAvatar(event)">
-                    </div>
                 </div>
 
-                <div class="profile-name"><%=user.name%></div>
+                <div class="profile-name">
+                    <%=user.name%>
+                </div>
                 <div class="profile-role">Wildlife Enthusiast</div>
 
                 <div class="profile-stats">
@@ -42,21 +40,32 @@
                         <div class="stat-number">8</div>
                         <div class="stat-label">Feedbacks</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-number">156</div>
-                        <div class="stat-label">Days Active</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">24</div>
-                        <div class="stat-label">Photos</div>
-                    </div>
                 </div>
 
                 <div class="profile-actions">
-                    <button class="action-btn">Edit Profile</button>
                     <button class="action-btn" onclick="window.location.href='/booking'">+ Generate Ticket</button>
                     <button class="action-btn secondary">Change Password</button>
-                    <button class="action-btn secondary">Download Data</button>
+                </div>
+
+                <div class="profile-interests">
+                    <div class="interests-title">Interests & Preferences</div>
+                    <div class="interests-tags">
+                        <%if (user.interests && user.interests.trim() !=='' ) {%>
+                            <%user.interests.split(',').forEach((interest, index)=> {%>
+                                <%const trimmedInterest=interest.trim();%>
+                                    <%if (trimmedInterest) {%>
+                                        <% // Define badge types for different interests const
+                                            badgeTypes=['success', 'info' , 'warning' ]; const
+                                            badgeType=badgeTypes[index % badgeTypes.length]; %>
+                                            <span class="badge <%=badgeType%>">
+                                                <%=trimmedInterest%>
+                                            </span>
+                                            <%}%>
+                                                <%});%>
+                                                    <%} else {%>
+                                                        <span class="badge info">No interests specified</span>
+                                                        <%}%>
+                    </div>
                 </div>
             </div>
 
@@ -66,7 +75,6 @@
                     <button class="tab-btn active" onclick="switchTab('personal')">Personal Info</button>
                     <button class="tab-btn" onclick="switchTab('activity')">Activity History</button>
                     <button class="tab-btn" onclick="switchTab('bookings')">My Bookings</button>
-                    <button class="tab-btn" onclick="switchTab('settings')">Settings</button>
                 </div>
 
                 <!-- Personal Info Tab -->
@@ -74,32 +82,44 @@
                     <div class="info-section">
                         <div class="section-title">
                             Personal Information
-                            <button class="edit-btn" style="float: right;">✏️ Edit</button>
                         </div>
                         <div class="info-grid">
                             <div class="info-item">
                                 <div class="info-label">Full Name</div>
-                                <div class="info-value"><%=user.name%></div>
+                                <div class="info-value">
+                                    <%=user.name%>
+                                </div>
                             </div>
                             <div class="info-item">
                                 <div class="info-label">User ID</div>
-                                <div class="info-value"><%=user.id%></div>
+                                <div class="info-value">
+                                    <%=user.id%>
+                                </div>
                             </div>
                             <div class="info-item">
                                 <div class="info-label">Email Address</div>
-                                <div class="info-value"><%=user.email%></div>
+                                <div class="info-value">
+                                    <%=user.email%>
+                                </div>
                             </div>
                             <div class="info-item">
                                 <div class="info-label">Phone Number</div>
-                                <div class="info-value"><%=user.phone%></div>
+                                <div class="info-value">
+                                    <%=user.phone%>
+                                </div>
                             </div>
                             <div class="info-item">
                                 <div class="info-label">Aadhar Id</div>
-                                <div class="info-value"><%=user.aadhar_id%></div>
+                                <div class="info-value">
+                                    <%=user.aadhar_id%>
+                                </div>
                             </div>
                             <div class="info-item">
                                 <div class="info-label">Member Since</div>
-                                <div class="info-value"><%=new Date(user.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })%></div>
+                                <div class="info-value">
+                                    <%=new Date(user.created_at).toLocaleDateString('en-US', { year: 'numeric' ,
+                                        month: 'long' , day: 'numeric' })%>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -109,36 +129,33 @@
                         <div class="info-grid">
                             <div class="info-item" style="grid-column: 1 / -1;">
                                 <div class="info-label">Address</div>
-                                <div class="info-value"><%=user.address%></div>
+                                <div class="info-value">
+                                    <%=user.address%>
+                                </div>
                             </div>
                             <div class="info-item">
                                 <div class="info-label">City</div>
-                                <div class="info-value"><%=user.city%></div>
+                                <div class="info-value">
+                                    <%=user.city%>
+                                </div>
                             </div>
                             <div class="info-item">
                                 <div class="info-label">PIN Code</div>
-                                <div class="info-value"><%=user.pin%></div>
+                                <div class="info-value">
+                                    <%=user.pin%>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="info-section" style="margin-top: 20px;">
-                        <div class="section-title">Interests & Preferences</div>
-                        <div>
-                            <span class="badge success">Wildlife Photography</span>
-                            <span class="badge success">Conservation</span>
-                            <span class="badge success">Bird Watching</span>
-                            <span class="badge info">Research</span>
-                            <span class="badge info">Education</span>
-                        </div>
-                    </div>
+
                 </div>
 
                 <!-- Activity History Tab -->
                 <div id="activity" class="tab-content">
                     <div class="info-section">
                         <div class="section-title">Recent Activity</div>
-                        
+
                         <div class="activity-card">
                             <div class="activity-header">
                                 <div class="activity-title">🎫 Safari Booking Confirmed</div>
@@ -155,7 +172,8 @@
                                 <div class="activity-date">5 days ago</div>
                             </div>
                             <div class="activity-description">
-                                Submitted 5-star feedback for Tourism Zone C safari experience. Spotted Bengal Tiger and Asian Elephants.
+                                Submitted 5-star feedback for Tourism Zone C safari experience. Spotted Bengal Tiger and
+                                Asian Elephants.
                             </div>
                         </div>
 
@@ -165,7 +183,8 @@
                                 <div class="activity-date">1 week ago</div>
                             </div>
                             <div class="activity-description">
-                                Uploaded 8 wildlife photographs from recent safari visit. Photos shared with conservation team.
+                                Uploaded 8 wildlife photographs from recent safari visit. Photos shared with
+                                conservation team.
                             </div>
                         </div>
 
@@ -175,7 +194,8 @@
                                 <div class="activity-date">2 weeks ago</div>
                             </div>
                             <div class="activity-description">
-                                Updated contact information and added new interests: Bird Watching, Wildlife Photography.
+                                Updated contact information and added new interests: Bird Watching, Wildlife
+                                Photography.
                             </div>
                         </div>
                     </div>
@@ -185,71 +205,39 @@
                 <div id="bookings" class="tab-content">
                     <div class="info-section">
                         <div class="section-title">My Safari Bookings</div>
-                        
-                        <%bookings.map(booking => {%>
-                        <div class="activity-card">
-                            <div class="activity-header">
-                                <div class="activity-title">🎫 <%=booking.safari_zone%></div>
-                                <%if (new Date() > new Date(booking.safari_date)) {%>
-                                    <span class="badge success">Completed</span>
-                                <%}else{%>
-                                    <span class="badge warning">Upcoming</span>
-                                <%}%>
+
+                        <%bookings.map(booking=> {%>
+                            <div class="activity-card">
+                                <div class="activity-header">
+                                    <div class="activity-title">🎫 <%=booking.safari_zone%>
+                                    </div>
+                                    <%if (new Date()> new Date(booking.safari_date)) {%>
+                                        <span class="badge success">Completed</span>
+                                        <%}else{%>
+                                            <span class="badge warning">Upcoming</span>
+                                            <%}%>
+                                </div>
+                                <div class="activity-description">
+                                    <strong>Date:</strong>
+                                    <%=new Date(booking.safari_date).toLocaleDateString('en-US', { year: 'numeric' ,
+                                        month: 'long' , day: 'numeric' })%><br>
+                                        <%if(booking.time_slot==='morning-1' ){%>
+                                            <strong>Time:</strong> 6:00 AM - 9:00 AM<br>
+                                            <%}else if(booking.time_slot==='morning-2' ){%>
+                                                <strong>Time:</strong> 9:30 AM - 12:30 PM<br>
+                                                <%}else if(booking.time_slot==='afternoon' ){%>
+                                                    <strong>Time:</strong> 2:00 PM - 5:00 PM<br>
+                                                    <%}else if(booking.time_slot==='evening' ){%>
+                                                        <strong>Time:</strong> 5:30 PM - 8:30 PM<br>
+                                                        <%}%>
+                                                            <strong>Booking ID:</strong>
+                                                            <%=booking.booking_id%><br>
+                                                                <strong>Persons:</strong>
+                                                                <%=booking.person_count%><br>
+                                                                    <strong>Amount:</strong> ₹<%=booking.total_amount%>
+                                </div>
                             </div>
-                            <div class="activity-description">
-                                <strong>Date:</strong> <%=new Date(booking.safari_date).toLocaleDateString('en-US', { year: 'numeric' ,
-                                    month: 'long' , day: 'numeric' })%><br>
-                                <%if(booking.time_slot === 'morning-1'){%>
-                                    <strong>Time:</strong> 6:00 AM - 9:00 AM<br>
-                                <%}else if(booking.time_slot === 'morning-2'){%>
-                                    <strong>Time:</strong> 9:30 AM - 12:30 PM<br>
-                                <%}else if(booking.time_slot === 'afternoon'){%>
-                                    <strong>Time:</strong> 2:00 PM - 5:00 PM<br>
-                                <%}else if(booking.time_slot === 'evening'){%>
-                                    <strong>Time:</strong> 5:30 PM - 8:30 PM<br>
-                                <%}%>
-                                <strong>Booking ID:</strong> <%=booking.booking_id%><br>
-                                <strong>Persons:</strong> <%=booking.person_count%><br>
-                                <strong>Amount:</strong> ₹<%=booking.total_amount%>
-                            </div>
-                        </div>
-                        <%});%>
-                    </div>
-                </div>
-
-                <!-- Settings Tab -->
-                <div id="settings" class="tab-content">
-                    <div class="info-section">
-                        <div class="section-title">Account Settings</div>
-                        
-                        <div class="info-item" style="margin-bottom: 15px;">
-                            <div class="info-label">Email Notifications</div>
-                            <label style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
-                                <input type="checkbox" checked style="transform: scale(1.3);"> Receive safari booking confirmations
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
-                                <input type="checkbox" checked style="transform: scale(1.3);"> Wildlife updates and newsletters
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
-                                <input type="checkbox" style="transform: scale(1.3);"> Conservation program alerts
-                            </label>
-                        </div>
-
-                        <div class="info-item" style="margin-bottom: 15px;">
-                            <div class="info-label">Privacy Settings</div>
-                            <label style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
-                                <input type="checkbox" checked style="transform: scale(1.3);"> Make profile visible to other users
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
-                                <input type="checkbox" checked style="transform: scale(1.3);"> Share photos with community
-                            </label>
-                        </div>
-
-                        <div class="info-item">
-                            <div class="info-label">Account Actions</div>
-                            <button class="action-btn secondary" style="margin-top: 10px; width: 100%;">Export My Data</button>
-                            <button class="action-btn secondary" style="margin-top: 10px; width: 100%;">Deactivate Account</button>
-                        </div>
+                            <%});%>
                     </div>
                 </div>
             </div>
@@ -265,9 +253,9 @@
             leaf.style.left = Math.random() * 100 + '%';
             leaf.style.animationDelay = Math.random() * 5 + 's';
             leaf.style.animationDuration = (Math.random() * 4 + 6) + 's';
-            
+
             document.querySelector('.bg-animation').appendChild(leaf);
-            
+
             setTimeout(() => {
                 if (leaf.parentNode) {
                     leaf.parentNode.removeChild(leaf);
@@ -286,12 +274,12 @@
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
-            
+
             // Remove active from all buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            
+
             // Show selected tab
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
@@ -302,13 +290,13 @@
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const avatar = document.querySelector('.profile-avatar');
                     avatar.style.backgroundImage = `url(${e.target.result})`;
                     avatar.style.backgroundSize = 'cover';
                     avatar.style.backgroundPosition = 'center';
                     avatar.innerHTML = '';
-                    
+
                     // Re-add upload button
                     const uploadDiv = document.createElement('div');
                     uploadDiv.className = 'avatar-upload';
@@ -318,7 +306,7 @@
                         </label>
                     `;
                     avatar.appendChild(uploadDiv);
-                    
+
                     showNotification('Profile picture updated successfully!');
                 };
                 reader.readAsDataURL(file);
@@ -339,11 +327,11 @@
             `;
             notification.textContent = message;
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 notification.style.transform = 'translateX(0)';
             }, 100);
-            
+
             setTimeout(() => {
                 notification.style.transform = 'translateX(300px)';
                 setTimeout(() => {
@@ -360,4 +348,5 @@
         }, 1000);
     </script>
 </body>
+
 </html>

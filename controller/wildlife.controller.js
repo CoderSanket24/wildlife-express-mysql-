@@ -157,7 +157,8 @@ export const postFeedbackPage = async (req, res) => {
         return res.status(200).json({ success: true, message: "Feedback submitted successfully." });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ success: false, message: "Failed to submit feedback." });
+        if(error.code === 'ER_NO_REFERENCED_ROW_2') return res.status(500).json({ success: false, message: 'Booking Id does not exists.' });
+        return res.status(500).json({ success: false, message: error.sqlMessage });
     }
 }
 
@@ -202,7 +203,7 @@ export const getVisitorsFeedbackPage = async (req, res) => {
         const averageRatingResult = await avgRating();
         const averageRating = averageRatingResult ? parseFloat(averageRatingResult).toFixed(1) : "0.00";
         const recommendRatingResult = await recommendRating();
-        const recommendRatingPercentage = (recommendRatingResult / totalFeedbacks) * 100;
+        const recommendRatingPercentage = ((recommendRatingResult / totalFeedbacks) * 100).toFixed(1);
         const thisMonthFeedbacks = feedbacks.filter(feedback => {
             const submittedDate = new Date(feedback.submitted_at);
             const now = new Date();

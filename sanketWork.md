@@ -45,7 +45,6 @@ DELIMITER ;
 # procedure
 DELIMITER $$
 
-DROP PROCEDURE IF EXISTS BookSafariTicket;
 CREATE PROCEDURE BookSafariTicket(
     IN p_visitor_email VARCHAR(255),
     IN p_safari_date DATE,

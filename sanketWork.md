@@ -146,3 +146,18 @@ SELECT
 FROM feedbacks f
 INNER JOIN visitors v ON f.visitor_id = v.id
 ORDER BY submitted_at DESC;
+
+SELECT
+    f.visit_date,
+    f.booking_id,
+    f.rating_overall,
+    f.rating_guide,
+    f.rating_facility,
+    f.sightings,
+    f.comments,
+    f.recommend,
+    f.submitted_at
+FROM feedbacks f
+INNER JOIN visitors v ON f.visitor_id = v.id
+WHERE v.email = ?
+ORDER BY f.submitted_at DESC;

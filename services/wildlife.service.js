@@ -11,8 +11,8 @@ export const loadTicketsInfo = async () => {
     return rows;
 }
 
-export const loadFeedbacks = async () => {
-    const [rows] = await dbClient.execute(`
+export const loadFeedbacks = async (filters = {}) => {
+    let query = `
         SELECT
             v.name,
             f.visit_date,
@@ -26,9 +26,33 @@ export const loadFeedbacks = async () => {
             f.submitted_at
         FROM feedbacks f
         INNER JOIN visitors v ON f.visitor_id = v.id
-        ORDER BY submitted_at DESC;
-    `);
+    `;
+
+    const whereClauses = [];
+    const queryParams = [];
+
+    if (filters.rating) {
+        whereClauses.push('f.rating_overall = ?');
+        queryParams.push(filters.rating);
+    }
+
+    if (filters.search) {
+        whereClauses.push('(v.name LIKE ? OR f.booking_id LIKE ? OR f.comments LIKE ?)');
+        const searchTerm = `%${filters.search}%`;
+        queryParams.push(searchTerm, searchTerm, searchTerm);
+    }
+
+    if (whereClauses.length > 0) {
+        query += ` WHERE ${whereClauses.join(' AND ')}`;
+    }
+
+    if (filters.sortBy === 'recent') {
+        query += ' ORDER BY f.submitted_at DESC';
+    } else {
+        query += ' ORDER BY f.submitted_at DESC'; // Default sort
+    }
     
+    const [rows] = await dbClient.execute(query, queryParams);
     return rows;
 }
 

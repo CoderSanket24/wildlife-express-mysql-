@@ -200,18 +200,29 @@ export const getUserProfilePage = async (req, res) => {
 export const getVisitorsFeedbackPage = async (req, res) => {
     try {
         if (!req.user) return res.redirect('/'); // Ensure user is logged in
-        const feedbacks = await loadFeedbacks();
+
+        const { rating, sortBy, search } = req.query;
+        const filters = { rating, sortBy, search };
+
+        const feedbacks = await loadFeedbacks(filters);
         const totalFeedbacks = feedbacks.length;
         const averageRatingResult = await avgRating();
         const averageRating = averageRatingResult ? parseFloat(averageRatingResult).toFixed(1) : "0.00";
         const recommendRatingResult = await recommendRating();
-        const recommendRatingPercentage = ((recommendRatingResult / totalFeedbacks) * 100).toFixed(1);
+        const recommendRatingPercentage = totalFeedbacks > 0 ? ((recommendRatingResult / totalFeedbacks) * 100).toFixed(1) : 0;
         const thisMonthFeedbacks = feedbacks.filter(feedback => {
             const submittedDate = new Date(feedback.submitted_at);
             const now = new Date();
             return submittedDate.getMonth() === now.getMonth() && submittedDate.getFullYear() === now.getFullYear();
         }).length;
-        return res.render("visitors-feedback", { feedbacks, totalFeedbacks, averageRating, recommendRatingPercentage, thisMonthFeedbacks });
+        return res.render("visitors-feedback", { 
+            feedbacks, 
+            totalFeedbacks, 
+            averageRating, 
+            recommendRatingPercentage, 
+            thisMonthFeedbacks,
+            filters // Pass filters to the template
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");

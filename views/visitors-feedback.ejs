@@ -20,10 +20,10 @@
         <div class="controls-bar">
             <a href="/" class="back-btn">← Back to Dashboard</a>
             <div class="filter-section">
-                <button class="filter-btn active" onclick="filterFeedback('all')">All Feedback</button>
-                <button class="filter-btn" onclick="filterFeedback('5-star')">5 Stars</button>
-                <button class="filter-btn" onclick="filterFeedback('4-star')">4 Stars</button>
-                <button class="filter-btn" onclick="filterFeedback('recent')">Recent</button>
+                <a href="/visitors-feedback" class="filter-btn <%= !filters.rating && !filters.sortBy ? 'active' : '' %>">All Feedback</a>
+                <a href="/visitors-feedback?rating=5" class="filter-btn <%= filters.rating == '5' ? 'active' : '' %>">5 Stars</a>
+                <a href="/visitors-feedback?rating=4" class="filter-btn <%= filters.rating == '4' ? 'active' : '' %>">4 Stars</a>
+                <a href="/visitors-feedback?sortBy=recent" class="filter-btn <%= filters.sortBy == 'recent' ? 'active' : '' %>">Recent</a>
             </div>
         </div>
 
@@ -47,13 +47,15 @@
         </div>
 
         <div class="search-bar">
-            <input type="text" class="search-input" placeholder="Search feedback by name, booking ID, or comments..."
-                oninput="searchFeedback(this.value)">
+            <form action="/visitors-feedback" method="GET">
+                <input type="text" name="search" class="search-input" placeholder="Search feedback by name, booking ID, or comments..." value="<%= filters.search || '' %>">
+                <button type="submit" style="display: none;">Search</button>
+            </form>
         </div>
 
         <div class="feedback-grid" id="feedbackGrid">
             <%feedbacks.forEach(feedback=> {%>
-                <div class="feedback-card" data-rating="3" data-date="2025-01-17">
+                <div class="feedback-card" data-rating="<%= feedback.rating_overall %>" data-date="<%= new Date(feedback.submitted_at).toISOString().split('T')[0] %>">
                     <div class="feedback-header">
                         <div class="visitor-info">
                             <div class="visitor-name">
@@ -140,7 +142,7 @@
 
         </div>
 
-        <div class="no-results" id="noResults" style="display: none;">
+        <div class="no-results" id="noResults" style="display: <%= feedbacks.length === 0 ? 'block' : 'none' %>;">
             No feedback found matching your search criteria.
         </div>
     </div>
@@ -167,80 +169,6 @@
         setInterval(createFloatingLeaf, 2000);
         for (let i = 0; i < 5; i++) {
             setTimeout(createFloatingLeaf, i * 500);
-        }
-
-        // Filter feedback
-        function filterFeedback(filterType) {
-            const cards = document.querySelectorAll('.feedback-card');
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            let visibleCount = 0;
-
-            // Update active button
-            filterBtns.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-
-            cards.forEach(card => {
-                let show = false;
-                const rating = parseInt(card.getAttribute('data-rating'));
-
-                switch (filterType) {
-                    case 'all':
-                        show = true;
-                        break;
-                    case '5-star':
-                        show = rating === 5;
-                        break;
-                    case '4-star':
-                        show = rating === 4;
-                        break;
-                    case 'recent':
-                        const cardDate = new Date(card.getAttribute('data-date'));
-                        const weekAgo = new Date();
-                        weekAgo.setDate(weekAgo.getDate() - 7);
-                        show = cardDate >= weekAgo;
-                        break;
-                }
-
-                if (show) {
-                    card.style.display = 'block';
-                    visibleCount++;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
-            // Show/hide no results message
-            document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
-        }
-
-        // Search feedback
-        function searchFeedback(searchTerm) {
-            const cards = document.querySelectorAll('.feedback-card');
-            const term = searchTerm.toLowerCase().trim();
-            let visibleCount = 0;
-
-            if (term === '') {
-                cards.forEach(card => {
-                    card.style.display = 'block';
-                    visibleCount++;
-                });
-            } else {
-                cards.forEach(card => {
-                    const name = card.querySelector('.visitor-name').textContent.toLowerCase();
-                    const bookingId = card.querySelector('.booking-id').textContent.toLowerCase();
-                    const comment = card.querySelector('.feedback-comment').textContent.toLowerCase();
-
-                    if (name.includes(term) || bookingId.includes(term) || comment.includes(term)) {
-                        card.style.display = 'block';
-                        visibleCount++;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            }
-
-            // Show/hide no results message
-            document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
         }
 
         // Notification system

@@ -4,206 +4,942 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Visitor Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .nav-tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 10px;
-            
-            align-items: center;
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
-        
-        .nav-tab {
-            background: rgba(76, 175, 80, 0.2);
+
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
             color: #4CAF50;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .dashboard-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(76, 175, 80, 0.1);
             border: 2px solid rgba(76, 175, 80, 0.3);
-            padding: 12px 24px;
-            border-radius: 25px;
-            cursor: pointer;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
             transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
-            font-weight: bold;
             position: relative;
             overflow: hidden;
-            
-            width: 15rem;
         }
-        
-        .nav-tab::before {
+
+        .stat-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
             transition: left 0.5s;
         }
-        
-        .nav-tab:hover::before {
+
+        .stat-card:hover::before {
             left: 100%;
         }
-        
-        .nav-tab:hover,
-        .nav-tab.active {
-            background: rgba(76, 175, 80, 0.4);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
         }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .chart-title {
+            color: #4CAF50;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .chart-canvas {
+            max-height: 300px;
+        }
+
+        .data-table-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: white;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .data-table th {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .data-table tr:hover {
+            background: rgba(76, 175, 80, 0.1);
+        }
+
         .back-btn {
-    background: rgba(76, 175, 80, 0.2);
-    color: #4CAF50;
-    border: 2px solid rgba(76, 175, 80, 0.3);
-    padding: 10px 20px;
-    border-radius: 25px;
-    cursor: pointer;
-    font-weight: bold;
-    margin-bottom: 30px;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-block;
-}
-        </style>
-        <link rel="stylesheet" href="../style.css">
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: rgba(76, 175, 80, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .add-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin: 20px auto;
+            display: block;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .add-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+        }
+
+        .filter-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 2px solid rgba(76, 175, 80, 0.3);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: rgba(76, 175, 80, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .filter-btn.active {
+            background: rgba(76, 175, 80, 0.6);
+            color: white;
+            font-weight: bold;
+        }
+
+        .filter-stats-overlay {
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-confirmed {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.2);
+            color: #FFC107;
+        }
+
+        .status-cancelled {
+            background: rgba(220, 53, 69, 0.2);
+            color: #DC3545;
+        }
+    </style>
+    <link rel="stylesheet" href="../style.css">
 </head>
 
 <body>
     <div class="bg-animation">
         <!-- Floating leaves will be generated by JavaScript -->
     </div>
-    <div class="container">
+
+    <div class="dashboard-container">
         <a href="/" class="back-btn">← Back to Dashboard</a>
-        <!-- Visitors Section -->
-        <div id="visitors" class="content-section">
-            <h2 class="section-title">🎫 Visitor & Tourism Records</h2>
 
-            <div class="stats-container">
-                <div class="stat-item">
-                    <div class="stat-number">1247</div>
-                    <div class="stat-label">Monthly Visitors</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">45</div>
-                    <div class="stat-label">Today's Visitors</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number"><%= totalVisitors %></div>
-                    <div class="stat-label">Total Visitors</div>
-                </div>
-            </div>
-
-            
-            <button class="add-btn" onclick="window.location.href='/booking'">+ Generate Ticket</button>
-        
-
-            <div class="nav-tabs">
-                <div class="nav-tab active" onclick="showSection('Visitors')">
-                    <span class="icon">👥</span>Visitors Info
-                </div>
-                <div class="nav-tab" onclick="showSection('Tickets')">
-                    <span class="icon">🎟️</span>Tickets Info
-                </div>
-            </div>
-
-            <div id="Visitors" class="data-grid">
-                <div class="data-card">
-                    <div class="card-header">
-                        <span class="icon">👥</span>Group Booking #VIS-2025-0145
-                    </div>
-                    <div class="card-content">
-                        <p><strong>Lead Visitor:</strong> Amit Patel</p>
-                        <p><strong>Group Size:</strong> 6 people</p>
-                        <p><strong>Visit Date:</strong> Jan 22, 2025</p>
-                        <p><strong>Guide Assigned:</strong> Vikram Singh</p>
-                        <p><strong>Safari Zone:</strong> Tourism Zone C</p>
-                    </div>
-                </div>
-
-                <% visitors_info.map(({name, aadhar_id, age, address})=> { %>
-                    <div class="data-card">
-                        <div class="card-header">
-                            <span class="icon">👥</span>Booking #VIS-2025-0145
-                        </div>
-                        <div class="card-content">
-                            <p><strong>Visitor Name: </strong>
-                                <%=name%>
-                            </p>
-                            <p><strong>Visitor age: </strong>
-                                <%=age%>
-                            </p>
-                            <p><strong>Aadhar Id: </strong>
-                                <%=aadhar_id%>
-                            </p>
-                            <p><strong>Address: </strong>
-                                <%=address%>
-                            </p>
-                        </div>
-                    </div>
-                    <% }) %>
-            </div>
-            <div id="Tickets" class="data-grid inactive">
-                <% if (tickets && tickets.length > 0) { %>
-                    <% tickets.forEach(ticket => { %>
-                        <div class="data-card">
-                            <div class="card-header">
-                                <span class="icon">🎟️</span>Ticket #<%= ticket.booking_id %>
-                            </div>
-                            <div class="card-content">
-                                <p><strong>Visitor:</strong> <%= ticket.visitor_name %></p>
-                                <p><strong>Contact:</strong> <%= ticket.contact_number %></p>
-                                <p><strong>Safari Date:</strong> <%= new Date(ticket.safari_date).toLocaleDateString('en-GB') %></p>
-                                <p><strong>Time Slot:</strong> <%= ticket.time_slot %></p>
-                                <p><strong>Zone:</strong> <%= ticket.safari_zone %></p>
-                                <p><strong>Persons:</strong> <%= ticket.person_count %></p>
-                                <p><strong>Total Amount:</strong> ₹<%= Number(ticket.total_amount).toLocaleString('en-IN') %></p>
-                                <p><strong>Status:</strong> <span class="status status-<%= ticket.booking_status.toLowerCase() %>"><%= ticket.booking_status %></span></p>
-                            </div>
-                        </div>
-                    <% }) %>
-                <% } else { %>
-                    <div class="data-card">
-                        <div class="card-content">
-                            <p>No ticket information available.</p>
-                        </div>
-                    </div>
-                <% } %>
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">🎫 Visitor Analytics Dashboard</h1>
+            <p class="dashboard-subtitle">Real-time insights from actual booking data</p>
+            <div style="margin-top: 10px;">
+                <span
+                    style="display: inline-block; width: 8px; height: 8px; background: #4CAF50; border-radius: 50%; margin-right: 8px;"></span>
+                <span style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Live Data • <span id="currentFilter">All
+                        Time</span> • Last updated: <span id="lastUpdated"></span></span>
             </div>
         </div>
-        <div class="loading">
-            <div class="spinner"></div>
-            Loading data...
+
+        <!-- Key Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-number">
+                    <%= chartData.statistics.monthlyVisitors || 0 %>
+                </div>
+                <div class="stat-label">Monthly Visitors</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-number">
+                    <%= chartData.statistics.todayVisitors || 0 %>
+                </div>
+                <div class="stat-label">Today's Visitors</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎟️</div>
+                <div class="stat-number">
+                    <%= totalVisitors || 0 %>
+                </div>
+                <div class="stat-label">Total Visitors</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-number">₹<%= (chartData.statistics.totalRevenue || 0).toLocaleString('en-IN') %>
+                </div>
+                <div class="stat-label">Total Revenue</div>
+            </div>
+        </div>
+
+        <button class="add-btn" onclick="window.location.href='/booking'">+ Generate New Ticket</button>
+
+        <!-- Filter Controls -->
+        <div class="filter-controls">
+            <button class="filter-btn active" onclick="filterData('all')" title="Show all historical data">
+                📊 All Time
+            </button>
+            <button class="filter-btn" onclick="filterData('today')" title="Show today's data only">
+                📅 Today
+            </button>
+            <button class="filter-btn" onclick="filterData('week')" title="Show last 7 days">
+                📆 This Week
+            </button>
+            <button class="filter-btn" onclick="filterData('month')" title="Show current month">
+                🗓️ This Month
+            </button>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            <!-- Visitor Age Distribution -->
+            <div class="chart-container">
+                <h3 class="chart-title">👥 Visitor Age Distribution</h3>
+                <canvas id="ageChart" class="chart-canvas"></canvas>
+            </div>
+
+            <!-- Safari Zone Popularity -->
+            <div class="chart-container">
+                <h3 class="chart-title">🌍 Safari Zone Popularity</h3>
+                <canvas id="zoneChart" class="chart-canvas"></canvas>
+            </div>
+
+            <!-- Revenue Trends -->
+            <div class="chart-container">
+                <h3 class="chart-title">💰 Revenue Trends</h3>
+                <canvas id="revenueChart" class="chart-canvas"></canvas>
+            </div>
+
+            <!-- Booking Status Overview -->
+            <div class="chart-container">
+                <h3 class="chart-title">📋 Booking Status Overview</h3>
+                <canvas id="statusChart" class="chart-canvas"></canvas>
+            </div>
+
+            <!-- Time Slot Preferences -->
+            <div class="chart-container">
+                <h3 class="chart-title">⏰ Time Slot Preferences</h3>
+                <canvas id="timeSlotChart" class="chart-canvas"></canvas>
+            </div>
+
+            <!-- Visitor Trends -->
+            <div class="chart-container">
+                <h3 class="chart-title">📈 Daily Visitor Trends</h3>
+                <canvas id="trendsChart" class="chart-canvas"></canvas>
+            </div>
+        </div>
+
+        <!-- Data Tables -->
+        <div class="data-table-container">
+            <h3 class="chart-title">📋 Recent Visitor Records</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Aadhar ID</th>
+                        <th>Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (visitors_info && visitors_info.length> 0) { %>
+                        <% visitors_info.slice(0, 10).forEach(visitor=> { %>
+                            <tr>
+                                <td>
+                                    <%= visitor.name %>
+                                </td>
+                                <td>
+                                    <%= visitor.age %>
+                                </td>
+                                <td>
+                                    <%= visitor.aadhar_id %>
+                                </td>
+                                <td>
+                                    <%= visitor.address %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="4" style="text-align: center;">No visitor data available</td>
+                                    </tr>
+                                    <% } %>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="data-table-container">
+            <h3 class="chart-title">🎟️ Recent Ticket Bookings</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Visitor</th>
+                        <th>Safari Date</th>
+                        <th>Zone</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if (tickets && tickets.length> 0) { %>
+                        <% tickets.slice(0, 10).forEach(ticket=> { %>
+                            <tr>
+                                <td>#<%= ticket.booking_id %>
+                                </td>
+                                <td>
+                                    <%= ticket.visitor_name %>
+                                </td>
+                                <td>
+                                    <%= new Date(ticket.safari_date).toLocaleDateString('en-GB') %>
+                                </td>
+                                <td>
+                                    <%= ticket.safari_zone %>
+                                </td>
+                                <td>₹<%= Number(ticket.total_amount).toLocaleString('en-IN') %>
+                                </td>
+                                <td><span class="status status-<%= ticket.booking_status.toLowerCase() %>">
+                                        <%= ticket.booking_status %>
+                                    </span></td>
+                            </tr>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="6" style="text-align: center;">No ticket data available</td>
+                                    </tr>
+                                    <% } %>
+                </tbody>
+            </table>
         </div>
     </div>
+
     <script src="./script.js"></script>
     <script>
-        function showSection(sectionId) {
-            // Hide all sections
-            const sections = document.querySelectorAll('.data-grid');
-            sections.forEach(section => {
-                section.classList.add('inactive');
-            });
+        // Get pre-processed chart data from server
+        const chartData = JSON.parse('<%- JSON.stringify(chartData) %>');
 
-            // Remove active class from all tabs
-            const tabs = document.querySelectorAll('.nav-tab');
-            tabs.forEach(tab => {
-                tab.classList.remove('active');
-            });
+        // Chart instances
+        let charts = {};
 
-            // Show loading
-            const loading = document.querySelector('.loading');
-            loading.style.display = 'block';
+        // Initialize all charts when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeCharts();
+            updateLastUpdatedTime();
+        });
+
+        function updateLastUpdatedTime() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = now.toLocaleTimeString();
+        }
+
+        function initializeCharts() {
+            createAgeDistributionChart();
+            createZonePopularityChart();
+            createRevenueChart();
+            createStatusChart();
+            createTimeSlotChart();
+            createTrendsChart();
+        }
+
+        function createAgeDistributionChart() {
+            const ctx = document.getElementById('ageChart').getContext('2d');
+
+            if (!chartData.ageDistribution || !chartData.ageDistribution.data || chartData.ageDistribution.data.length === 0) {
+                return;
+            }
+
+            charts.ageChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: chartData.ageDistribution.labels,
+                    datasets: [{
+                        data: chartData.ageDistribution.data,
+                        backgroundColor: [
+                            'rgba(76, 175, 80, 0.8)',
+                            'rgba(76, 175, 80, 0.6)',
+                            'rgba(76, 175, 80, 0.4)',
+                            'rgba(76, 175, 80, 0.3)',
+                            'rgba(76, 175, 80, 0.2)'
+                        ],
+                        borderColor: 'rgba(76, 175, 80, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createZonePopularityChart() {
+            const ctx = document.getElementById('zoneChart').getContext('2d');
+
+            charts.zoneChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.zonePopularity.labels,
+                    datasets: [{
+                        label: 'Bookings',
+                        data: chartData.zonePopularity.data,
+                        backgroundColor: 'rgba(76, 175, 80, 0.6)',
+                        borderColor: 'rgba(76, 175, 80, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                color: 'white'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: 'white'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createRevenueChart() {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+
+            charts.revenueChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.revenueData.labels,
+                    datasets: [{
+                        label: 'Revenue (₹)',
+                        data: chartData.revenueData.data,
+                        borderColor: 'rgba(76, 175, 80, 1)',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                color: 'white',
+                                callback: function (value) {
+                                    return '₹' + value.toLocaleString('en-IN');
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: 'white'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createStatusChart() {
+            const ctx = document.getElementById('statusChart').getContext('2d');
+
+            charts.statusChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: chartData.statusData.labels,
+                    datasets: [{
+                        data: chartData.statusData.data,
+                        backgroundColor: [
+                            'rgba(76, 175, 80, 0.8)',
+                            'rgba(255, 193, 7, 0.8)',
+                            'rgba(220, 53, 69, 0.8)',
+                            'rgba(23, 162, 184, 0.8)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createTimeSlotChart() {
+            const ctx = document.getElementById('timeSlotChart').getContext('2d');
+
+            charts.timeSlotChart = new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: chartData.timeSlotData.labels,
+                    datasets: [{
+                        data: chartData.timeSlotData.data,
+                        backgroundColor: [
+                            'rgba(76, 175, 80, 0.7)',
+                            'rgba(76, 175, 80, 0.5)',
+                            'rgba(76, 175, 80, 0.3)',
+                            'rgba(76, 175, 80, 0.2)'
+                        ],
+                        borderColor: 'rgba(76, 175, 80, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    },
+                    scales: {
+                        r: {
+                            ticks: {
+                                color: 'white'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createTrendsChart() {
+            const ctx = document.getElementById('trendsChart').getContext('2d');
+
+            if (!chartData.visitorTrends || !chartData.visitorTrends.data || chartData.visitorTrends.data.length === 0) {
+                return;
+            }
+
+            charts.trendsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.visitorTrends.labels,
+                    datasets: [{
+                        label: 'Daily Visitors',
+                        data: chartData.visitorTrends.data,
+                        backgroundColor: 'rgba(76, 175, 80, 0.6)',
+                        borderColor: 'rgba(76, 175, 80, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: 'white',
+                                stepSize: 1
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: 'white',
+                                maxRotation: 45
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Store original data for filtering
+        let originalChartData = JSON.parse(JSON.stringify(chartData));
+
+        function filterData(period) {
+            // Update active filter button
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update current filter display
+            const filterNames = {
+                'all': 'All Time',
+                'today': 'Today',
+                'week': 'This Week',
+                'month': 'This Month'
+            };
+            document.getElementById('currentFilter').textContent = filterNames[period] || period;
+
+
+
+            // Show loading animation
+            document.querySelectorAll('.chart-container').forEach(container => {
+                container.style.opacity = '0.5';
+            });
 
             setTimeout(() => {
-                // Hide loading and show section
-                loading.style.display = 'none';
-                document.getElementById(sectionId).classList.remove('inactive');
+                // Filter the data based on period
+                const filteredData = filterChartDataByPeriod(originalChartData, period);
 
-                // Add active class to clicked tab
-                event.target.closest('.nav-tab').classList.add('active');
-            }, 500);
+                // Update all charts with filtered data
+                updateChartsWithFilteredData(filteredData);
+
+                // Update statistics
+                updateFilteredStatistics(filteredData, period);
+
+                // Restore opacity
+                document.querySelectorAll('.chart-container').forEach(container => {
+                    container.style.opacity = '1';
+                });
+
+
+            }, 300);
+        }
+
+        function filterChartDataByPeriod(data, period) {
+            const now = new Date();
+            let startDate;
+
+            switch (period) {
+                case 'today':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    break;
+                case 'week':
+                    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    break;
+                case 'month':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    break;
+                case 'all':
+                default:
+                    return data; // Return original data for 'all'
+            }
+
+            // Filter revenue/trends data by date
+            const filteredRevenue = {
+                labels: [],
+                data: [],
+                visitors: [],
+                bookings: []
+            };
+
+            if (data.revenueData && data.revenueData.labels) {
+                data.revenueData.labels.forEach((label, index) => {
+                    // Parse date more carefully (handle different formats)
+                    const labelDate = new Date(label);
+                    let includeDate = false;
+
+                    if (period === 'today') {
+                        // Check if it's today
+                        includeDate = labelDate.toDateString() === now.toDateString();
+                    } else if (period === 'week') {
+                        // Check if it's within last 7 days
+                        const daysDiff = (now - labelDate) / (1000 * 60 * 60 * 24);
+                        includeDate = daysDiff >= 0 && daysDiff <= 7;
+                    } else if (period === 'month') {
+                        // Check if it's in current month
+                        includeDate = labelDate.getMonth() === now.getMonth() &&
+                            labelDate.getFullYear() === now.getFullYear();
+                    } else {
+                        includeDate = labelDate >= startDate;
+                    }
+
+                    if (includeDate) {
+                        filteredRevenue.labels.push(label);
+                        filteredRevenue.data.push(data.revenueData.data[index] || 0);
+                        filteredRevenue.visitors.push(data.revenueData.visitors[index] || 0);
+                        filteredRevenue.bookings.push(data.revenueData.bookings[index] || 0);
+                    }
+                });
+            }
+
+            // Filter visitor trends data
+            const filteredTrends = {
+                labels: [],
+                data: []
+            };
+
+            if (data.visitorTrends && data.visitorTrends.labels) {
+                data.visitorTrends.labels.forEach((label, index) => {
+                    const labelDate = new Date(label);
+
+                    let includeDate = false;
+
+                    if (period === 'today') {
+                        includeDate = labelDate.toDateString() === now.toDateString();
+                    } else if (period === 'week') {
+                        const daysDiff = (now - labelDate) / (1000 * 60 * 60 * 24);
+                        includeDate = daysDiff >= 0 && daysDiff <= 7;
+                    } else if (period === 'month') {
+                        includeDate = labelDate.getMonth() === now.getMonth() &&
+                            labelDate.getFullYear() === now.getFullYear();
+                    } else {
+                        includeDate = labelDate >= startDate;
+                    }
+
+                    if (includeDate) {
+                        filteredTrends.labels.push(label);
+                        filteredTrends.data.push(data.visitorTrends.data[index] || 0);
+                    }
+                });
+            }
+
+            return {
+                ...data,
+                revenueData: filteredRevenue,
+                visitorTrends: filteredTrends
+            };
+        }
+
+        function updateChartsWithFilteredData(filteredData) {
+            // Update Revenue Chart
+            if (charts.revenueChart && filteredData.revenueData) {
+                if (filteredData.revenueData.labels.length === 0) {
+                    // No data for this period
+                    charts.revenueChart.data.labels = ['No Data'];
+                    charts.revenueChart.data.datasets[0].data = [0];
+                } else {
+                    charts.revenueChart.data.labels = filteredData.revenueData.labels;
+                    charts.revenueChart.data.datasets[0].data = filteredData.revenueData.data;
+                }
+                charts.revenueChart.update();
+            }
+
+            // Update Visitor Trends Chart
+            if (charts.trendsChart && filteredData.visitorTrends) {
+                if (filteredData.visitorTrends.labels.length === 0) {
+                    // No data for this period
+                    charts.trendsChart.data.labels = ['No Data'];
+                    charts.trendsChart.data.datasets[0].data = [0];
+                } else {
+                    charts.trendsChart.data.labels = filteredData.visitorTrends.labels;
+                    charts.trendsChart.data.datasets[0].data = filteredData.visitorTrends.data;
+                }
+                charts.trendsChart.update();
+            }
+
+            // Note: Age distribution, zone popularity, status, and time slot charts
+            // remain unchanged as they show overall patterns, not time-based data
+        }
+
+        function updateFilteredStatistics(filteredData, period) {
+            // Calculate filtered statistics
+            let filteredVisitors = 0;
+            let filteredRevenue = 0;
+            let filteredBookings = 0;
+
+            if (filteredData.revenueData && filteredData.revenueData.visitors) {
+                filteredVisitors = filteredData.revenueData.visitors.reduce((sum, count) => sum + count, 0);
+                filteredRevenue = filteredData.revenueData.data.reduce((sum, amount) => sum + amount, 0);
+                filteredBookings = filteredData.revenueData.bookings.reduce((sum, count) => sum + count, 0);
+            }
+
+            // Update the statistics display
+            const periodLabel = period === 'all' ? 'All Time' :
+                period === 'today' ? 'Today' :
+                    period === 'week' ? 'This Week' :
+                        period === 'month' ? 'This Month' : period;
+
+            // Show filtered stats in a temporary overlay or update existing stats
+            showFilteredStatsOverlay(periodLabel, filteredVisitors, filteredRevenue, filteredBookings);
+        }
+
+        function showFilteredStatsOverlay(period, visitors, revenue, bookings) {
+            // Simple notification - less intrusive
+            if (period !== 'All Time') {
+                const message = `${period}: ${visitors} visitors, ₹${revenue.toLocaleString('en-IN')}`;
+                console.log('📊 Filter applied:', message);
+            }
         }
     </script>
 </body>

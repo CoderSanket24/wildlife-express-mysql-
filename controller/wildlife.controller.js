@@ -1,5 +1,6 @@
 import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking, totalAnimalsCount, totalSpeciesCount, avgRating, recommendRating, medical_checkups, medical_treatments, feeding_logs, getBookingsByEmail, getFeedbacksByEmail, addZone, zoneDetails } from "../services/wildlife.service.js";
 import { getVisitorByEmail } from "../services/auth.service.js";
+import { getComprehensiveDashboardData, getDashboardStats, updateAnalyticsSummary } from "../services/visitor-analytics.service.js";
 
 export const getHomePage = async (req, res) => {
     try {
@@ -8,7 +9,7 @@ export const getHomePage = async (req, res) => {
         const ZoneDetails = await zoneDetails();
         const totalAreas = ZoneDetails.total_area;
         const totalCameraTraps = ZoneDetails.total_cameras;
-        
+
         return res.render("index", { totalAnimals, speciesCount, totalAreas, totalCameraTraps });
     } catch (error) {
         console.error(error);
@@ -19,15 +20,48 @@ export const getHomePage = async (req, res) => {
 export const getVisitorPage = async (req, res) => {
     try {
         if (!req.user) return res.redirect('/');
+
+        // Update analytics summary before loading dashboard
+        await updateAnalyticsSummary();
+
+        // Get comprehensive dashboard data using optimized database views
+        const dashboardData = await getComprehensiveDashboardData();
+
+        // Get raw data for tables (limited for performance)
         const visitors_info = await loadVisitorsInfo();
-        const totalVisitors = visitors_info.length;
         const tickets = await loadTicketsInfo();
-        return res.render("visitors", { visitors_info, tickets, totalVisitors });
+
+        // Extract statistics and chart data
+        const { statistics, charts } = dashboardData;
+
+        return res.render("visitors", {
+            visitors_info: visitors_info.slice(0, 50), // Limit for performance
+            tickets: tickets.slice(0, 50), // Limit for performance
+            totalVisitors: statistics.registered_visitors,
+            chartData: {
+                ageDistribution: charts.ageDistribution,
+                zonePopularity: charts.zonePopularity,
+                revenueData: charts.revenueData,
+                statusData: charts.statusData,
+                timeSlotData: charts.timeSlotData,
+                visitorTrends: {
+                    labels: charts.revenueData.labels,
+                    data: charts.revenueData.visitors.map(v => parseInt(v) || 0)
+                },
+                statistics: {
+                    totalRevenue: parseFloat(statistics.total_revenue) || 0,
+                    monthlyVisitors: parseInt(statistics.month_visitors) || 0,
+                    todayVisitors: parseInt(statistics.today_visitors) || 0
+                }
+            }
+        });
     } catch (error) {
-        console.error(error);
-        return res.status(500).send("internal server error.");
+        console.error('Error loading visitor dashboard:', error);
+        return res.status(500).send("Internal server error.");
     }
 }
+
+
 
 export const getAnimalsPage = async (req, res) => {
     try {
@@ -153,11 +187,11 @@ export const postFeedbackPage = async (req, res) => {
     try {
         // The user does not need to be logged in to submit feedback.
         const formData = req.body;;
-        await submitFeedback(formData,req.user.id);
+        await submitFeedback(formData, req.user.id);
         return res.status(200).json({ success: true, message: "Feedback submitted successfully." });
     } catch (error) {
         console.error(error);
-        if(error.code === 'ER_NO_REFERENCED_ROW_2') return res.status(500).json({ success: false, message: 'Booking Id does not exists.' });
+        if (error.code === 'ER_NO_REFERENCED_ROW_2') return res.status(500).json({ success: false, message: 'Booking Id does not exists.' });
         return res.status(500).json({ success: false, message: error.sqlMessage });
     }
 }
@@ -175,7 +209,7 @@ export const getBookingPage = async (req, res) => {
 export const postBookingPage = async (req, res) => {
     try {
         const bookingData = req.body;
-        const result = await createBooking(bookingData,req.user.email);
+        const result = await createBooking(bookingData, req.user.email);
         return res.status(201).json({ success: true, message: result.message, bookingId: result.bookingId });
     } catch (error) {
         console.error(error);
@@ -189,8 +223,8 @@ export const getUserProfilePage = async (req, res) => {
         const user = await getVisitorByEmail(req.user.email);
         const bookings = await getBookingsByEmail(req.user.email);
         const feedbacks = await getFeedbacksByEmail(req.user.email);
-        
-        return res.render("user-profile", { user, bookings, feedbacks});
+
+        return res.render("user-profile", { user, bookings, feedbacks });
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");
@@ -215,11 +249,11 @@ export const getVisitorsFeedbackPage = async (req, res) => {
             const now = new Date();
             return submittedDate.getMonth() === now.getMonth() && submittedDate.getFullYear() === now.getFullYear();
         }).length;
-        return res.render("visitors-feedback", { 
-            feedbacks, 
-            totalFeedbacks, 
-            averageRating, 
-            recommendRatingPercentage, 
+        return res.render("visitors-feedback", {
+            feedbacks,
+            totalFeedbacks,
+            averageRating,
+            recommendRatingPercentage,
             thisMonthFeedbacks,
             filters // Pass filters to the template
         });

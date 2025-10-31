@@ -72,17 +72,37 @@ document.querySelectorAll('.data-card').forEach(card => {
 function animateNumbers() {
     const statNumbers = document.querySelectorAll('.stat-number');
     statNumbers.forEach(stat => {
-        const finalNumber = parseInt(stat.textContent);
+        const originalText = stat.textContent;
+        const isCurrency = originalText.includes('₹');
+        
+        // Extract number from text (handle currency and commas)
+        const numberMatch = originalText.match(/[\d,]+/);
+        if (!numberMatch) return;
+        
+        const finalNumber = parseInt(numberMatch[0].replace(/,/g, ''));
+        if (isNaN(finalNumber)) return;
+        
         let currentNumber = 0;
         const increment = finalNumber / 50;
 
         const timer = setInterval(() => {
             currentNumber += increment;
             if (currentNumber >= finalNumber) {
-                stat.textContent = finalNumber;
+                // Restore original formatting
+                if (isCurrency) {
+                    stat.textContent = `₹${finalNumber.toLocaleString('en-IN')}`;
+                } else {
+                    stat.textContent = finalNumber.toString();
+                }
                 clearInterval(timer);
             } else {
-                stat.textContent = Math.floor(currentNumber);
+                // Show animated number with proper formatting
+                const animatedNumber = Math.floor(currentNumber);
+                if (isCurrency) {
+                    stat.textContent = `₹${animatedNumber.toLocaleString('en-IN')}`;
+                } else {
+                    stat.textContent = animatedNumber.toString();
+                }
             }
         }, 40);
     });

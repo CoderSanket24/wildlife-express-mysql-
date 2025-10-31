@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "node --env-file=.env --watch ./app.js",
-    "start": "node app.js"
+    "start": "node app.js",
+    "setup-db": "node --env-file=.env scripts/manual-db-setup.js",
+    "update-analytics": "node --env-file=.env -e \"import('./services/visitor-analytics.service.js').then(m => m.updateAnalyticsSummary().then(console.log))\"",
+    "cleanup-test-data": "node --env-file=.env scripts/cleanup-test-data.js"
   },
   "keywords": [],
   "author": "",

@@ -7,7 +7,15 @@ export const loadVisitorsInfo = async () => {
 }
 
 export const loadTicketsInfo = async () => {
-    const [rows] = await dbClient.execute('select * from tickets');
+    const [rows] = await dbClient.execute(`
+        SELECT 
+            t.*,
+            v.name as visitor_name,
+            v.email as visitor_email
+        FROM tickets t
+        LEFT JOIN visitors v ON t.visitor_id = v.id
+        ORDER BY t.safari_date DESC
+    `);
     return rows;
 }
 

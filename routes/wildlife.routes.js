@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { postAddAnimalPage, getAnimalsPage, getBookingPage, getFeedbackPage, getHomePage, getMedicalPage, getStaffPage, getVisitorPage, getZonesPage, postFeedbackPage, postBookingPage, getAddAnimalPage, getUserProfilePage, getVisitorsFeedbackPage, postAddZonesPage, getAddZonesPage } from "../controller/wildlife.controller.js";
+import { postAddAnimalPage, getAnimalsPage, getBookingPage, getFeedbackPage, getHomePage, getMedicalPage, getStaffPage, getVisitorPage, getZonesPage, postFeedbackPage, postBookingPage, getAddAnimalPage, getUserProfilePage, getVisitorsFeedbackPage, postAddZonesPage, getAddZonesPage, getZoneDetailsAPI } from "../controller/wildlife.controller.js";
 import upload from '../middlewares/upload-middleware.js';
 
 const router = Router();
@@ -16,5 +16,6 @@ router.route("/feedback").get(getFeedbackPage).post(postFeedbackPage);
 router.route('/booking').get(getBookingPage).post(postBookingPage);
 router.route('/user-profile').get(getUserProfilePage);
 router.route('/visitors-feedback').get(getVisitorsFeedbackPage);
+router.get('/api/zones/details/:zoneId', getZoneDetailsAPI);
 
 export default router;

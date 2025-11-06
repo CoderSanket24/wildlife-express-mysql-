@@ -1,6 +1,7 @@
-import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking, totalAnimalsCount, totalSpeciesCount, avgRating, recommendRating, medical_checkups, medical_treatments, feeding_logs, getBookingsByEmail, getFeedbacksByEmail, addZone, zoneDetails } from "../services/wildlife.service.js";
+import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking, totalAnimalsCount, totalSpeciesCount, avgRating, recommendRating, medical_checkups, medical_treatments, feeding_logs, getBookingsByEmail, getFeedbacksByEmail, addZone, zoneDetails, getFilteredZones, getZoneFilterOptions } from "../services/wildlife.service.js";
 import { getVisitorByEmail } from "../services/auth.service.js";
 import { getComprehensiveDashboardData, getDashboardStats, updateAnalyticsSummary } from "../services/visitor-analytics.service.js";
+import { db as dbClient } from "../config/db-client.js";
 
 export const getHomePage = async (req, res) => {
     try {
@@ -140,12 +141,40 @@ export const getStaffPage = async (req, res) => {
 export const getZonesPage = async (req, res) => {
     try {
         if (!req.user) return res.redirect('/');
-        const zones = await loadZones();
+        
+        // Get filter parameters from query string
+        const filters = {
+            access_level: req.query.access_level || '',
+            climate: req.query.climate || '',
+            min_area: req.query.min_area ? parseFloat(req.query.min_area) : null,
+            max_area: req.query.max_area ? parseFloat(req.query.max_area) : null,
+            min_cameras: req.query.min_cameras ? parseInt(req.query.min_cameras) : null,
+            max_cameras: req.query.max_cameras ? parseInt(req.query.max_cameras) : null,
+            search: req.query.search || '',
+            sort_by: req.query.sort_by || 'zone_name',
+            sort_order: req.query.sort_order || 'ASC'
+        };
+        
+        // Get filtered zone data
+        const zones = await getFilteredZones(filters);
         const activeZones = zones.length;
+        
+        // Get basic zone details (unfiltered for totals)
         const ZoneDetails = await zoneDetails();
         const totalArea = ZoneDetails.total_area;
         const totalCameraTraps = ZoneDetails.total_cameras;
-        return res.render("zones", { zones, activeZones, totalArea, totalCameraTraps });
+        
+        // Get filter options for dropdowns
+        const filterOptions = await getZoneFilterOptions();
+        
+        return res.render("zones", { 
+            zones, 
+            activeZones, 
+            totalArea, 
+            totalCameraTraps,
+            filters,
+            filterOptions
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");
@@ -262,3 +291,21 @@ export const getVisitorsFeedbackPage = async (req, res) => {
         return res.status(500).send("internal server error.");
     }
 }
+
+export const getZoneDetailsAPI = async (req, res) => {
+    try {
+        if (!req.user) return res.status(401).json({ success: false, message: 'Unauthorized' });
+        
+        const { zoneId } = req.params;
+        const [zones] = await dbClient.execute('SELECT * FROM zones WHERE zone_id = ?', [zoneId]);
+        
+        if (zones.length === 0) {
+            return res.status(404).json({ success: false, message: 'Zone not found' });
+        }
+        
+        return res.json({ success: true, zone: zones[0] });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};

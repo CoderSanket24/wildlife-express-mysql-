@@ -235,3 +235,100 @@ export const feeding_logs = async () => {
     const [rows] = await dbClient.execute('select * from feeding_logs');
     return rows;
 }
+
+// Zone filtering functions
+export const getFilteredZones = async (filters) => {
+    try {
+        let query = 'SELECT * FROM zones WHERE 1=1';
+        const params = [];
+        
+        // Apply filters
+        if (filters.access_level) {
+            query += ' AND access_level = ?';
+            params.push(filters.access_level);
+        }
+        
+        if (filters.climate) {
+            query += ' AND climate LIKE ?';
+            params.push(`%${filters.climate}%`);
+        }
+        
+        if (filters.min_area !== null) {
+            query += ' AND area >= ?';
+            params.push(filters.min_area);
+        }
+        
+        if (filters.max_area !== null) {
+            query += ' AND area <= ?';
+            params.push(filters.max_area);
+        }
+        
+        if (filters.min_cameras !== null) {
+            query += ' AND camera_traps >= ?';
+            params.push(filters.min_cameras);
+        }
+        
+        if (filters.max_cameras !== null) {
+            query += ' AND camera_traps <= ?';
+            params.push(filters.max_cameras);
+        }
+        
+        if (filters.search) {
+            query += ' AND (zone_name LIKE ? OR zone_id LIKE ? OR primary_species LIKE ?)';
+            const searchTerm = `%${filters.search}%`;
+            params.push(searchTerm, searchTerm, searchTerm);
+        }
+        
+        // Apply sorting
+        const validSortColumns = ['zone_name', 'area', 'climate', 'camera_traps', 'access_level', 'zone_id'];
+        const sortBy = validSortColumns.includes(filters.sort_by) ? filters.sort_by : 'zone_name';
+        const sortOrder = filters.sort_order === 'DESC' ? 'DESC' : 'ASC';
+        
+        query += ` ORDER BY ${sortBy} ${sortOrder}`;
+        
+        const [rows] = await dbClient.execute(query, params);
+        return rows;
+    } catch (error) {
+        console.error('Error filtering zones:', error);
+        return [];
+    }
+};
+
+export const getZoneFilterOptions = async () => {
+    try {
+        // Get unique access levels
+        const [accessLevels] = await dbClient.execute(
+            'SELECT DISTINCT access_level FROM zones WHERE access_level IS NOT NULL ORDER BY access_level'
+        );
+        
+        // Get unique climates
+        const [climates] = await dbClient.execute(
+            'SELECT DISTINCT climate FROM zones WHERE climate IS NOT NULL ORDER BY climate'
+        );
+        
+        // Get area range
+        const [areaRange] = await dbClient.execute(
+            'SELECT MIN(area) as min_area, MAX(area) as max_area FROM zones'
+        );
+        
+        // Get camera range
+        const [cameraRange] = await dbClient.execute(
+            'SELECT MIN(camera_traps) as min_cameras, MAX(camera_traps) as max_cameras FROM zones'
+        );
+        
+        return {
+            accessLevels: accessLevels.map(row => row.access_level),
+            climates: climates.map(row => row.climate),
+            areaRange: areaRange[0],
+            cameraRange: cameraRange[0]
+        };
+    } catch (error) {
+        console.error('Error getting filter options:', error);
+        return {
+            accessLevels: [],
+            climates: [],
+            areaRange: { min_area: 0, max_area: 1000 },
+            cameraRange: { min_cameras: 0, max_cameras: 100 }
+        };
+    }
+};

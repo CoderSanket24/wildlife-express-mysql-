@@ -36,34 +36,8 @@
             <a href="/addStaff" class="add-btn" style="text-decoration: none; display: inline-block; text-align: center;">+ Add New Staff</a>
 
             <div class="data-grid">
-                <div class="data-card">
-                    <div class="card-header">
-                        <span class="icon">👨‍🌾</span>Raj Kumar
-                    </div>
-                    <div class="card-content">
-                        <p><strong>Role:</strong> Senior Forest Ranger</p>
-                        <p><strong>Employee ID:</strong> RNG-101</p>
-                        <p><strong>Assigned Zone:</strong> Core Zone A</p>
-                        <p><strong>Shift:</strong> Morning (6 AM - 2 PM)</p>
-                        <p><strong>Experience:</strong> 12 years</p>
-                    </div>
-                </div>
-
-                <div class="data-card">
-                    <div class="card-header">
-                        <span class="icon">👩‍⚕️</span>Dr. Priya Sharma
-                    </div>
-                    <div class="card-content">
-                        <p><strong>Role:</strong> Wildlife Veterinarian</p>
-                        <p><strong>Employee ID:</strong> VET-201</p>
-                        <p><strong>Assigned Zone:</strong> Medical Center</p>
-                        <p><strong>Shift:</strong> Day (9 AM - 6 PM)</p>
-                        <p><strong>Specialization:</strong> Large Mammals</p>
-                    </div>
-                </div>
-
-                <% staff.map(({employee_id,employee_name,age,gender,assigned_zone,experience_years,shift,
-                    role,category})=>{ %>
+                <% staff.map(({employee_id,employee_name,age,gender,experience_years,shift,
+                    role,category,assigned_zone_name})=>{ %>
                     <div class="data-card">
                         <div class="card-header">
                             <%if (gender=='Male'){%>
@@ -86,7 +60,7 @@
                                 <%=age || 'Not specified'%> years
                             </p>
                             <p><strong>Assigned Zone:</strong>
-                                <%=assigned_zone || 'Not assigned'%>
+                                <%=assigned_zone_name || 'Not assigned'%>
                             </p>
                             <p><strong>Shift:</strong>
                                 <%=shift || 'Not specified'%>

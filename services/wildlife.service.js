@@ -153,7 +153,13 @@ export const addAnimal = async (name, species_id, status, count, habitat_zone, l
 }
 
 export const loadStaff = async () => {
-    const [rows] = await dbClient.execute('select * from rangers_staff');
+    const [rows] = await dbClient.execute(`
+        SELECT 
+            rs.*,
+            z.zone_name as assigned_zone_name
+        FROM rangers_staff rs
+        LEFT JOIN zones z ON rs.assigned_zone = z.zone_id
+    `);
     return rows;
 }
 

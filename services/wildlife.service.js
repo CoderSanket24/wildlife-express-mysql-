@@ -1,4 +1,3 @@
-import { vi } from "zod/locales";
 import { db as dbClient } from "../config/db-client.js";
 
 export const loadVisitorsInfo = async () => {
@@ -159,6 +158,8 @@ export const loadStaff = async () => {
 }
 
 export const addStaff = async (staffData) => {
+    const procedureCallQuery = `CALL sp_HireRanger(?, ?, ?, ?, ?, ?, ?, ?, ?, @msg);`
+
     const {
         employee_id,
         employee_name,
@@ -171,20 +172,14 @@ export const addStaff = async (staffData) => {
         category
     } = staffData;
 
-    try {
-        const [result] = await dbClient.execute(
-            `INSERT INTO rangers_staff 
-            (employee_id, employee_name, age, gender, assigned_zone, experience_years, shift, role, category) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [employee_id, employee_name, age, gender, assigned_zone, experience_years, shift, role, category]
-        );
+    const values = [employee_id, employee_name, age, gender, assigned_zone, experience_years, shift, role, category]
 
-        return {
-            success: true,
-            message: 'Staff member registered successfully!',
-            employeeId: employee_id,
-            insertId: result.insertId
-        };
+    try {
+        await dbClient.execute(procedureCallQuery, values);
+        const result = await dbClient.execute('SELECT @msg AS message;');
+        // console.log(result);
+        
+        return { success: true, message: result[0][0].message, employeeId: employee_id };
     } catch (error) {
         if (error.code === 'ER_DUP_ENTRY') {
             throw new Error('Employee ID already exists. Please use a unique Employee ID.');

@@ -62,8 +62,6 @@ export const getVisitorPage = async (req, res) => {
     }
 }
 
-
-
 export const getAnimalsPage = async (req, res) => {
     try {
         if (!req.user) return res.redirect('/');
@@ -334,18 +332,10 @@ export const postAddStaffPage = async (req, res) => {
             });
         }
 
-        // Validate age range
-        if (staffData.age < 18 || staffData.age > 70) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Age must be between 18 and 70 years.' 
-            });
-        }
-
         const result = await addStaff(staffData);
 
         return res.status(201).json({ 
-            success: true, 
+            success: result.success, 
             message: result.message,
             employeeId: result.employeeId
         });
@@ -361,7 +351,7 @@ export const postAddStaffPage = async (req, res) => {
         
         return res.status(500).json({ 
             success: false, 
-            message: 'Failed to register staff member. Please try again.' 
+            message: error.sqlMessage 
         });
     }
 };

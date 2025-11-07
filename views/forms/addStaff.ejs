@@ -367,7 +367,7 @@
                     </div>
                     <div class="form-group has-icon">
                         <label class="form-label">Age *</label>
-                        <input type="number" class="form-input" id="age" name="age" min="18" max="70" placeholder="Enter age" required>
+                        <input type="number" class="form-input" id="age" name="age" placeholder="Enter age" required>
                         <span class="input-icon">📅</span>
                     </div>
                     <div class="form-group">
@@ -392,17 +392,12 @@
                         <label class="form-label">Assigned Zone</label>
                         <select class="form-select" id="assigned_zone" name="assigned_zone">
                             <option value="">Select Zone</option>
-                            <option value="Core Zone A">🌳 Core Zone A (Premium Wildlife)</option>
-                            <option value="Core Zone B">🌳 Core Zone B (Dense Forest)</option>
-                            <option value="Buffer Zone A">🌲 Buffer Zone A (Elephant Corridor)</option>
-                            <option value="Buffer Zone B">🌲 Buffer Zone B (Mixed Habitat)</option>
-                            <option value="Tourism Zone C">🎫 Tourism Zone C (Visitor Area)</option>
-                            <option value="North Sector">⬆️ North Sector</option>
-                            <option value="South Sector">⬇️ South Sector</option>
-                            <option value="East Sector">➡️ East Sector</option>
-                            <option value="West Sector">⬅️ West Sector</option>
-                            <option value="Patrol Route A">🚶 Patrol Route A</option>
-                            <option value="Patrol Route B">🚶 Patrol Route B</option>
+                            <option value="A">🌳 Core Zone A (Premium Wildlife)</option>
+                            <option value="B">🌳 Core Zone B (Dense Forest)</option>
+                            <option value="A">🌲 Buffer Zone A (Elephant Corridor)</option>
+                            <option value="B">🌲 Buffer Zone B (Mixed Habitat)</option>
+                            <option value="C">🎫 Tourism Zone C (Visitor Area)</option>
+                            <option value="D">⬆️ North Sector</option>
                             <option value="Watchtower Station">🏢 Watchtower Station</option>
                         </select>
                     </div>
@@ -578,17 +573,6 @@
             }
         });
 
-        function generateSQL(data) {
-            const columns = Object.keys(data).join(', ');
-            const values = Object.values(data).map(v => {
-                if (v === null || v === '') return 'NULL';
-                if (typeof v === 'string') return `'${v.replace(/'/g, "''")}'`;
-                return v;
-            }).join(', ');
-            
-            return `INSERT INTO rangers_staff (${columns}) VALUES (${values});`;
-        }
-
         // Form validation
         function validateForm() {
             const employeeId = document.getElementById('employee_id').value;
@@ -597,11 +581,6 @@
 
             if (!employeeId || !employeeName || !age) {
                 showNotification('Please fill in all required fields (marked with *)', 'error');
-                return false;
-            }
-
-            if (age < 18 || age > 70) {
-                showNotification('Age must be between 18 and 70 years', 'error');
                 return false;
             }
 

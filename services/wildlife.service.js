@@ -158,6 +158,41 @@ export const loadStaff = async () => {
     return rows;
 }
 
+export const addStaff = async (staffData) => {
+    const {
+        employee_id,
+        employee_name,
+        age,
+        gender,
+        assigned_zone,
+        experience_years,
+        shift,
+        role,
+        category
+    } = staffData;
+
+    try {
+        const [result] = await dbClient.execute(
+            `INSERT INTO rangers_staff 
+            (employee_id, employee_name, age, gender, assigned_zone, experience_years, shift, role, category) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [employee_id, employee_name, age, gender, assigned_zone, experience_years, shift, role, category]
+        );
+
+        return {
+            success: true,
+            message: 'Staff member registered successfully!',
+            employeeId: employee_id,
+            insertId: result.insertId
+        };
+    } catch (error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+            throw new Error('Employee ID already exists. Please use a unique Employee ID.');
+        }
+        throw error;
+    }
+}
+
 export const createBooking = async (bookingData, visitorEmail) => {
     const procedureCallQuery = `CALL BookSafariTicket(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @booking_status);`;
 

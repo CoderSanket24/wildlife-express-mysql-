@@ -20,20 +20,20 @@
 
             <div class="stats-container">
                 <div class="stat-item">
-                    <div class="stat-number">45</div>
+                    <div class="stat-number"><%= staff.length %></div>
                     <div class="stat-label">Total Staff</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">28</div>
+                    <div class="stat-number"><%= staff.filter(s => s.category && s.category.toLowerCase().includes('field')).length %></div>
                     <div class="stat-label">Field Rangers</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">12</div>
-                    <div class="stat-label">On Duty Today</div>
+                    <div class="stat-number"><%= staff.filter(s => s.shift && (s.shift.toLowerCase().includes('morning') || s.shift.toLowerCase().includes('day'))).length %></div>
+                    <div class="stat-label">Day Shift Staff</div>
                 </div>
             </div>
 
-            <button class="add-btn">+ Add New Staff</button>
+            <a href="/addStaff" class="add-btn" style="text-decoration: none; display: inline-block; text-align: center;">+ Add New Staff</a>
 
             <div class="data-grid">
                 <div class="data-card">
@@ -68,29 +68,34 @@
                         <div class="card-header">
                             <%if (gender=='Male'){%>
                                 <span class="icon">👨‍💼</span>
-                            <%}else{%>
+                            <%}else if (gender=='Female'){%>
                                 <span class="icon">👩‍💼</span>
+                            <%}else{%>
+                                <span class="icon">👤</span>
                             <%}%>
-                            <%=employee_name%>
+                            <%=employee_name || 'Unknown'%>
                         </div>
                         <div class="card-content">
                             <p><strong>Role:</strong>
-                                <%=role%>
+                                <%=role || 'Not specified'%>
                             </p>
                             <p><strong>Employee ID:</strong>
                                 <%=employee_id%>
                             </p>
+                            <p><strong>Age:</strong>
+                                <%=age || 'Not specified'%> years
+                            </p>
                             <p><strong>Assigned Zone:</strong>
-                                <%=assigned_zone%>
+                                <%=assigned_zone || 'Not assigned'%>
                             </p>
                             <p><strong>Shift:</strong>
-                                <%=shift%>
+                                <%=shift || 'Not specified'%>
                             </p>
                             <p><strong>Experience:</strong>
-                                <%=experience_years%> years
+                                <%=experience_years || 0%> years
                             </p>
                             <p><strong>Category:</strong>
-                                <%=category%>
+                                <%=category || 'Not specified'%>
                             </p>
                         </div>
                     </div>

@@ -1,4 +1,4 @@
-import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking, totalAnimalsCount, totalSpeciesCount, avgRating, recommendRating, medical_checkups, medical_treatments, feeding_logs, getBookingsByEmail, getFeedbacksByEmail, addZone, zoneDetails, getFilteredZones, getZoneFilterOptions } from "../services/wildlife.service.js";
+import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking, totalAnimalsCount, totalSpeciesCount, avgRating, recommendRating, medical_checkups, medical_treatments, feeding_logs, getBookingsByEmail, getFeedbacksByEmail, addZone, zoneDetails, getFilteredZones, getZoneFilterOptions, addStaff } from "../services/wildlife.service.js";
 import { getVisitorByEmail } from "../services/auth.service.js";
 import { getComprehensiveDashboardData, getDashboardStats, updateAnalyticsSummary } from "../services/visitor-analytics.service.js";
 import { db as dbClient } from "../config/db-client.js";
@@ -307,5 +307,61 @@ export const getZoneDetailsAPI = async (req, res) => {
     } catch (error) {
         console.error(error);
         return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
+export const getAddStaffPage = async (req, res) => {
+    try {
+        if (!req.user) return res.redirect('/');
+        return res.render("forms/addStaff");
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("internal server error.");
+    }
+}
+
+export const postAddStaffPage = async (req, res) => {
+    try {
+        if (!req.user) return res.redirect('/');
+
+        const staffData = req.body;
+
+        // Validate required fields
+        if (!staffData.employee_id || !staffData.employee_name || !staffData.age) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Missing required fields: Employee ID, Name, and Age are mandatory.' 
+            });
+        }
+
+        // Validate age range
+        if (staffData.age < 18 || staffData.age > 70) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Age must be between 18 and 70 years.' 
+            });
+        }
+
+        const result = await addStaff(staffData);
+
+        return res.status(201).json({ 
+            success: true, 
+            message: result.message,
+            employeeId: result.employeeId
+        });
+    } catch (error) {
+        console.error('Error adding staff:', error);
+        
+        if (error.message.includes('Employee ID already exists')) {
+            return res.status(400).json({ 
+                success: false, 
+                message: error.message 
+            });
+        }
+        
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Failed to register staff member. Please try again.' 
+        });
     }
 };

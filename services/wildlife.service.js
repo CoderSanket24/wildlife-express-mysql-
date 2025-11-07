@@ -152,15 +152,73 @@ export const addAnimal = async (name, species_id, status, count, habitat_zone, l
     return rows;
 }
 
-export const loadStaff = async () => {
-    const [rows] = await dbClient.execute(`
-        SELECT 
-            rs.*,
-            z.zone_name as assigned_zone_name
-        FROM rangers_staff rs
-        LEFT JOIN zones z ON rs.assigned_zone = z.zone_id
-    `);
-    return rows;
+export const loadStaff = async (filters = {}) => {
+    try {
+        let query = `
+            SELECT 
+                rs.*,
+                z.zone_name as assigned_zone_name
+            FROM rangers_staff rs
+            LEFT JOIN zones z ON rs.assigned_zone = z.zone_id
+            WHERE 1=1
+        `;
+        const params = [];
+        
+        // Apply filters
+        if (filters.role) {
+            query += ' AND rs.role = ?';
+            params.push(filters.role);
+        }
+        
+        if (filters.category) {
+            query += ' AND rs.category = ?';
+            params.push(filters.category);
+        }
+        
+        if (filters.shift) {
+            query += ' AND rs.shift = ?';
+            params.push(filters.shift);
+        }
+        
+        if (filters.gender) {
+            query += ' AND rs.gender = ?';
+            params.push(filters.gender);
+        }
+        
+        if (filters.assigned_zone) {
+            query += ' AND rs.assigned_zone = ?';
+            params.push(filters.assigned_zone);
+        }
+        
+        if (filters.min_experience !== null) {
+            query += ' AND rs.experience_years >= ?';
+            params.push(filters.min_experience);
+        }
+        
+        if (filters.max_experience !== null) {
+            query += ' AND rs.experience_years <= ?';
+            params.push(filters.max_experience);
+        }
+        
+        if (filters.search) {
+            query += ' AND (rs.employee_name LIKE ? OR rs.employee_id LIKE ? OR z.zone_name LIKE ?)';
+            const searchTerm = `%${filters.search}%`;
+            params.push(searchTerm, searchTerm, searchTerm);
+        }
+        
+        // Apply sorting
+        const validSortColumns = ['employee_name', 'employee_id', 'age', 'experience_years', 'shift', 'role', 'category'];
+        const sortBy = validSortColumns.includes(filters.sort_by) ? filters.sort_by : 'employee_name';
+        const sortOrder = filters.sort_order === 'DESC' ? 'DESC' : 'ASC';
+        
+        query += ` ORDER BY ${sortBy} ${sortOrder}`;
+        
+        const [rows] = await dbClient.execute(query, params);
+        return rows;
+    } catch (error) {
+        console.error('Error filtering staff:', error);
+        return [];
+    }
 }
 
 export const addStaff = async (staffData) => {
@@ -365,6 +423,59 @@ export const getZoneFilterOptions = async () => {
             climates: [],
             areaRange: { min_area: 0, max_area: 1000 },
             cameraRange: { min_cameras: 0, max_cameras: 100 }
+        };
+    }
+};
+
+export const getStaffFilterOptions = async () => {
+    try {
+        // Get unique roles
+        const [roles] = await dbClient.execute(
+            'SELECT DISTINCT role FROM rangers_staff WHERE role IS NOT NULL ORDER BY role'
+        );
+        
+        // Get unique categories
+        const [categories] = await dbClient.execute(
+            'SELECT DISTINCT category FROM rangers_staff WHERE category IS NOT NULL ORDER BY category'
+        );
+        
+        // Get unique shifts
+        const [shifts] = await dbClient.execute(
+            'SELECT DISTINCT shift FROM rangers_staff WHERE shift IS NOT NULL ORDER BY shift'
+        );
+        
+        // Get unique genders
+        const [genders] = await dbClient.execute(
+            'SELECT DISTINCT gender FROM rangers_staff WHERE gender IS NOT NULL ORDER BY gender'
+        );
+        
+        // Get zones for assignment filter
+        const [zones] = await dbClient.execute(
+            'SELECT zone_id, zone_name FROM zones ORDER BY zone_name'
+        );
+        
+        // Get experience range
+        const [experienceRange] = await dbClient.execute(
+            'SELECT MIN(experience_years) as min_experience, MAX(experience_years) as max_experience FROM rangers_staff'
+        );
+        
+        return {
+            roles: roles.map(row => row.role),
+            categories: categories.map(row => row.category),
+            shifts: shifts.map(row => row.shift),
+            genders: genders.map(row => row.gender),
+            zones: zones,
+            experienceRange: experienceRange[0]
+        };
+    } catch (error) {
+        console.error('Error getting staff filter options:', error);
+        return {
+            roles: [],
+            categories: [],
+            shifts: [],
+            genders: [],
+            zones: [],
+            experienceRange: { min_experience: 0, max_experience: 50 }
         };
     }
 };

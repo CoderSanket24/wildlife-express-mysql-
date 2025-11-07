@@ -6,6 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="../style.css">
+    <style>
+        /* Fix dropdown option visibility */
+        select option {
+            background-color: #2a2a2a;
+            color: #fff;
+        }
+        select {
+            color-scheme: dark;
+        }
+        /* Fix placeholder color */
+        input::placeholder {
+            color: #fff;
+            opacity: 0.7;
+        }
+    </style>
 </head>
 
 <body>
@@ -34,6 +49,128 @@
             </div>
 
             <a href="/addStaff" class="add-btn" style="text-decoration: none; display: inline-block; text-align: center;">+ Add New Staff</a>
+
+            <!-- Filter Section -->
+            <div class="filter-section" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 20px; border-radius: 15px; margin: 20px 0; border: 1px solid rgba(255, 255, 255, 0.2);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="color: #fff; margin: 0;">🔍 Filter Staff</h3>
+                    <span style="color: #4CAF50; font-weight: bold;"><%= staff.length %> results found</span>
+                </div>
+                <form id="filterForm" method="GET" action="/staff">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                        <!-- Search -->
+                        <div>
+                            <label style="color: #fff; display: block; margin-bottom: 5px;">Search</label>
+                            <input type="text" name="search" placeholder="Name, ID, Zone..." 
+                                   value="<%= filters.search %>"
+                                   style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                        </div>
+
+                        <!-- Role Filter -->
+                        <div>
+                            <label style="color: #fff; display: block; margin-bottom: 5px;">Role</label>
+                            <select name="role" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                <option value="">All Roles</option>
+                                <% filterOptions.roles.forEach(role => { %>
+                                    <option value="<%= role %>" <%= filters.role === role ? 'selected' : '' %>><%= role %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <!-- Category Filter -->
+                        <div>
+                            <label style="color: #fff; display: block; margin-bottom: 5px;">Category</label>
+                            <select name="category" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                <option value="">All Categories</option>
+                                <% filterOptions.categories.forEach(category => { %>
+                                    <option value="<%= category %>" <%= filters.category === category ? 'selected' : '' %>><%= category %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <!-- Shift Filter -->
+                        <div>
+                            <label style="color: #fff; display: block; margin-bottom: 5px;">Shift</label>
+                            <select name="shift" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                <option value="">All Shifts</option>
+                                <% filterOptions.shifts.forEach(shift => { %>
+                                    <option value="<%= shift %>" <%= filters.shift === shift ? 'selected' : '' %>><%= shift %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <!-- Gender Filter -->
+                        <div>
+                            <label style="color: #fff; display: block; margin-bottom: 5px;">Gender</label>
+                            <select name="gender" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                <option value="">All Genders</option>
+                                <% filterOptions.genders.forEach(gender => { %>
+                                    <option value="<%= gender %>" <%= filters.gender === gender ? 'selected' : '' %>><%= gender %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <!-- Zone Filter -->
+                        <div>
+                            <label style="color: #fff; display: block; margin-bottom: 5px;">Assigned Zone</label>
+                            <select name="assigned_zone" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                <option value="">All Zones</option>
+                                <% filterOptions.zones.forEach(zone => { %>
+                                    <option value="<%= zone.zone_id %>" <%= filters.assigned_zone === zone.zone_id ? 'selected' : '' %>><%= zone.zone_name %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <!-- Min Experience -->
+                        <div>
+                            <label style="color: #fff; display: block; margin-bottom: 5px;">Min Experience (years)</label>
+                            <input type="number" name="min_experience" placeholder="0" min="0"
+                                   value="<%= filters.min_experience || '' %>"
+                                   style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                        </div>
+
+                        <!-- Max Experience -->
+                        <div>
+                            <label style="color: #fff; display: block; margin-bottom: 5px;">Max Experience (years)</label>
+                            <input type="number" name="max_experience" placeholder="50" min="0"
+                                   value="<%= filters.max_experience || '' %>"
+                                   style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                        </div>
+
+                        <!-- Sort By -->
+                        <div>
+                            <label style="color: #fff; display: block; margin-bottom: 5px;">Sort By</label>
+                            <select name="sort_by" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                <option value="employee_name" <%= filters.sort_by === 'employee_name' ? 'selected' : '' %>>Name</option>
+                                <option value="employee_id" <%= filters.sort_by === 'employee_id' ? 'selected' : '' %>>Employee ID</option>
+                                <option value="age" <%= filters.sort_by === 'age' ? 'selected' : '' %>>Age</option>
+                                <option value="experience_years" <%= filters.sort_by === 'experience_years' ? 'selected' : '' %>>Experience</option>
+                                <option value="shift" <%= filters.sort_by === 'shift' ? 'selected' : '' %>>Shift</option>
+                                <option value="role" <%= filters.sort_by === 'role' ? 'selected' : '' %>>Role</option>
+                                <option value="category" <%= filters.sort_by === 'category' ? 'selected' : '' %>>Category</option>
+                            </select>
+                        </div>
+
+                        <!-- Sort Order -->
+                        <div>
+                            <label style="color: #fff; display: block; margin-bottom: 5px;">Order</label>
+                            <select name="sort_order" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                <option value="ASC" <%= filters.sort_order === 'ASC' ? 'selected' : '' %>>Ascending</option>
+                                <option value="DESC" <%= filters.sort_order === 'DESC' ? 'selected' : '' %>>Descending</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                            Apply Filters
+                        </button>
+                        <a href="/staff" style="padding: 10px 20px; background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block;">
+                            Clear Filters
+                        </a>
+                    </div>
+                </form>
+            </div>
 
             <div class="data-grid">
                 <% staff.map(({employee_id,employee_name,age,gender,experience_years,shift,

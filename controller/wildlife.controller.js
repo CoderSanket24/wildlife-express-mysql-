@@ -1,4 +1,4 @@
-import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking, totalAnimalsCount, totalSpeciesCount, avgRating, recommendRating, medical_checkups, medical_treatments, feeding_logs, getBookingsByEmail, getFeedbacksByEmail, addZone, zoneDetails, getFilteredZones, getZoneFilterOptions, addStaff } from "../services/wildlife.service.js";
+import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking, totalAnimalsCount, totalSpeciesCount, avgRating, recommendRating, medical_checkups, medical_treatments, feeding_logs, getBookingsByEmail, getFeedbacksByEmail, addZone, zoneDetails, getFilteredZones, getZoneFilterOptions, getStaffFilterOptions, addStaff } from "../services/wildlife.service.js";
 import { getVisitorByEmail } from "../services/auth.service.js";
 import { getComprehensiveDashboardData, getDashboardStats, updateAnalyticsSummary } from "../services/visitor-analytics.service.js";
 import { db as dbClient } from "../config/db-client.js";
@@ -127,9 +127,34 @@ export const getMedicalPage = async (req, res) => {
 export const getStaffPage = async (req, res) => {
     try {
         if (!req.user) return res.redirect('/');
-        const staff = await loadStaff();
+        
+        // Get filter parameters from query string
+        const filters = {
+            role: req.query.role || '',
+            category: req.query.category || '',
+            shift: req.query.shift || '',
+            gender: req.query.gender || '',
+            assigned_zone: req.query.assigned_zone || '',
+            min_experience: req.query.min_experience ? parseInt(req.query.min_experience) : null,
+            max_experience: req.query.max_experience ? parseInt(req.query.max_experience) : null,
+            search: req.query.search || '',
+            sort_by: req.query.sort_by || 'employee_name',
+            sort_order: req.query.sort_order || 'ASC'
+        };
+        
+        // Get filtered staff data
+        const staff = await loadStaff(filters);
         const activeStaff = staff.length;
-        return res.render("staff", { staff, activeStaff });
+        
+        // Get filter options for dropdowns
+        const filterOptions = await getStaffFilterOptions();
+        
+        return res.render("staff", { 
+            staff, 
+            activeStaff,
+            filters,
+            filterOptions
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");

@@ -1,4 +1,4 @@
-import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking, totalAnimalsCount, totalSpeciesCount, avgRating, recommendRating, medical_checkups, medical_treatments, feeding_logs, getBookingsByEmail, getFeedbacksByEmail, addZone, zoneDetails, getFilteredZones, getZoneFilterOptions, getStaffFilterOptions, addStaff } from "../services/wildlife.service.js";
+import { addAnimal, loadAnimals, loadFeedbacks, loadStaff, loadTicketsInfo, loadVisitorsInfo, loadZones, submitFeedback, createBooking, totalAnimalsCount, totalSpeciesCount, avgRating, recommendRating, medical_checkups, medical_treatments, feeding_logs, getBookingsByEmail, getFeedbacksByEmail, addZone, zoneDetails, getFilteredZones, getZoneFilterOptions, getStaffFilterOptions, getAnimalFilterOptions, getMedicalFilterOptions, addStaff, addMedicalCheckup, addMedicalTreatment, addFeedingLog } from "../services/wildlife.service.js";
 import { getVisitorByEmail } from "../services/auth.service.js";
 import { getComprehensiveDashboardData, getDashboardStats, updateAnalyticsSummary } from "../services/visitor-analytics.service.js";
 import { db as dbClient } from "../config/db-client.js";
@@ -65,11 +65,35 @@ export const getVisitorPage = async (req, res) => {
 export const getAnimalsPage = async (req, res) => {
     try {
         if (!req.user) return res.redirect('/');
-        const animals = await loadAnimals();
+        
+        // Get filter parameters from query string
+        const filters = {
+            status: req.query.status || '',
+            habitat_zone: req.query.habitat_zone || '',
+            min_count: req.query.min_count ? parseInt(req.query.min_count) : null,
+            max_count: req.query.max_count ? parseInt(req.query.max_count) : null,
+            search: req.query.search || '',
+            sort_by: req.query.sort_by || 'name',
+            sort_order: req.query.sort_order || 'ASC'
+        };
+        
+        // Get filtered animal data
+        const animals = await loadAnimals(filters);
         const totalSpecies = new Set(animals.map(animal => animal.species_id)).size;
         const totalAnimals = animals.reduce((acc, animal) => acc + animal.count, 0);
         const endangeredCount = animals.filter(animal => animal.status.toLowerCase() === 'endangered').length;
-        return res.render("animals", { animals, totalSpecies, totalAnimals, endangeredCount });
+        
+        // Get filter options for dropdowns
+        const filterOptions = await getAnimalFilterOptions();
+        
+        return res.render("animals", { 
+            animals, 
+            totalSpecies, 
+            totalAnimals, 
+            endangeredCount,
+            filters,
+            filterOptions
+        });
     } catch (error) {
         console.error(error);
         return res.status(500).send("internal server error.");
@@ -109,14 +133,51 @@ export const postAddAnimalPage = async (req, res) => {
 export const getMedicalPage = async (req, res) => {
     try {
         if (!req.user) return res.redirect('/');
-        const checkups = await medical_checkups();
-        const treatments = await medical_treatments();
-        const logs = await feeding_logs();
+        
+        // Get filter parameters from query string
+        const checkupFilters = {
+            health_status: req.query.health_status || '',
+            vaccination_status: req.query.vaccination_status || '',
+            animal_id: req.query.checkup_animal_id || '',
+            search: req.query.checkup_search || '',
+            sort_by: req.query.checkup_sort_by || 'checkup_date',
+            sort_order: req.query.checkup_sort_order || 'DESC'
+        };
+        
+        const treatmentFilters = {
+            treatment_progress: req.query.treatment_progress || '',
+            condition: req.query.condition || '',
+            animal_id: req.query.treatment_animal_id || '',
+            search: req.query.treatment_search || '',
+            sort_by: req.query.treatment_sort_by || 'treatment_start_date',
+            sort_order: req.query.treatment_sort_order || 'DESC'
+        };
+        
+        const feedingFilters = {
+            food_type: req.query.food_type || '',
+            staff_id: req.query.staff_id || '',
+            schedule_name: req.query.schedule_name || '',
+            search: req.query.feeding_search || '',
+            sort_by: req.query.feeding_sort_by || 'feeding_date',
+            sort_order: req.query.feeding_sort_order || 'DESC'
+        };
+        
+        // Get filtered data
+        const checkups = await medical_checkups(checkupFilters);
+        const treatments = await medical_treatments(treatmentFilters);
+        const logs = await feeding_logs(feedingFilters);
+        
+        // Get filter options for dropdowns
+        const filterOptions = await getMedicalFilterOptions();
 
         res.render("medical", {
             checkups,
             treatments,
             logs,
+            checkupFilters,
+            treatmentFilters,
+            feedingFilters,
+            filterOptions
         });
     } catch (error) {
         console.error(error);
@@ -377,6 +438,115 @@ export const postAddStaffPage = async (req, res) => {
         return res.status(500).json({ 
             success: false, 
             message: error.sqlMessage 
+        });
+    }
+};
+
+// Medical Forms Pages
+export const getAddMedicalCheckupPage = async (req, res) => {
+    try {
+        if (!req.user) return res.redirect('/');
+        return res.render("forms/addMedicalCheckup");
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("internal server error.");
+    }
+};
+
+export const getAddTreatmentPage = async (req, res) => {
+    try {
+        if (!req.user) return res.redirect('/');
+        return res.render("forms/addTreatment");
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("internal server error.");
+    }
+};
+
+export const getAddFeedingLogPage = async (req, res) => {
+    try {
+        if (!req.user) return res.redirect('/');
+        return res.render("forms/addFeedingLog");
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send("internal server error.");
+    }
+};
+
+// API Endpoints
+export const getAnimalsAPI = async (req, res) => {
+    try {
+        if (!req.user) return res.status(401).json({ success: false, message: 'Unauthorized' });
+        
+        // Query to get animals with proper id and name fields
+        const [animals] = await dbClient.execute('SELECT id, name, species_id FROM animals ORDER BY name');
+        return res.json(animals);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
+export const getStaffAPI = async (req, res) => {
+    try {
+        if (!req.user) return res.status(401).json({ success: false, message: 'Unauthorized' });
+        
+        // Query to get staff with proper fields
+        const [staff] = await dbClient.execute('SELECT employee_id, employee_name FROM rangers_staff ORDER BY employee_name');
+        return res.json(staff);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
+export const postMedicalCheckup = async (req, res) => {
+    try {
+        if (!req.user) return res.status(401).json({ success: false, message: 'Unauthorized' });
+        
+        const checkupData = req.body;
+        const result = await addMedicalCheckup(checkupData);
+        
+        return res.status(201).json({ success: true, message: result.message });
+    } catch (error) {
+        console.error('Error adding medical checkup:', error);
+        return res.status(500).json({ 
+            success: false, 
+            message: error.sqlMessage || error.message || 'Failed to add medical checkup.' 
+        });
+    }
+};
+
+export const postMedicalTreatment = async (req, res) => {
+    try {
+        if (!req.user) return res.status(401).json({ success: false, message: 'Unauthorized' });
+        
+        const treatmentData = req.body;
+        const result = await addMedicalTreatment(treatmentData);
+        
+        return res.status(201).json({ success: true, message: result.message });
+    } catch (error) {
+        console.error('Error adding medical treatment:', error);
+        return res.status(500).json({ 
+            success: false, 
+            message: error.sqlMessage || error.message || 'Failed to add medical treatment.' 
+        });
+    }
+};
+
+export const postFeedingLog = async (req, res) => {
+    try {
+        if (!req.user) return res.status(401).json({ success: false, message: 'Unauthorized' });
+        
+        const feedingData = req.body;
+        const result = await addFeedingLog(feedingData);
+        
+        return res.status(201).json({ success: true, message: result.message });
+    } catch (error) {
+        console.error('Error adding feeding log:', error);
+        return res.status(500).json({ 
+            success: false, 
+            message: error.sqlMessage || error.message || 'Failed to add feeding log.' 
         });
     }
 };

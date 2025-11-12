@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WildGuard Sanctuary - Add Treatment</title>
+    <link rel="stylesheet" href="/addAnimal.css">
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🌿 WildGuard Sanctuary</h1>
+            <p>Add Medical Treatment Record</p>
+        </div>
+
+        <div class="form-section">
+            <a href="/medical" class="back-btn">← Back to Medical Dashboard</a>
+            
+            <h2 class="section-title">💊 Add Medical Treatment</h2>
+            
+            <form id="addTreatmentForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Animal<span class="required">*</span></label>
+                        <select name="animal_id" class="form-select" id="animalId" required>
+                            <option value="">Select Animal</option>
+                        </select>
+                    </div>
+                    <div class="form-group has-icon">
+                        <label class="form-label">Condition<span class="required">*</span></label>
+                        <input type="text" name="condition" class="form-input" id="condition" placeholder="e.g., Respiratory Infection" required>
+                        <span class="input-icon">🩺</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Treatment Start Date<span class="required">*</span></label>
+                    <input type="date" name="treatment_start_date" class="form-input" id="startDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Medication<span class="required">*</span></label>
+                    <textarea name="medication" class="form-input" id="medication" rows="3" placeholder="List medications, dosages, and frequency..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Treatment Progress<span class="required">*</span></label>
+                    <div class="status-options">
+                        <div class="status-option">
+                            <input type="radio" class="status-radio" id="ongoing" name="treatment_progress" value="Ongoing" required>
+                            <label for="ongoing" class="status-label vulnerable">🔄 Ongoing</label>
+                        </div>
+                        <div class="status-option">
+                            <input type="radio" class="status-radio" id="improving" name="treatment_progress" value="Improving">
+                            <label for="improving" class="status-label stable">📈 Improving</label>
+                        </div>
+                        <div class="status-option">
+                            <input type="radio" class="status-radio" id="recovered" name="treatment_progress" value="Recovered">
+                            <label for="recovered" class="status-label stable">✅ Recovered</label>
+                        </div>
+                        <div class="status-option">
+                            <input type="radio" class="status-radio" id="critical" name="treatment_progress" value="Critical">
+                            <label for="critical" class="status-label endangered">🚨 Critical</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Expected Recovery Date<span class="required">*</span></label>
+                    <input type="date" name="expected_recovery_date" class="form-input" id="recoveryDate" required>
+                </div>
+
+                <div class="info-card">
+                    <strong>ℹ️ Important Guidelines:</strong><br>
+                    • Provide detailed medication information<br>
+                    • Update treatment progress regularly<br>
+                    • Set realistic recovery expectations<br>
+                    • All fields marked with <span class="required">*</span> are required
+                </div>
+
+                <div class="loading-spinner" id="loadingSpinner"></div>
+                <div class="success-message" id="successMessage">
+                    ✅ Treatment record added successfully!
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span class="icon">💊</span>Add Treatment Record
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.classList.add('show'), 10);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 500);
+            }, 4000);
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').max = today;
+            document.getElementById('recoveryDate').min = today;
+
+            // Load animals
+            try {
+                const response = await fetch('/api/animals');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch animals');
+                }
+                const animals = await response.json();
+                console.log('Animals loaded:', animals);
+                const select = document.getElementById('animalId');
+                animals.forEach(animal => {
+                    const option = document.createElement('option');
+                    option.value = animal.id;
+                    option.textContent = `${animal.name} (ID: ${animal.id})`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading animals:', error);
+                showNotification('Failed to load animals list', 'error');
+            }
+        });
+
+        document.getElementById('addTreatmentForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const loading = document.getElementById('loadingSpinner');
+            const success = document.getElementById('successMessage');
+            
+            loading.style.display = 'block';
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+
+            try {
+                const response = await fetch('/api/medical-treatments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                loading.style.display = 'none';
+
+                if (result.success) {
+                    success.style.display = 'block';
+                    showNotification('Treatment record added successfully!');
+                    setTimeout(() => {
+                        window.location.href = '/medical';
+                    }, 2000);
+                } else {
+                    showNotification(result.message || 'Failed to add treatment record.', 'error');
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                showNotification('An error occurred. Please try again.', 'error');
+                console.error('Form submission error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

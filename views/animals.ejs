@@ -6,6 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Fix dropdown option visibility */
+        select option {
+            background-color: #2a2a2a;
+            color: #fff;
+        }
+        select {
+            color-scheme: dark;
+        }
+        /* Fix placeholder color */
+        input::placeholder {
+            color: #fff;
+            opacity: 0.7;
+        }
+    </style>
 </head>
 
 <body>
@@ -34,6 +49,94 @@
             </div>
 
             <button class="add-btn" onclick="window.location.href='/addAnimal'">+ Add New Species</button>
+
+            <!-- Filter Section -->
+            <div class="filter-section" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 20px; border-radius: 15px; margin: 20px 0; border: 1px solid rgba(255, 255, 255, 0.2);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="color: #fff; margin: 0;">🔍 Filter Animals</h3>
+                    <span style="color: #4CAF50; font-weight: bold;"><%= animals.length %> results found</span>
+                </div>
+                <form id="filterForm" method="GET" action="/animals">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                        <!-- Search -->
+                        <div>
+                            <label style="color: #fff; display: block; margin-bottom: 5px;">Search</label>
+                            <input type="text" name="search" placeholder="Name, Species ID, Zone..." 
+                                   value="<%= filters.search %>"
+                                   style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                        </div>
+
+                        <!-- Status Filter -->
+                        <div>
+                            <label style="color: #fff; display: block; margin-bottom: 5px;">Status</label>
+                            <select name="status" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                <option value="">All Statuses</option>
+                                <% filterOptions.statuses.forEach(status => { %>
+                                    <option value="<%= status %>" <%= filters.status === status ? 'selected' : '' %>><%= status %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <!-- Habitat Zone Filter -->
+                        <div>
+                            <label style="color: #fff; display: block; margin-bottom: 5px;">Habitat Zone</label>
+                            <select name="habitat_zone" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                <option value="">All Zones</option>
+                                <% filterOptions.habitatZones.forEach(zone => { %>
+                                    <option value="<%= zone %>" <%= filters.habitat_zone === zone ? 'selected' : '' %>><%= zone %></option>
+                                <% }); %>
+                            </select>
+                        </div>
+
+                        <!-- Min Count -->
+                        <div>
+                            <label style="color: #fff; display: block; margin-bottom: 5px;">Min Count</label>
+                            <input type="number" name="min_count" placeholder="0" min="0"
+                                   value="<%= filters.min_count || '' %>"
+                                   style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                        </div>
+
+                        <!-- Max Count -->
+                        <div>
+                            <label style="color: #fff; display: block; margin-bottom: 5px;">Max Count</label>
+                            <input type="number" name="max_count" placeholder="1000" min="0"
+                                   value="<%= filters.max_count || '' %>"
+                                   style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                        </div>
+
+                        <!-- Sort By -->
+                        <div>
+                            <label style="color: #fff; display: block; margin-bottom: 5px;">Sort By</label>
+                            <select name="sort_by" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                <option value="name" <%= filters.sort_by === 'name' ? 'selected' : '' %>>Name</option>
+                                <option value="species_id" <%= filters.sort_by === 'species_id' ? 'selected' : '' %>>Species ID</option>
+                                <option value="status" <%= filters.sort_by === 'status' ? 'selected' : '' %>>Status</option>
+                                <option value="count" <%= filters.sort_by === 'count' ? 'selected' : '' %>>Count</option>
+                                <option value="habitat_zone" <%= filters.sort_by === 'habitat_zone' ? 'selected' : '' %>>Habitat Zone</option>
+                                <option value="last_survey" <%= filters.sort_by === 'last_survey' ? 'selected' : '' %>>Last Survey</option>
+                            </select>
+                        </div>
+
+                        <!-- Sort Order -->
+                        <div>
+                            <label style="color: #fff; display: block; margin-bottom: 5px;">Order</label>
+                            <select name="sort_order" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                <option value="ASC" <%= filters.sort_order === 'ASC' ? 'selected' : '' %>>Ascending</option>
+                                <option value="DESC" <%= filters.sort_order === 'DESC' ? 'selected' : '' %>>Descending</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                            Apply Filters
+                        </button>
+                        <a href="/animals" style="padding: 10px 20px; background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block;">
+                            Clear Filters
+                        </a>
+                    </div>
+                </form>
+            </div>
 
             <div class="data-grid">
 

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WildGuard Sanctuary - Add Feeding Log</title>
+    <link rel="stylesheet" href="/addAnimal.css">
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🌿 WildGuard Sanctuary</h1>
+            <p>Add Feeding Log Record</p>
+        </div>
+
+        <div class="form-section">
+            <a href="/medical" class="back-btn">← Back to Medical Dashboard</a>
+            
+            <h2 class="section-title">🥩 Add Feeding Log</h2>
+            
+            <form id="addFeedingForm">
+                <div class="form-row">
+                    <div class="form-group has-icon">
+                        <label class="form-label">Schedule Name<span class="required">*</span></label>
+                        <input type="text" name="schedule_name" class="form-input" id="scheduleName" placeholder="e.g., Morning Feed - Carnivores" required>
+                        <span class="input-icon">📋</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Feeding Date<span class="required">*</span></label>
+                        <input type="date" name="feeding_date" class="form-input" id="feedingDate" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Food Type<span class="required">*</span></label>
+                        <select name="food_type" class="form-select" id="foodType" required>
+                            <option value="">Select Food Type</option>
+                            <option value="Meat">Meat</option>
+                            <option value="Fish">Fish</option>
+                            <option value="Vegetables">Vegetables</option>
+                            <option value="Fruits">Fruits</option>
+                            <option value="Grains">Grains</option>
+                            <option value="Mixed">Mixed</option>
+                            <option value="Special Diet">Special Diet</option>
+                        </select>
+                    </div>
+                    <div class="form-group has-icon">
+                        <label class="form-label">Quantity (kg)<span class="required">*</span></label>
+                        <input type="number" step="0.01" name="quantity_kg" class="form-input" id="quantity" placeholder="e.g., 150.5" min="0" required>
+                        <span class="input-icon">⚖️</span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Staff Member<span class="required">*</span></label>
+                        <select name="staff_id" class="form-select" id="staffId" required>
+                            <option value="">Select Staff Member</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Feeding Time<span class="required">*</span></label>
+                        <input type="time" name="feeding_time" class="form-input" id="feedingTime" required>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <strong>ℹ️ Important Guidelines:</strong><br>
+                    • Record accurate food quantities<br>
+                    • Ensure proper food type selection<br>
+                    • Log feeding time precisely<br>
+                    • All fields marked with <span class="required">*</span> are required
+                </div>
+
+                <div class="loading-spinner" id="loadingSpinner"></div>
+                <div class="success-message" id="successMessage">
+                    ✅ Feeding log added successfully!
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span class="icon">🥩</span>Add Feeding Log
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.classList.add('show'), 10);
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 500);
+            }, 4000);
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('feedingDate').max = today;
+
+            // Load staff members
+            try {
+                const response = await fetch('/api/staff');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch staff');
+                }
+                const staff = await response.json();
+                console.log('Staff loaded:', staff);
+                const select = document.getElementById('staffId');
+                staff.forEach(member => {
+                    const option = document.createElement('option');
+                    option.value = member.employee_id;
+                    option.textContent = `${member.employee_name} (ID: ${member.employee_id})`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading staff:', error);
+                showNotification('Failed to load staff list', 'error');
+            }
+        });
+
+        document.getElementById('addFeedingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const loading = document.getElementById('loadingSpinner');
+            const success = document.getElementById('successMessage');
+            
+            loading.style.display = 'block';
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+
+            try {
+                const response = await fetch('/api/feeding-logs', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                loading.style.display = 'none';
+
+                if (result.success) {
+                    success.style.display = 'block';
+                    showNotification('Feeding log added successfully!');
+                    setTimeout(() => {
+                        window.location.href = '/medical';
+                    }, 2000);
+                } else {
+                    showNotification(result.message || 'Failed to add feeding log.', 'error');
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                showNotification('An error occurred. Please try again.', 'error');
+                console.error('Form submission error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

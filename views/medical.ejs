@@ -5,6 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="../style.css">
+    <style>
+        /* Fix dropdown option visibility */
+        select option {
+            background-color: #2a2a2a;
+            color: #fff;
+        }
+        select {
+            color-scheme: dark;
+        }
+        /* Fix placeholder color */
+        input::placeholder {
+            color: #fff;
+            opacity: 0.7;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+    </style>
 </head>
 <body>
     <div class="bg-animation">
@@ -18,74 +38,390 @@
         
             <div class="stats-container">
                 <div class="stat-item">
-                    <div class="stat-number">89</div>
+                    <div class="stat-number"><%= checkups ? checkups.length : 0 %></div>
                     <div class="stat-label">Health Checkups</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">1,250</div>
-                    <div class="stat-label">kg Food/Day</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">5</div>
+                    <div class="stat-number"><%= treatments ? treatments.length : 0 %></div>
                     <div class="stat-label">Active Treatments</div>
                 </div>
+                <div class="stat-item">
+                    <div class="stat-number"><%= logs ? logs.length : 0 %></div>
+                    <div class="stat-label">Feeding Logs</div>
+                </div>
             </div>
-        
-            <button class="add-btn">+ Add Medical Record</button>
-            <button class="add-btn">+ Log Feeding</button>
-        
-            <div class="data-grid">
-                <% if (checkups) { %>
-                    <% checkups.forEach(checkup => { %>
-                    <div class="data-card">
-                        <div class="card-header">
-                            <span class="icon">🩺</span>Animal ID: <%= checkup.animal_id %>
-                        </div>
-                        <div class="card-content">
-                            <p><strong>Last Checkup:</strong> <%= new Date(checkup.checkup_date).toLocaleDateString() %></p>
-                            <p><strong>Health Status:</strong> <%= checkup.health_status %></p>
-                            <p><strong>Weight:</strong> <%= checkup.weight_kg %> kg</p>
-                            <p><strong>Vaccination:</strong> <%= checkup.vaccination_status %></p>
-                            <p><strong>Next Checkup:</strong> <%= new Date(checkup.next_checkup_date).toLocaleDateString() %></p>
-                        </div>
-                    </div>
-                    <% }); %>
-                <% } %>
 
-                <% if (treatments) { %>
-                    <% treatments.forEach(treatment => { %>
-                    <div class="data-card">
-                        <div class="card-header">
-                            <span class="icon">💊</span>Treatment Log - Animal ID: <%= treatment.animal_id %>
-                        </div>
-                        <div class="card-content">
-                            <p><strong>Condition:</strong> <%= treatment.condition %></p>
-                            <p><strong>Treatment Started:</strong> <%= new Date(treatment.treatment_start_date).toLocaleDateString() %></p>
-                            <p><strong>Medication:</strong> <%= treatment.medication %></p>
-                            <p><strong>Progress:</strong> <%= treatment.treatment_progress %></p>
-                            <p><strong>Expected Recovery:</strong> <%= new Date(treatment.expected_recovery_date).toLocaleDateString() %></p>
-                        </div>
-                    </div>
-                    <% }); %>
-                <% } %>
-
-                <% if (logs) { %>
-                    <% logs.forEach(log => { %>
-                    <div class="data-card">
-                        <div class="card-header">
-                            <span class="icon">🥩</span><%= log.schedule_name %>
-                        </div>
-                        <div class="card-content">
-                            <p><strong>Date:</strong> <%= new Date(log.feeding_date).toLocaleDateString() %></p>
-                            <p><strong>Food Type:</strong> <%= log.food_type %></p>
-                            <p><strong>Quantity:</strong> <%= log.quantity_kg %> kg total</p>
-                            <p><strong>Fed By:</strong> Staff ID: <%= log.staff_id %></p>
-                            <p><strong>Time:</strong> <%= log.feeding_time %></p>
-                        </div>
-                    </div>
-                    <% }); %>
-                <% } %>
+            <!-- Tab Buttons -->
+            <div style="display: flex; gap: 10px; margin-top: 20px; margin-bottom: 20px;">
+                <button class="add-btn tab-btn active" onclick="showTab('checkups')" style="flex: 1;">
+                    🩺 Medical Checkups
+                </button>
+                <button class="add-btn tab-btn" onclick="showTab('treatments')" style="flex: 1;">
+                    💊 Medical Treatments
+                </button>
+                <button class="add-btn tab-btn" onclick="showTab('feeding')" style="flex: 1;">
+                    🥩 Feeding Logs
+                </button>
             </div>
+
+            <!-- Medical Checkups Section -->
+            <div id="checkups-section" class="tab-content">
+                <button class="add-btn" onclick="window.location.href='/addMedicalCheckup'">+ Add Medical Checkup</button>
+                
+                <!-- Checkup Filters -->
+                <div class="filter-section" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 20px; border-radius: 15px; margin: 20px 0; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="color: #fff; margin: 0;">🔍 Filter Medical Checkups</h3>
+                        <span style="color: #4CAF50; font-weight: bold;"><%= checkups.length %> results found</span>
+                    </div>
+                    <form method="GET" action="/medical">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                            <!-- Search -->
+                            <div>
+                                <label style="color: #fff; display: block; margin-bottom: 5px;">Search</label>
+                                <input type="text" name="checkup_search" placeholder="Animal ID, Status..." 
+                                       value="<%= checkupFilters.search %>"
+                                       style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                            </div>
+
+                            <!-- Health Status -->
+                            <div>
+                                <label style="color: #fff; display: block; margin-bottom: 5px;">Health Status</label>
+                                <select name="health_status" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                    <option value="">All Health Status</option>
+                                    <% if (filterOptions.healthStatuses) { %>
+                                        <% filterOptions.healthStatuses.forEach(status => { %>
+                                            <option value="<%= status %>" <%= checkupFilters.health_status === status ? 'selected' : '' %>><%= status %></option>
+                                        <% }); %>
+                                    <% } %>
+                                </select>
+                            </div>
+
+                            <!-- Vaccination Status -->
+                            <div>
+                                <label style="color: #fff; display: block; margin-bottom: 5px;">Vaccination Status</label>
+                                <select name="vaccination_status" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                    <option value="">All Vaccination Status</option>
+                                    <% if (filterOptions.vaccinationStatuses) { %>
+                                        <% filterOptions.vaccinationStatuses.forEach(status => { %>
+                                            <option value="<%= status %>" <%= checkupFilters.vaccination_status === status ? 'selected' : '' %>><%= status %></option>
+                                        <% }); %>
+                                    <% } %>
+                                </select>
+                            </div>
+
+                            <!-- Animal -->
+                            <div>
+                                <label style="color: #fff; display: block; margin-bottom: 5px;">Animal</label>
+                                <select name="checkup_animal_id" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                    <option value="">All Animals</option>
+                                    <% if (filterOptions.animalIds) { %>
+                                        <% filterOptions.animalIds.forEach(animal => { %>
+                                            <option value="<%= animal.id %>" <%= checkupFilters.animal_id == animal.id ? 'selected' : '' %>><%= animal.name %></option>
+                                        <% }); %>
+                                    <% } %>
+                                </select>
+                            </div>
+
+                            <!-- Sort By -->
+                            <div>
+                                <label style="color: #fff; display: block; margin-bottom: 5px;">Sort By</label>
+                                <select name="checkup_sort_by" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                    <option value="checkup_date" <%= checkupFilters.sort_by === 'checkup_date' ? 'selected' : '' %>>Date</option>
+                                    <option value="animal_id" <%= checkupFilters.sort_by === 'animal_id' ? 'selected' : '' %>>Animal</option>
+                                    <option value="health_status" <%= checkupFilters.sort_by === 'health_status' ? 'selected' : '' %>>Status</option>
+                                    <option value="weight_kg" <%= checkupFilters.sort_by === 'weight_kg' ? 'selected' : '' %>>Weight</option>
+                                </select>
+                            </div>
+
+                            <!-- Sort Order -->
+                            <div>
+                                <label style="color: #fff; display: block; margin-bottom: 5px;">Order</label>
+                                <select name="checkup_sort_order" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                    <option value="ASC" <%= checkupFilters.sort_order === 'ASC' ? 'selected' : '' %>>Ascending</option>
+                                    <option value="DESC" <%= checkupFilters.sort_order === 'DESC' ? 'selected' : '' %>>Descending</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                                Apply Filters
+                            </button>
+                            <a href="/medical" style="padding: 10px 20px; background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block;">
+                                Clear Filters
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="data-grid">
+                    <% if (checkups && checkups.length > 0) { %>
+                        <% checkups.forEach(checkup => { %>
+                        <div class="data-card">
+                            <div class="card-header">
+                                <span class="icon">🩺</span>Animal ID: <%= checkup.animal_id %>
+                            </div>
+                            <div class="card-content">
+                                <p><strong>Checkup Date:</strong> <%= new Date(checkup.checkup_date).toLocaleDateString() %></p>
+                                <p><strong>Health Status:</strong> <%= checkup.health_status %></p>
+                                <p><strong>Weight:</strong> <%= checkup.weight_kg %> kg</p>
+                                <p><strong>Vaccination:</strong> <%= checkup.vaccination_status %></p>
+                                <p><strong>Next Checkup:</strong> <%= new Date(checkup.next_checkup_date).toLocaleDateString() %></p>
+                            </div>
+                        </div>
+                        <% }); %>
+                    <% } else { %>
+                        <p>No medical checkups recorded yet.</p>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Medical Treatments Section -->
+            <div id="treatments-section" class="tab-content" style="display: none;">
+                <button class="add-btn" onclick="window.location.href='/addTreatment'">+ Add Treatment Record</button>
+                
+                <!-- Treatment Filters -->
+                <div class="filter-section" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 20px; border-radius: 15px; margin: 20px 0; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="color: #fff; margin: 0;">🔍 Filter Medical Treatments</h3>
+                        <span style="color: #4CAF50; font-weight: bold;"><%= treatments.length %> results found</span>
+                    </div>
+                    <form method="GET" action="/medical">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                            <!-- Search -->
+                            <div>
+                                <label style="color: #fff; display: block; margin-bottom: 5px;">Search</label>
+                                <input type="text" name="treatment_search" placeholder="Animal, Condition, Medication..." 
+                                       value="<%= treatmentFilters.search %>"
+                                       style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                            </div>
+
+                            <!-- Treatment Progress -->
+                            <div>
+                                <label style="color: #fff; display: block; margin-bottom: 5px;">Progress Status</label>
+                                <select name="treatment_progress" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                    <option value="">All Progress Status</option>
+                                    <% if (filterOptions.treatmentProgress) { %>
+                                        <% filterOptions.treatmentProgress.forEach(progress => { %>
+                                            <option value="<%= progress %>" <%= treatmentFilters.treatment_progress === progress ? 'selected' : '' %>><%= progress %></option>
+                                        <% }); %>
+                                    <% } %>
+                                </select>
+                            </div>
+
+                            <!-- Condition -->
+                            <div>
+                                <label style="color: #fff; display: block; margin-bottom: 5px;">Condition</label>
+                                <select name="condition" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                    <option value="">All Conditions</option>
+                                    <% if (filterOptions.conditions) { %>
+                                        <% filterOptions.conditions.forEach(condition => { %>
+                                            <option value="<%= condition %>" <%= treatmentFilters.condition === condition ? 'selected' : '' %>><%= condition %></option>
+                                        <% }); %>
+                                    <% } %>
+                                </select>
+                            </div>
+
+                            <!-- Animal -->
+                            <div>
+                                <label style="color: #fff; display: block; margin-bottom: 5px;">Animal</label>
+                                <select name="treatment_animal_id" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                    <option value="">All Animals</option>
+                                    <% if (filterOptions.animalIds) { %>
+                                        <% filterOptions.animalIds.forEach(animal => { %>
+                                            <option value="<%= animal.id %>" <%= treatmentFilters.animal_id == animal.id ? 'selected' : '' %>><%= animal.name %></option>
+                                        <% }); %>
+                                    <% } %>
+                                </select>
+                            </div>
+
+                            <!-- Sort By -->
+                            <div>
+                                <label style="color: #fff; display: block; margin-bottom: 5px;">Sort By</label>
+                                <select name="treatment_sort_by" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                    <option value="treatment_start_date" <%= treatmentFilters.sort_by === 'treatment_start_date' ? 'selected' : '' %>>Date</option>
+                                    <option value="animal_id" <%= treatmentFilters.sort_by === 'animal_id' ? 'selected' : '' %>>Animal</option>
+                                    <option value="condition" <%= treatmentFilters.sort_by === 'condition' ? 'selected' : '' %>>Condition</option>
+                                    <option value="treatment_progress" <%= treatmentFilters.sort_by === 'treatment_progress' ? 'selected' : '' %>>Progress</option>
+                                </select>
+                            </div>
+
+                            <!-- Sort Order -->
+                            <div>
+                                <label style="color: #fff; display: block; margin-bottom: 5px;">Order</label>
+                                <select name="treatment_sort_order" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                    <option value="ASC" <%= treatmentFilters.sort_order === 'ASC' ? 'selected' : '' %>>Ascending</option>
+                                    <option value="DESC" <%= treatmentFilters.sort_order === 'DESC' ? 'selected' : '' %>>Descending</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                                Apply Filters
+                            </button>
+                            <a href="/medical" style="padding: 10px 20px; background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block;">
+                                Clear Filters
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="data-grid">
+                    <% if (treatments && treatments.length > 0) { %>
+                        <% treatments.forEach(treatment => { %>
+                        <div class="data-card">
+                            <div class="card-header">
+                                <span class="icon">💊</span>Animal ID: <%= treatment.animal_id %>
+                            </div>
+                            <div class="card-content">
+                                <p><strong>Condition:</strong> <%= treatment.condition %></p>
+                                <p><strong>Treatment Started:</strong> <%= new Date(treatment.treatment_start_date).toLocaleDateString() %></p>
+                                <p><strong>Medication:</strong> <%= treatment.medication %></p>
+                                <p><strong>Progress:</strong> <%= treatment.treatment_progress %></p>
+                                <p><strong>Expected Recovery:</strong> <%= new Date(treatment.expected_recovery_date).toLocaleDateString() %></p>
+                            </div>
+                        </div>
+                        <% }); %>
+                    <% } else { %>
+                        <p>No active treatments recorded.</p>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Feeding Logs Section -->
+            <div id="feeding-section" class="tab-content" style="display: none;">
+                <button class="add-btn" onclick="window.location.href='/addFeedingLog'">+ Log Feeding</button>
+                
+                <!-- Feeding Filters -->
+                <div class="filter-section" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 20px; border-radius: 15px; margin: 20px 0; border: 1px solid rgba(255, 255, 255, 0.2);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="color: #fff; margin: 0;">🔍 Filter Feeding Logs</h3>
+                        <span style="color: #4CAF50; font-weight: bold;"><%= logs.length %> results found</span>
+                    </div>
+                    <form method="GET" action="/medical">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                            <!-- Search -->
+                            <div>
+                                <label style="color: #fff; display: block; margin-bottom: 5px;">Search</label>
+                                <input type="text" name="feeding_search" placeholder="Schedule, Food Type, Staff..." 
+                                       value="<%= feedingFilters.search %>"
+                                       style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                            </div>
+
+                            <!-- Food Type -->
+                            <div>
+                                <label style="color: #fff; display: block; margin-bottom: 5px;">Food Type</label>
+                                <select name="food_type" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                    <option value="">All Food Types</option>
+                                    <% if (filterOptions.foodTypes) { %>
+                                        <% filterOptions.foodTypes.forEach(type => { %>
+                                            <option value="<%= type %>" <%= feedingFilters.food_type === type ? 'selected' : '' %>><%= type %></option>
+                                        <% }); %>
+                                    <% } %>
+                                </select>
+                            </div>
+
+                            <!-- Schedule Name -->
+                            <div>
+                                <label style="color: #fff; display: block; margin-bottom: 5px;">Schedule</label>
+                                <select name="schedule_name" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                    <option value="">All Schedules</option>
+                                    <% if (filterOptions.scheduleNames) { %>
+                                        <% filterOptions.scheduleNames.forEach(schedule => { %>
+                                            <option value="<%= schedule %>" <%= feedingFilters.schedule_name === schedule ? 'selected' : '' %>><%= schedule %></option>
+                                        <% }); %>
+                                    <% } %>
+                                </select>
+                            </div>
+
+                            <!-- Staff -->
+                            <div>
+                                <label style="color: #fff; display: block; margin-bottom: 5px;">Staff Member</label>
+                                <select name="staff_id" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                    <option value="">All Staff</option>
+                                    <% if (filterOptions.staffIds) { %>
+                                        <% filterOptions.staffIds.forEach(staff => { %>
+                                            <option value="<%= staff.employee_id %>" <%= feedingFilters.staff_id == staff.employee_id ? 'selected' : '' %>><%= staff.employee_name %></option>
+                                        <% }); %>
+                                    <% } %>
+                                </select>
+                            </div>
+
+                            <!-- Sort By -->
+                            <div>
+                                <label style="color: #fff; display: block; margin-bottom: 5px;">Sort By</label>
+                                <select name="feeding_sort_by" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                    <option value="feeding_date" <%= feedingFilters.sort_by === 'feeding_date' ? 'selected' : '' %>>Date</option>
+                                    <option value="schedule_name" <%= feedingFilters.sort_by === 'schedule_name' ? 'selected' : '' %>>Schedule</option>
+                                    <option value="food_type" <%= feedingFilters.sort_by === 'food_type' ? 'selected' : '' %>>Food Type</option>
+                                    <option value="quantity_kg" <%= feedingFilters.sort_by === 'quantity_kg' ? 'selected' : '' %>>Quantity</option>
+                                </select>
+                            </div>
+
+                            <!-- Sort Order -->
+                            <div>
+                                <label style="color: #fff; display: block; margin-bottom: 5px;">Order</label>
+                                <select name="feeding_sort_order" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff;">
+                                    <option value="ASC" <%= feedingFilters.sort_order === 'ASC' ? 'selected' : '' %>>Ascending</option>
+                                    <option value="DESC" <%= feedingFilters.sort_order === 'DESC' ? 'selected' : '' %>>Descending</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                                Apply Filters
+                            </button>
+                            <a href="/medical" style="padding: 10px 20px; background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; display: inline-block;">
+                                Clear Filters
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="data-grid">
+                    <% if (logs && logs.length > 0) { %>
+                        <% logs.forEach(log => { %>
+                        <div class="data-card">
+                            <div class="card-header">
+                                <span class="icon">🥩</span><%= log.schedule_name %>
+                            </div>
+                            <div class="card-content">
+                                <p><strong>Date:</strong> <%= new Date(log.feeding_date).toLocaleDateString() %></p>
+                                <p><strong>Food Type:</strong> <%= log.food_type %></p>
+                                <p><strong>Quantity:</strong> <%= log.quantity_kg %> kg</p>
+                                <p><strong>Fed By:</strong> Staff ID: <%= log.staff_id %></p>
+                                <p><strong>Time:</strong> <%= log.feeding_time %></p>
+                            </div>
+                        </div>
+                        <% }); %>
+                    <% } else { %>
+                        <p>No feeding logs recorded yet.</p>
+                    <% } %>
+                </div>
+            </div>
+
+            <script>
+                function showTab(tabName) {
+                    // Hide all tab contents
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    
+                    // Remove active class from all buttons
+                    document.querySelectorAll('.tab-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Show selected tab content
+                    document.getElementById(tabName + '-section').style.display = 'block';
+                    
+                    // Add active class to clicked button
+                    event.target.classList.add('active');
+                }
+            </script>
         </div>
     </div>
     <script src="../app.js"></script>

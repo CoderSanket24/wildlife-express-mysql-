@@ -132,9 +132,51 @@ export const zoneDetails = async () => {
     return rows[0];
 }
 
-export const loadAnimals = async () => {
-    const [rows] = await dbClient.execute('select * from animals');
-    return rows;
+export const loadAnimals = async (filters = {}) => {
+    try {
+        let query = 'SELECT * FROM animals WHERE 1=1';
+        const params = [];
+        
+        // Apply filters
+        if (filters.status) {
+            query += ' AND status = ?';
+            params.push(filters.status);
+        }
+        
+        if (filters.habitat_zone) {
+            query += ' AND habitat_zone = ?';
+            params.push(filters.habitat_zone);
+        }
+        
+        if (filters.min_count !== null) {
+            query += ' AND count >= ?';
+            params.push(filters.min_count);
+        }
+        
+        if (filters.max_count !== null) {
+            query += ' AND count <= ?';
+            params.push(filters.max_count);
+        }
+        
+        if (filters.search) {
+            query += ' AND (name LIKE ? OR species_id LIKE ? OR habitat_zone LIKE ?)';
+            const searchTerm = `%${filters.search}%`;
+            params.push(searchTerm, searchTerm, searchTerm);
+        }
+        
+        // Apply sorting
+        const validSortColumns = ['name', 'species_id', 'status', 'count', 'habitat_zone', 'last_survey'];
+        const sortBy = validSortColumns.includes(filters.sort_by) ? filters.sort_by : 'name';
+        const sortOrder = filters.sort_order === 'DESC' ? 'DESC' : 'ASC';
+        
+        query += ` ORDER BY ${sortBy} ${sortOrder}`;
+        
+        const [rows] = await dbClient.execute(query, params);
+        return rows;
+    } catch (error) {
+        console.error('Error filtering animals:', error);
+        return [];
+    }
 }
 
 export const totalAnimalsCount = async () => {
@@ -316,20 +358,193 @@ export const getFeedbacksByEmail = async (email) => {
     return rows;
 }
 
-export const medical_checkups = async () => {
-    const [rows] = await dbClient.execute('select * from medical_checkups');
-    return rows;
+export const medical_checkups = async (filters = {}) => {
+    try {
+        let query = 'SELECT * FROM medical_checkups WHERE 1=1';
+        const params = [];
+        
+        if (filters.health_status) {
+            query += ' AND health_status = ?';
+            params.push(filters.health_status);
+        }
+        
+        if (filters.vaccination_status) {
+            query += ' AND vaccination_status = ?';
+            params.push(filters.vaccination_status);
+        }
+        
+        if (filters.animal_id) {
+            query += ' AND animal_id = ?';
+            params.push(filters.animal_id);
+        }
+        
+        if (filters.search) {
+            query += ' AND (animal_id LIKE ? OR health_status LIKE ?)';
+            const searchTerm = `%${filters.search}%`;
+            params.push(searchTerm, searchTerm);
+        }
+        
+        const validSortColumns = ['checkup_date', 'animal_id', 'health_status', 'weight_kg'];
+        const sortBy = validSortColumns.includes(filters.sort_by) ? filters.sort_by : 'checkup_date';
+        const sortOrder = filters.sort_order === 'DESC' ? 'DESC' : 'ASC';
+        
+        query += ` ORDER BY ${sortBy} ${sortOrder}`;
+        
+        const [rows] = await dbClient.execute(query, params);
+        return rows;
+    } catch (error) {
+        console.error('Error filtering medical checkups:', error);
+        return [];
+    }
 }
 
-export const medical_treatments = async () => {
-    const [rows] = await dbClient.execute('select * from medical_treatments');
-    return rows;
+export const medical_treatments = async (filters = {}) => {
+    try {
+        let query = 'SELECT * FROM medical_treatments WHERE 1=1';
+        const params = [];
+        
+        if (filters.treatment_progress) {
+            query += ' AND treatment_progress = ?';
+            params.push(filters.treatment_progress);
+        }
+        
+        if (filters.condition) {
+            query += ' AND `condition` LIKE ?';
+            params.push(`%${filters.condition}%`);
+        }
+        
+        if (filters.animal_id) {
+            query += ' AND animal_id = ?';
+            params.push(filters.animal_id);
+        }
+        
+        if (filters.search) {
+            query += ' AND (animal_id LIKE ? OR `condition` LIKE ? OR medication LIKE ?)';
+            const searchTerm = `%${filters.search}%`;
+            params.push(searchTerm, searchTerm, searchTerm);
+        }
+        
+        const validSortColumns = ['treatment_start_date', 'animal_id', 'condition', 'treatment_progress'];
+        let sortBy = validSortColumns.includes(filters.sort_by) ? filters.sort_by : 'treatment_start_date';
+        if (sortBy === 'condition') sortBy = '`condition`';
+        const sortOrder = filters.sort_order === 'DESC' ? 'DESC' : 'ASC';
+        
+        query += ` ORDER BY ${sortBy} ${sortOrder}`;
+        
+        const [rows] = await dbClient.execute(query, params);
+        return rows;
+    } catch (error) {
+        console.error('Error filtering medical treatments:', error);
+        return [];
+    }
 }
 
-export const feeding_logs = async () => {
-    const [rows] = await dbClient.execute('select * from feeding_logs');
-    return rows;
+export const feeding_logs = async (filters = {}) => {
+    try {
+        let query = 'SELECT * FROM feeding_logs WHERE 1=1';
+        const params = [];
+        
+        if (filters.food_type) {
+            query += ' AND food_type = ?';
+            params.push(filters.food_type);
+        }
+        
+        if (filters.staff_id) {
+            query += ' AND staff_id = ?';
+            params.push(filters.staff_id);
+        }
+        
+        if (filters.schedule_name) {
+            query += ' AND schedule_name LIKE ?';
+            params.push(`%${filters.schedule_name}%`);
+        }
+        
+        if (filters.search) {
+            query += ' AND (schedule_name LIKE ? OR food_type LIKE ? OR staff_id LIKE ?)';
+            const searchTerm = `%${filters.search}%`;
+            params.push(searchTerm, searchTerm, searchTerm);
+        }
+        
+        const validSortColumns = ['feeding_date', 'schedule_name', 'food_type', 'quantity_kg'];
+        const sortBy = validSortColumns.includes(filters.sort_by) ? filters.sort_by : 'feeding_date';
+        const sortOrder = filters.sort_order === 'DESC' ? 'DESC' : 'ASC';
+        
+        query += ` ORDER BY ${sortBy} ${sortOrder}`;
+        
+        const [rows] = await dbClient.execute(query, params);
+        return rows;
+    } catch (error) {
+        console.error('Error filtering feeding logs:', error);
+        return [];
+    }
 }
+
+export const getMedicalFilterOptions = async () => {
+    try {
+        // Get unique health statuses
+        const [healthStatuses] = await dbClient.execute(
+            'SELECT DISTINCT health_status FROM medical_checkups WHERE health_status IS NOT NULL ORDER BY health_status'
+        );
+        
+        // Get unique vaccination statuses
+        const [vaccinationStatuses] = await dbClient.execute(
+            'SELECT DISTINCT vaccination_status FROM medical_checkups WHERE vaccination_status IS NOT NULL ORDER BY vaccination_status'
+        );
+        
+        // Get unique treatment progress statuses
+        const [treatmentProgress] = await dbClient.execute(
+            'SELECT DISTINCT treatment_progress FROM medical_treatments WHERE treatment_progress IS NOT NULL ORDER BY treatment_progress'
+        );
+        
+        // Get unique conditions
+        const [conditions] = await dbClient.execute(
+            'SELECT DISTINCT `condition` FROM medical_treatments WHERE `condition` IS NOT NULL ORDER BY `condition`'
+        );
+        
+        // Get unique food types
+        const [foodTypes] = await dbClient.execute(
+            'SELECT DISTINCT food_type FROM feeding_logs WHERE food_type IS NOT NULL ORDER BY food_type'
+        );
+        
+        // Get unique schedule names
+        const [scheduleNames] = await dbClient.execute(
+            'SELECT DISTINCT schedule_name FROM feeding_logs WHERE schedule_name IS NOT NULL ORDER BY schedule_name'
+        );
+        
+        // Get animal IDs
+        const [animalIds] = await dbClient.execute(
+            'SELECT DISTINCT id, name FROM animals ORDER BY name'
+        );
+        
+        // Get staff IDs
+        const [staffIds] = await dbClient.execute(
+            'SELECT DISTINCT employee_id, employee_name FROM rangers_staff ORDER BY employee_name'
+        );
+        
+        return {
+            healthStatuses: healthStatuses.map(row => row.health_status),
+            vaccinationStatuses: vaccinationStatuses.map(row => row.vaccination_status),
+            treatmentProgress: treatmentProgress.map(row => row.treatment_progress),
+            conditions: conditions.map(row => row.condition),
+            foodTypes: foodTypes.map(row => row.food_type),
+            scheduleNames: scheduleNames.map(row => row.schedule_name),
+            animalIds: animalIds,
+            staffIds: staffIds
+        };
+    } catch (error) {
+        console.error('Error getting medical filter options:', error);
+        return {
+            healthStatuses: [],
+            vaccinationStatuses: [],
+            treatmentProgress: [],
+            conditions: [],
+            foodTypes: [],
+            scheduleNames: [],
+            animalIds: [],
+            staffIds: []
+        };
+    }
+};
 
 // Zone filtering functions
 export const getFilteredZones = async (filters) => {
@@ -478,5 +693,126 @@ export const getStaffFilterOptions = async () => {
             zones: [],
             experienceRange: { min_experience: 0, max_experience: 50 }
         };
+    }
+};
+
+export const getAnimalFilterOptions = async () => {
+    try {
+        // Get unique statuses
+        const [statuses] = await dbClient.execute(
+            'SELECT DISTINCT status FROM animals WHERE status IS NOT NULL ORDER BY status'
+        );
+        
+        // Get unique habitat zones
+        const [habitatZones] = await dbClient.execute(
+            'SELECT DISTINCT habitat_zone FROM animals WHERE habitat_zone IS NOT NULL ORDER BY habitat_zone'
+        );
+        
+        // Get count range
+        const [countRange] = await dbClient.execute(
+            'SELECT MIN(count) as min_count, MAX(count) as max_count FROM animals'
+        );
+        
+        return {
+            statuses: statuses.map(row => row.status),
+            habitatZones: habitatZones.map(row => row.habitat_zone),
+            countRange: countRange[0]
+        };
+    } catch (error) {
+        console.error('Error getting animal filter options:', error);
+        return {
+            statuses: [],
+            habitatZones: [],
+            countRange: { min_count: 0, max_count: 1000 }
+        };
+    }
+};
+
+
+// Add Medical Records
+export const addMedicalCheckup = async (checkupData) => {
+    try {
+        const query = `
+            INSERT INTO medical_checkups (
+                animal_id, checkup_date, health_status, 
+                weight_kg, vaccination_status, next_checkup_date
+            ) VALUES (?, ?, ?, ?, ?, ?)
+        `;
+        
+        const values = [
+            checkupData.animal_id,
+            checkupData.checkup_date,
+            checkupData.health_status,
+            checkupData.weight_kg,
+            checkupData.vaccination_status,
+            checkupData.next_checkup_date
+        ];
+        
+        await dbClient.execute(query, values);
+        return { success: true, message: 'Medical checkup added successfully' };
+    } catch (error) {
+        console.error('Service error adding checkup:', error);
+        if (error.code === 'ER_NO_REFERENCED_ROW_2') {
+            throw new Error('Invalid animal ID. Please select a valid animal.');
+        }
+        throw error;
+    }
+};
+
+export const addMedicalTreatment = async (treatmentData) => {
+    try {
+        const query = `
+            INSERT INTO medical_treatments (
+                animal_id, \`condition\`, treatment_start_date, 
+                medication, treatment_progress, expected_recovery_date
+            ) VALUES (?, ?, ?, ?, ?, ?)
+        `;
+        
+        const values = [
+            treatmentData.animal_id,
+            treatmentData.condition,
+            treatmentData.treatment_start_date,
+            treatmentData.medication,
+            treatmentData.treatment_progress,
+            treatmentData.expected_recovery_date
+        ];
+        
+        await dbClient.execute(query, values);
+        return { success: true, message: 'Medical treatment added successfully' };
+    } catch (error) {
+        console.error('Service error adding treatment:', error);
+        if (error.code === 'ER_NO_REFERENCED_ROW_2') {
+            throw new Error('Invalid animal ID. Please select a valid animal.');
+        }
+        throw error;
+    }
+};
+
+export const addFeedingLog = async (feedingData) => {
+    try {
+        const query = `
+            INSERT INTO feeding_logs (
+                schedule_name, feeding_date, food_type, 
+                quantity_kg, staff_id, feeding_time
+            ) VALUES (?, ?, ?, ?, ?, ?)
+        `;
+        
+        const values = [
+            feedingData.schedule_name,
+            feedingData.feeding_date,
+            feedingData.food_type,
+            feedingData.quantity_kg,
+            feedingData.staff_id,
+            feedingData.feeding_time
+        ];
+        
+        await dbClient.execute(query, values);
+        return { success: true, message: 'Feeding log added successfully' };
+    } catch (error) {
+        console.error('Service error adding feeding log:', error);
+        if (error.code === 'ER_NO_REFERENCED_ROW_2') {
+            throw new Error('Invalid staff ID. Please select a valid staff member.');
+        }
+        throw error;
     }
 };

@@ -148,8 +148,9 @@ export const totalSpeciesCount = async () => {
 }
 
 export const addAnimal = async (name, species_id, status, count, habitat_zone, last_survey, image_url) => {
-    const [rows] = await dbClient.execute('insert into animals (name, species_id, status, count, habitat_zone, last_survey, image_url) values (?, ?, ?, ?, ?, ?, ?)', [name, species_id, status, count, habitat_zone, last_survey, image_url]);
-    return rows;
+    const procedureCallQuery = `CALL sp_LogAnimalSurvey(?, ?, ?, ?, ?, ?, ?);`;
+    const values = [species_id, name, status, count, habitat_zone, last_survey, image_url];
+    await dbClient.execute(procedureCallQuery, values);
 }
 
 export const loadStaff = async (filters = {}) => {

@@ -732,12 +732,7 @@ export const getAnimalFilterOptions = async () => {
 // Add Medical Records
 export const addMedicalCheckup = async (checkupData) => {
     try {
-        const query = `
-            INSERT INTO medical_checkups (
-                animal_id, checkup_date, health_status, 
-                weight_kg, vaccination_status, next_checkup_date
-            ) VALUES (?, ?, ?, ?, ?, ?)
-        `;
+        const procedureCallQuery = `CALL sp_AddCheckup(?, ?, ?, ?, ?, ?, @msg);`
         
         const values = [
             checkupData.animal_id,
@@ -748,8 +743,9 @@ export const addMedicalCheckup = async (checkupData) => {
             checkupData.next_checkup_date
         ];
         
-        await dbClient.execute(query, values);
-        return { success: true, message: 'Medical checkup added successfully' };
+        await dbClient.execute(procedureCallQuery, values);
+        const result = await dbClient.execute('SELECT @msg AS message;');
+        return { success: true, message: result[0][0].message };
     } catch (error) {
         console.error('Service error adding checkup:', error);
         if (error.code === 'ER_NO_REFERENCED_ROW_2') {

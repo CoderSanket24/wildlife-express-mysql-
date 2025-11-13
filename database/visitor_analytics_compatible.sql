@@ -3,20 +3,6 @@
 -- Compatible with MySQL 5.7+ with strict mode
 -- =====================================================
 
--- Create indexes (without IF NOT EXISTS for compatibility)
--- =====================================================
-
--- Drop existing indexes if they exist (ignore errors)
--- ALTER TABLE tickets DROP INDEX idx_tickets_safari_date;
--- ALTER TABLE tickets DROP INDEX idx_tickets_booking_status;
--- ALTER TABLE tickets DROP INDEX idx_tickets_safari_zone;
--- ALTER TABLE tickets DROP INDEX idx_tickets_time_slot;
--- ALTER TABLE tickets DROP INDEX idx_tickets_visitor_id;
--- ALTER TABLE visitors DROP INDEX idx_visitors_age;
--- ALTER TABLE visitors DROP INDEX idx_visitors_email;
--- ALTER TABLE tickets DROP INDEX idx_tickets_date_status;
--- ALTER TABLE tickets DROP INDEX idx_tickets_zone_date;
-
 -- Create indexes (will fail silently if they exist)
 CREATE INDEX idx_tickets_safari_date ON tickets(safari_date);
 CREATE INDEX idx_tickets_booking_status ON tickets(booking_status);
@@ -33,7 +19,6 @@ CREATE INDEX idx_tickets_zone_date ON tickets(safari_zone, safari_date);
 -- =====================================================
 
 -- 1. Age Distribution View (Fixed GROUP BY)
-DROP VIEW IF EXISTS v_age_distribution;
 CREATE VIEW v_age_distribution AS
 SELECT 
     age_group,
@@ -60,7 +45,6 @@ ORDER BY
     END;
 
 -- 2. Safari Zone Popularity View
-DROP VIEW IF EXISTS v_zone_popularity;
 CREATE VIEW v_zone_popularity AS
 SELECT 
     safari_zone,
@@ -73,7 +57,6 @@ GROUP BY safari_zone
 ORDER BY booking_count DESC;
 
 -- 3. Daily Revenue Trends View
-DROP VIEW IF EXISTS v_daily_revenue;
 CREATE VIEW v_daily_revenue AS
 SELECT 
     DATE(safari_date) as date,
@@ -86,7 +69,6 @@ GROUP BY DATE(safari_date)
 ORDER BY DATE(safari_date) DESC;
 
 -- 4. Booking Status Overview View
-DROP VIEW IF EXISTS v_booking_status;
 CREATE VIEW v_booking_status AS
 SELECT 
     booking_status,
@@ -97,7 +79,6 @@ FROM tickets
 GROUP BY booking_status;
 
 -- 5. Time Slot Preferences View
-DROP VIEW IF EXISTS v_time_slot_preferences;
 CREATE VIEW v_time_slot_preferences AS
 SELECT 
     time_slot,
@@ -110,7 +91,6 @@ GROUP BY time_slot
 ORDER BY slot_bookings DESC;
 
 -- 6. Monthly Visitor Trends View (Fixed GROUP BY)
-DROP VIEW IF EXISTS v_monthly_trends;
 CREATE VIEW v_monthly_trends AS
 SELECT 
     year_month.year,
@@ -134,7 +114,6 @@ GROUP BY year_month.year, year_month.month, year_month.month_name
 ORDER BY year_month.year DESC, year_month.month DESC;
 
 -- 7. Dashboard Statistics View
-DROP VIEW IF EXISTS v_dashboard_stats;
 CREATE VIEW v_dashboard_stats AS
 SELECT 
     (SELECT COUNT(*) FROM tickets WHERE DATE(safari_date) = CURDATE() AND booking_status != 'cancelled') as today_bookings,
@@ -149,7 +128,7 @@ SELECT
     (SELECT COUNT(*) FROM visitors) as registered_visitors;
 
 -- 8. Summary Table for Caching
-CREATE TABLE IF NOT EXISTS visitor_analytics_summary (
+CREATE TABLE visitor_analytics_summary (
     id INT AUTO_INCREMENT PRIMARY KEY,
     summary_date DATE NOT NULL,
     total_bookings INT DEFAULT 0,
@@ -163,8 +142,5 @@ CREATE TABLE IF NOT EXISTS visitor_analytics_summary (
     UNIQUE KEY unique_date (summary_date)
 );
 
--- Create index on summary table (without IF NOT EXISTS)
+-- Create index on summary table 
 CREATE INDEX idx_summary_date ON visitor_analytics_summary(summary_date);
-
--- Analyze tables for optimization
-ANALYZE TABLE visitors, tickets, feedbacks, zones;

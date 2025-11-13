@@ -228,7 +228,7 @@
                             <%bookings.map(booking=> {%>
                                 <div class="activity-card">
                                     <div class="activity-header">
-                                        <div class="activity-title">🎫 <%=booking.safari_zone%>
+                                        <div class="activity-title">🎫 <%=booking.zone_name || booking.safari_zone%>
                                         </div>
                                         <%if (new Date()> new Date(booking.safari_date)) {%>
                                             <span class="badge success">Completed</span>

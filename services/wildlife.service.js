@@ -327,14 +327,16 @@ export const getBookingsByEmail = async (email) => {
             t.safari_date,
             t.time_slot,
             t.safari_zone,
+            z.zone_name,
             t.person_count,
             t.total_amount
         FROM visitors v
         JOIN tickets t ON v.id = t.visitor_id
-        WHERE v.email = '${email}';
+        LEFT JOIN zones z ON t.safari_zone = z.zone_id
+        WHERE v.email = ?;
     `;
-    const rows = await dbClient.execute(query);
-    return rows[0];
+    const [rows] = await dbClient.execute(query, [email]);
+    return rows;
 }
 
 export const getFeedbacksByEmail = async (email) => {

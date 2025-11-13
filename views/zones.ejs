@@ -186,9 +186,6 @@
                                 <button class="action-btn view-btn" onclick="viewZoneDetails('<%=zone_id%>')">
                                     👁️ View Details
                                 </button>
-                                <button class="action-btn edit-btn" onclick="editZone('<%=zone_id%>')">
-                                    ✏️ Edit
-                                </button>
                             </div>
                         </div>
                     <% }); %>
@@ -733,19 +730,11 @@
                 </div>
                 
                 <div class="modal-actions">
-                    <button class="action-btn edit-btn" onclick="editZone('${zone.zone_id}')">
-                        ✏️ Edit Zone
-                    </button>
                     <button class="action-btn view-btn" onclick="viewZoneOnMap('${zone.zone_id}')">
                         🗺️ View on Map
                     </button>
                 </div>
             `;
-        }
-        
-        function editZone(zoneId) {
-            // Redirect to edit page or show edit modal
-            showNotification(`Edit functionality for zone ${zoneId} will be implemented soon!`, 'info');
         }
         
         function viewZoneOnMap(zoneId) {

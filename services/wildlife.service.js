@@ -99,7 +99,8 @@ export const submitFeedback = async (formData, visitorId) => {
 }
 
 export const loadZones = async () => {
-    const [rows] = await dbClient.execute('select * from zones');
+    // Use the enhanced zones view for richer data
+    const [rows] = await dbClient.execute('SELECT * FROM v_zones_enhanced ORDER BY zone_name');
     return rows;
 }
 
@@ -551,7 +552,8 @@ export const getMedicalFilterOptions = async () => {
 // Zone filtering functions
 export const getFilteredZones = async (filters) => {
     try {
-        let query = 'SELECT * FROM zones WHERE 1=1';
+        // Use the enhanced zones view instead of direct table query
+        let query = 'SELECT * FROM v_zones_enhanced WHERE 1=1';
         const params = [];
         
         // Apply filters
@@ -591,8 +593,8 @@ export const getFilteredZones = async (filters) => {
             params.push(searchTerm, searchTerm, searchTerm);
         }
         
-        // Apply sorting
-        const validSortColumns = ['zone_name', 'area', 'climate', 'camera_traps', 'access_level', 'zone_id'];
+        // Apply sorting (now includes additional calculated columns)
+        const validSortColumns = ['zone_name', 'area', 'climate', 'camera_traps', 'access_level', 'zone_id', 'camera_density', 'total_bookings', 'total_revenue'];
         const sortBy = validSortColumns.includes(filters.sort_by) ? filters.sort_by : 'zone_name';
         const sortOrder = filters.sort_order === 'DESC' ? 'DESC' : 'ASC';
         
